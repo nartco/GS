@@ -594,16 +594,19 @@ const CheckoutScreen = props => {
     formData.append('adresseFacturationType', data.adresseFacturationType);
     formData.append('facturationNom', NomFacturation);
 
+    let index = 0;
     data.productImages.forEach(productImage => {
       let productId = productImage.productId;
       let image = productImage.image;
 
       if (image) {
-        formData.append('image_' + productId, {
+        formData.append('image_' + productId + '_' + index, {
           uri: image,
           type: getImageType(image),
           name: 'image_' + productId,
         });
+
+        index++;
       }
     });
 

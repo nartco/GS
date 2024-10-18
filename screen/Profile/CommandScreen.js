@@ -1047,7 +1047,7 @@ const CommandScreen = props => {
           </TouchableOpacity>
           <TouchableOpacity onPress={() => console.log('Test')}>
             {/* <Button title={t('commander à nouveau')} navigation={() => handleCartLogin(item)}/> */}
-            <TouchableOpacity
+            {/*<TouchableOpacity
               onPress={() => handleCartLogin(item)}
               style={[
                 t(item.statut).length > 15
@@ -1069,6 +1069,33 @@ const CommandScreen = props => {
                 {t('commander à nouveau')}
               </Text>
             </TouchableOpacity>
+            */}
+            {item.showPaiementButton &&
+              item.statut.toLowerCase() == 'a payer' &&
+              item.totalPaye < item.totalPrice && (
+                <TouchableOpacity
+                  onPress={() => handleCommandDetail(item.id, item.paysLivraisonId)}
+                  style={[
+                    t(item.statut).length > 15
+                      ? {paddingVertical: 6, paddingHorizontal: 20}
+                      : {paddingVertical: 8, paddingHorizontal: 22},
+                    {
+                      flexDirection: 'row',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      backgroundColor: '#4E8FDA',
+                      borderRadius: 25,
+                    },
+                  ]}>
+                  <Text
+                    style={[
+                      t(item.statut).length > 15 ? {fontSize: 10} : {fontSize: 12},
+                      {fontFamily: 'Poppins-Medium', color: '#fff'},
+                    ]}>
+                    {t('passer au paiement')}
+                  </Text>
+                </TouchableOpacity>
+              )}
           </TouchableOpacity>
           <TouchableOpacity
             key={item.id}

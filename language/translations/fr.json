@@ -194,6 +194,8 @@
     "Please choose one of the options" : "Veuillez choisir l'une des options",
     "Adresse": "Adresse",
     "Libellé adresse": "Libellé adresse, ex. Domicile",
-    "Prénom Nom adresse": "Prénom Nom"
+    "Prénom Nom adresse": "Prénom Nom",
+    "passer au paiement": "Passer au paiement",
+    "confirmer la cotation": "Confirmer la cotation"
 
 }

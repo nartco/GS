@@ -459,8 +459,19 @@ const DepotScreen1 = props => {
       }
       return;
     }
+
+    let fournisseurId = null;
+    MagasinsDepotRawValues?.forEach(function (fournisseur) {
+      fournisseur.magasins?.forEach(function (magasin) {
+        if (magasin.id == UserMagasinChoix.id) {
+          fournisseurId = fournisseur.id;
+        }
+      });
+    });
+
+    
     // console.log('UserMagasinChoix', UserMagasinChoix);
-    await saveDepotMagasinValues(UserMagasinChoix?.label, UserMagasinChoix.id);
+    await saveDepotMagasinValues(UserMagasinChoix?.label, UserMagasinChoix.id, fournisseurId);
     await saveDepotMagasinSchedule(
       'fr' == Language
         ? actionTriggered.horaireOuverture

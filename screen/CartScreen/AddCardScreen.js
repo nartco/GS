@@ -418,13 +418,14 @@ const AddCardScreen = props => {
 
 
 
+    let index = 0;
     data.productImages.forEach(productImage => {
       let productId = productImage.productId;
 
       let image = productImage.image;
 
       if (image) {
-        formData.append('image_' + productId, {
+        formData.append('image_' + productId + '_' + index, {
           uri: image,
 
           type: getImageType(image),
@@ -432,7 +433,7 @@ const AddCardScreen = props => {
           name: 'image_' + productId,
         });
 
-      
+        index++;
       }
     });
 
