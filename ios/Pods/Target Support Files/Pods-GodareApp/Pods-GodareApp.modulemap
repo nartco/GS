@@ -1,0 +1,6 @@
+framework module Pods_GodareApp {
+  umbrella header "Pods-GodareApp-umbrella.h"
+
+  export *
+  module * { export * }
+}

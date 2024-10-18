@@ -1,0 +1,206 @@
+import {StyleSheet, Dimensions} from 'react-native';
+import commonStyle from '../../helper/commonStyle';
+const windowWidth = Dimensions.get('window').width;
+const windowHeight = Dimensions.get('window').height;
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+  },
+  containerStyle: {
+    backgroundColor: '#fff',
+  },
+  spacerStyle: {
+    marginBottom: 15,
+  },
+  safeContainerStyle: {
+    margin: 20,
+    justifyContent: 'center',
+  },
+  dropDownItemTextStyle: {
+    fontFamily: 'Roboto-Regular',
+  },
+  dropDownItemSelectedTextStyle: {
+    fontFamily: 'Roboto-Regular',
+  },
+  HeadingText: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 22,
+    textAlign: 'center',
+    marginTop: 30,
+    color: '#000',
+  },
+  InputContainer: {
+    width: windowWidth * 0.9,
+    alignSelf: 'center',
+    height: windowHeight * 0.35,
+    borderColor: '#DADAED',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+  },
+  TextInputFeild: {
+    width: '100%',
+    height: 'auto',
+    alignSelf: 'center',
+    color: '#000',
+    flex: 1,
+    fontFamily: 'Roboto-Regular',
+    textAlignVertical: 'top',
+    padding: 20,
+  },
+  ButtonContainer: {
+    width: '50%',
+    height: 45,
+    borderRadius: 60,
+    justifyContent: 'center',
+    backgroundColor: '#3292E0',
+    marginTop: 20,
+    alignSelf: 'center',
+    marginBottom: 10,
+  },
+  ButtonText: {
+    textAlign: 'center',
+    color: 'white',
+    fontSize: 14,
+    fontFamily: 'Roboto-Regular',
+  },
+  NoteAlertText:{
+    textAlign: 'center',
+    color: 'red',
+    fontSize: 14,
+    marginTop:12,
+    fontFamily: 'Roboto-Regular',
+  },
+  /// Contact Us
+
+  NameInputContainer: {
+    backgroundColor: '#fff',
+    width: windowWidth * 0.9,
+    alignSelf: 'center',
+    height: 48,
+    borderColor: '#DADAED',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    marginTop: 25,
+    borderRadius: 7,
+  },
+  settingItemContainer: {
+    backgroundColor: '#3292E0',
+    height: windowHeight * 0.07,
+    borderRadius: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  InputNam: {
+    marginLeft: '3%',
+    fontSize: 16,
+    fontFamily: 'Roboto-Regular',
+    // backgroundColor: 'tomato',
+    flex: 1,
+    color: '#000',
+  },
+  CountrySelect: {
+    width: '90%',
+    alignSelf: 'center',
+    height: 48,
+    borderColor: '#DADAED',
+    borderWidth: 1,
+    backgroundColor: '#fff',
+    marginTop: 10,
+    borderRadius: 7,
+    flexDirection: 'row',
+    marginBottom: 30,
+  },
+  inputCountryCustomContainer: {
+    backgroundColor: '#fff',
+    width: windowWidth * 0.9,
+    height: 60,
+    alignSelf: 'center',
+    justifyContent: 'center',
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 20,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: '#DADAED',
+    borderRadius: 7,
+  },
+  phoneContainer: {
+    // width: '75%',
+    width: windowWidth * 0.86,
+    height: 50,
+    backgroundColor: '#fff',
+    borderWidth: 1, borderColor: "#AAB0B7",
+    borderRadius: 10,
+    elevation: 0,
+    // backgroundColor: 'tomato',
+  },
+  textInput: {
+    paddingVertical: 0,
+    // backgroundColor: 'gold',
+    width: windowWidth * 0.5,
+    backgroundColor: '#fff',
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+  },
+  codeTextStyle: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 15,
+    // backgroundColor: 'green',
+    width: 'auto',
+  },
+  countryPickerButtonStyle: {
+    // backgroundColor: 'gold',
+    width: 70,
+  },
+  textInputStyle: {
+    fontFamily: 'Roboto-Regular',
+    color: '#000',
+  },
+  dropContainerStyle: {
+    justifyContent: 'center',
+    // backgroundColor: 'tomato',
+    width: windowWidth * 0.9,
+    // borderRadius:0
+    alignSelf: 'center',
+    marginTop: windowHeight * 0.02,
+    marginBottom: windowHeight * 0.01,
+  },
+
+  dropdown: {
+    height: 50,
+    borderRadius: 7,
+    paddingHorizontal: 17,
+    backgroundColor: '#fff',
+    // elevation: 1,
+    width: windowWidth * 0.9,
+    borderWidth: 1,
+    borderColor: '#DADAED',
+    alignSelf: 'center',
+  },
+  placeholderStyle: {
+    fontSize: 16,
+    fontFamily: 'Roboto-Regular',
+    color: '#B0B0C3',
+  },
+  selectedTextStyle: {
+    fontSize: 16,
+    fontFamily: 'Roboto-Regular',
+    color: '#B0B0C3',
+  },
+  iconStyle: {
+    width: 20,
+    height: 20,
+  },
+  containerrrrStyle: {
+    marginTop: 10,
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    maxHeight: 100,
+    elevation: 10,
+  },
+});
+
+export default styles;

@@ -1,0 +1,33 @@
+buildscript {
+    ext {
+        buildToolsVersion = "34.0.0"
+        minSdkVersion = 23
+        compileSdkVersion = 34
+        targetSdkVersion = 34
+        ndkVersion = "25.1.8937393"
+        kotlinVersion = "1.8.0"
+        googlePlayServicesVersion = "+" // default: "+"
+        firebaseMessagingVersion = "21.1.0" // default: "21.1.0"
+    }
+    repositories {
+        google()
+        mavenCentral()
+    }
+    dependencies {
+        classpath("com.google.gms:google-services:4.4.2")
+        classpath("com.android.tools.build:gradle")
+        classpath("com.facebook.react:react-native-gradle-plugin")
+        classpath("org.jetbrains.kotlin:kotlin-gradle-plugin")
+        classpath('com.google.gms:google-services:4.3.3')
+        configurations.all {
+                resolutionStrategy {
+                    force 'com.google.android.gms:play-services-gcm:16.1.0'
+                    force 'com.google.android.gms:play-services-base:16.1.0'
+                    force 'com.google.firebase:firebase-core:16.0.9'
+                    force 'com.google.firebase:firebase-messaging:18.0.0'
+            }
+        }
+    }
+}
+
+apply plugin: "com.facebook.react.rootproject"

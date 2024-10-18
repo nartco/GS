@@ -1,0 +1,6 @@
+framework module BugsnagReactNativePerformance {
+  umbrella header "BugsnagReactNativePerformance-umbrella.h"
+
+  export *
+  module * { export * }
+}
