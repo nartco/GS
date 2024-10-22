@@ -184,6 +184,7 @@ const DepotScreen3 = props => {
           );
           formatted.push({
             id: creneauPlage.idCreneauPlage,
+            fournisseurId: creneauPlage.idFournisseur,
             value: creneauPlage.idCreneauPlage,
             place: creneauPlage.quantite,
             codePostal: creneauPlage.codePostal,

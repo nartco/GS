@@ -265,15 +265,18 @@ const WavePaymen = props => {
 
       console.log(formData, 'formData');
 
+      let index = 0;
       Commande.productImages.forEach(productImage => {
         let productId = productImage.productId;
         let image = productImage.image;
         if (image) {
-          formData.append('image_' + productId, {
+          formData.append('image_' + productId + '_' + index, {
             uri: image,
             type: getImageType(image),
             name: 'image_' + productId,
           });
+
+          index++;
         }
       });
 

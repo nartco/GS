@@ -39,6 +39,7 @@ import {
   saveLivraisonmagasinSchedule,
   saveSelectedCountry,
   saveSelectedService,
+  getDepotValues
 } from '../../modules/GestionStorage';
 import axiosInstance from '../../axiosInstance';
 import {useTranslation} from 'react-i18next';
@@ -308,6 +309,8 @@ const Livraison1 = props => {
       // get magasins
       setActivityMagasin(true);
 
+      let depotValues = await getDepotValues();
+
       let fournisseurs = [];
 
       let requestBody = {
@@ -316,6 +319,11 @@ const Livraison1 = props => {
 
       if (route?.params?.excludedSupplierIds) {
         requestBody.fournisseurs = route.params.excludedSupplierIds;
+      }
+
+      if (depotValues && depotValues.depotMagasinFournisseurId && service && (service.code == 'fret-par-avion' || service.code == 'fret-par-bateau'))
+      {
+        requestBody.magasinsFournisseur = depotValues.depotMagasinFournisseurId;
       }
 
       await axiosInstance

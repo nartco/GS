@@ -1226,7 +1226,7 @@ const ColiSuivi = ({navigation, route}) => {
                       fontSize: 12,
                       color: '#fff',
                     }}>
-                    {t('Passer au paiement')}
+                    {t('confirmer la cotation')}
                   </Text>
                 </TouchableOpacity>
               )}
