@@ -595,6 +595,14 @@ export const getDepotModeChoice = async () => {
 export async function saveDepotCreneau(data) {
   try {
     await AsyncStorage.setItem('cart_depotCreneau', JSON.stringify(data));
+
+    if (data.fournisseurId)
+    {
+      await AsyncStorage.setItem(
+        'cart_depotMagasinFournisseurId',
+        JSON.stringify(data.fournisseurId),
+      );
+    }
   } catch (error) {
     console.log('error', error);
   }
@@ -616,7 +624,7 @@ export async function saveDepotAdresseId(data) {
   }
 }
 
-export async function saveDepotMagasinValues(UserMagasinChoix, UserMagasinId) {
+export async function saveDepotMagasinValues(UserMagasinChoix, UserMagasinId, fournisseurId) {
   try {
     await AsyncStorage.setItem('cart_depotMode', 'magasin');
     await AsyncStorage.setItem(
@@ -627,6 +635,14 @@ export async function saveDepotMagasinValues(UserMagasinChoix, UserMagasinId) {
       'cart_depotMagasinAdresseId',
       JSON.stringify(UserMagasinId),
     );
+
+    if (fournisseurId)
+    {
+      await AsyncStorage.setItem(
+        'cart_depotMagasinFournisseurId',
+        JSON.stringify(fournisseurId),
+      );
+    }
   } catch (error) {
     console.log('error', error);
   }
@@ -748,6 +764,11 @@ export const getDepotValues = async () => {
     );
     depotMagasinSchedule = JSON.parse(depotMagasinSchedule);
 
+    let depotMagasinFournisseurId = await AsyncStorage.getItem(
+      'cart_depotMagasinFournisseurId',
+    );
+    depotMagasinFournisseurId = JSON.parse(depotMagasinFournisseurId);
+
     return {
       depotMode: depotMode,
       depotAdresseId: depotAdresseId,
@@ -762,6 +783,7 @@ export const getDepotValues = async () => {
       depotCreneau: depotCreneau,
       depotEnlevementAdresseId: depotEnlevementAdresseId,
       depotMagasinSchedule: depotMagasinSchedule,
+      depotMagasinFournisseurId: depotMagasinFournisseurId
     };
   } catch (error) {
     console.log('error', error);
@@ -777,6 +799,7 @@ export const getDepotValues = async () => {
       depotMagasinAdresse: null,
       depotMagasinAdresseId: null,
       depotEnlevementAdresseId: null,
+      depotMagasinFournisseurId: null
     };
   }
 };
