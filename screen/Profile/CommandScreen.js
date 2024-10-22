@@ -1181,7 +1181,7 @@ const CommandScreen = (props) => {
               style={[
                 t(item.statut).length > 15
                   ? { fontSize: 11 }
-                  : { fontSize: 12 },
+                  : { fontSize: 14 },
                 {
                   color: "#292625",
                   fontFamily: "Poppins-Regular",

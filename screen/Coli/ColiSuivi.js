@@ -1212,7 +1212,7 @@ const ColiSuivi = ({navigation, route}) => {
                   onPress={NavigateToPayment}
                   style={{
                     paddingVertical: 8,
-                    width: 170,
+                    // width: 170,
                     alignSelf: 'center',
                     paddingHorizontal: 22,
                     flexDirection: 'row',
