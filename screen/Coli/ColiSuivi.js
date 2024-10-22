@@ -288,32 +288,35 @@ const ColiSuivi = ({navigation, route}) => {
       : parseInt(commandeProduct.quantite);
 
     if ('Ventes Privées' == Commande.service) {
-      stock.forEach(item => {
-        item.map(obj => {
-          // Fonction pour normaliser et diviser une chaîne en ensemble de mots
-          const normalizeAndSplit = str => {
-            return new Set(
-              str
-                .toLowerCase()
-                .replace(/,/g, '')
-                .split(' ')
-                .filter(word => word.trim() !== ''),
-            );
-          };
+      // console.log(commandeProduct, '2332');
+      // stock.forEach(item => {
+      //   item.map(obj => {
+      //     // Fonction pour normaliser et diviser une chaîne en ensemble de mots
+      //     const normalizeAndSplit = str => {
+      //       return new Set(
+      //         str
+      //           .toLowerCase()
+      //           .replace(/,/g, '')
+      //           .split(' ')
+      //           .filter(word => word.trim() !== ''),
+      //       );
+      //     };
 
-          // Normaliser et diviser obj.combinaison et ItemCommandPrice
-          const combinaisonSet = normalizeAndSplit(obj.combinaison);
-          const itemCommandPriceSet = normalizeAndSplit(ItemCommandPrice);
+      //     // Normaliser et diviser obj.combinaison et ItemCommandPrice
+      //     const combinaisonSet = normalizeAndSplit(obj.combinaison);
+      //     const itemCommandPriceSet = normalizeAndSplit(ItemCommandPrice);
+      //     console.log(obj, 'objt');
+      //     // Vérifier si les ensembles sont égaux
+      //     const setsAreEqual = (a, b) =>
+      //       a.size === b.size && [...a].every(value => b.has(value));
 
-          // Vérifier si les ensembles sont égaux
-          const setsAreEqual = (a, b) =>
-            a.size === b.size && [...a].every(value => b.has(value));
-
-          if (setsAreEqual(combinaisonSet, itemCommandPriceSet)) {
-            prix = parseFloat(obj.prix);
-          }
-        });
-      });
+      //     if (setsAreEqual(combinaisonSet, itemCommandPriceSet)) {
+      //       prix = parseFloat(obj.prix);
+      //     }
+      //   });
+      // });
+      prix = parseFloat(commandeProduct.prix);
+      prix = prix * commandeProduct.quantite;
     } else if ("Demandes d'achat" == Commande.service) {
       prix = parseFloat(commandeProduct.prixAchat);
       quantiteCommande = commandeProduct.quantite;
@@ -323,7 +326,7 @@ const ColiSuivi = ({navigation, route}) => {
         : parseInt(commandeProduct.quantite);
 
       prix =
-        parseFloat(commandeProduct.product.productSpecificites[0].prix) *
+        parseFloat(commandeProduct.prix) *
         quantite;
     }
 
@@ -388,8 +391,8 @@ const ColiSuivi = ({navigation, route}) => {
                   maxWidth: 190,
                 }}>
                 {'fr' == Language
-                  ? commandeProduct.product.name
-                  : commandeProduct.product.nameEN}
+                  ? commandeProduct.nomEnProduit
+                  : commandeProduct.nomEnProduit}
               </Text>
 
               {Commande.service == 'Fret par avion' ||
@@ -501,7 +504,7 @@ const ColiSuivi = ({navigation, route}) => {
       0,
       CommandeHasManualValidation,
     );
-
+    console.log({prices}, '3223323232323');
     let remiseTotal = prices.remiseTotal;
 
     let totalPrixAvecDouaneRemiseAvoir = prices.totalPrixAvecDouaneRemiseAvoir;
@@ -660,7 +663,11 @@ const ColiSuivi = ({navigation, route}) => {
                       letterSpacing: 0.8,
                     }}>
                     {('en' == Language ? '€ ' : '') +
-                      (remiseTotal == 0.0 ? '"-"' : '-' + remiseTotal) +
+                      (remiseTotal == 0.0
+                        ? Commande.remise > 0
+                          ? Commande.remise
+                          : '"-"'
+                        : '-' + remiseTotal) +
                       ('fr' == Language ? ' €' : '')}
                   </Text>
                 </View>
@@ -1004,12 +1011,6 @@ const ColiSuivi = ({navigation, route}) => {
                       {Commande?.avoir && Commande?.avoir > 0 && (
                         <Text style={styles.WeightCalText}>
                           {t('Avoir')} : {Commande?.avoir}
-                        </Text>
-                      )}
-
-                      {Commande.remise && Commande.remise > 0 && (
-                        <Text style={styles.WeightCalText}>
-                          {t('Remise')} : {Commande.remise}
                         </Text>
                       )}
                     </View>

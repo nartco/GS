@@ -44,6 +44,7 @@ const DepotScreen3 = props => {
   const [paysLivraisonObject, setPaysLivraisonObject] = useState(null);
   const [Language, setLanguage] = useState('fr');
   const [Loading, setLoading] = useState(false);
+  const [currentMonth, setCurrentMonth] = useState(moment().format('YYYY-MM'));
 
   LocaleConfig.locales.en = LocaleConfig.locales[''];
   LocaleConfig.locales.fr = {
@@ -184,8 +185,8 @@ const DepotScreen3 = props => {
           );
           formatted.push({
             id: creneauPlage.idCreneauPlage,
-            fournisseurId: creneauPlage.idFournisseur,
             value: creneauPlage.idCreneauPlage,
+            fournisseurId: creneauPlage.idFournisseur,
             place: creneauPlage.quantite,
             codePostal: creneauPlage.codePostal,
             ville: creneauPlage.ville,
@@ -221,17 +222,9 @@ const DepotScreen3 = props => {
 
   const handleDayPress = date => {
     setSelectedDate(date.dateString);
-    let horaires = [];
-
-    Creneaux.forEach(obj => {
-      if (obj.date == date.dateString) {
-        horaires.push(obj);
-      }
-    });
-
+    let horaires = Creneaux.filter(obj => obj.date === date.dateString);
     setHoraires(horaires);
-
-    setModalVisible(true);
+    setActiveHour(0); // Reset active hour when a new date is selected
   };
 
   if (Activity === true || !Service) {
@@ -280,9 +273,17 @@ const DepotScreen3 = props => {
             </View>
             <View style={{paddingHorizontal: 26}}>
               <Calendar
+                current={currentMonth}
+                onMonthChange={month =>
+                  setCurrentMonth(month.dateString.substring(0, 7))
+                }
                 markedDates={{
                   ...availableDates,
-                  [selectedDate]: {selected: true, selectedColor: '#2196F3'},
+                  [selectedDate]: {
+                    selected: true,
+                    marked: true,
+                    selectedColor: '#2196F3',
+                  },
                 }}
                 onDayPress={handleDayPress}
                 markingType={'dot'}

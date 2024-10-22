@@ -17,6 +17,8 @@
     "Inscription": "Registration",
     "S'inscrire": "Register",
     "Nom": "Name",
+    "redirect":"You will be directed to the packaging sales page. Once you have completed your packaging purchase, you must return to the Freight service to finalize your goods transport order.",
+   "redirectButton":"Freight Packaging",
     "E-mail": "E-mail",
     "Objet": "Object",
     "Date de naissance": "Date of Birth",
@@ -168,6 +170,8 @@
     "Vider le panier": "Empty cart",
     "Expédié en": "Sent to",
     "par": "by",
-    "Panier vide": "Cart empty"
+    "Panier vide": "Cart empty",
+    "Jusqu'au": "Until",
+    "confirmer la cotation": "Confirm the quotation"
 }
 

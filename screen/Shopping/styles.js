@@ -251,6 +251,43 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around',
     marginTop: windowHeight * 0.03,
   },
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    backgroundColor: 'white',
+    padding: 20,
+    borderRadius: 10,
+    alignItems: 'center',
+    width: '80%',
+  },
+  modalText: {
+    marginBottom: 20,
+    textAlign: 'center',
+  },
+  buttonContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    width: '100%',
+  },
+  button: {
+    padding: 10,
+    borderRadius: 30,
+    width: '45%',
+  },
+  cancelButton: {
+    backgroundColor: '#ccc',
+  },
+  continueButton: {
+    backgroundColor: '#2BA6E9',
+  },
+  buttonText: {
+    color: 'white',
+    textAlign: 'center',
+  },
 });
 
 export default styles;
