@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-h320dp-port-v13/values-h320dp-port-v13.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/0f7785e486dde7cef97916088169f316/transformed/material-1.11.0/res/values-h320dp-port-v13/values-h320dp-port-v13.xml",

@@ -1,0 +1,57 @@
+{
+  "name": "react-native-fbsdk-next",
+  "version": "13.1.3",
+  "summary": "Facebook SDK support for React Native apps.",
+  "requires_arc": true,
+  "authors": {
+    "thebergamo": "marcos@thedon.com.br"
+  },
+  "license": "MIT",
+  "homepage": "https://github.com/thebergamo/react-native-fbsdk-next/",
+  "source": {
+    "git": "https://github.com/thebergamo/react-native-fbsdk-next.git",
+    "tag": "v13.1.3"
+  },
+  "platforms": {
+    "ios": "12.0",
+    "tvos": "12.0"
+  },
+  "dependencies": {
+    "React-Core": [
+
+    ]
+  },
+  "cocoapods_version": ">= 1.12.0",
+  "subspecs": [
+    {
+      "name": "Core",
+      "dependencies": {
+        "FBSDKCoreKit": [
+          "~> 17.3"
+        ]
+      },
+      "source_files": "ios/RCTFBSDK/core/*.{h,m}"
+    },
+    {
+      "name": "Login",
+      "dependencies": {
+        "FBSDKLoginKit": [
+          "~> 17.3"
+        ]
+      },
+      "source_files": "ios/RCTFBSDK/login/*.{h,m}"
+    },
+    {
+      "name": "Share",
+      "dependencies": {
+        "FBSDKShareKit": [
+          "~> 17.3"
+        ],
+        "FBSDKGamingServicesKit": [
+          "~> 17.3"
+        ]
+      },
+      "source_files": "ios/RCTFBSDK/share/*.{h,m}"
+    }
+  ]
+}

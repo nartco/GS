@@ -1,4 +1,8 @@
 {
   "name": "GodareApp",
-  "displayName": "GodareApp"
+  "displayName": "GodareApp",
+  "react-native-google-mobile-ads": {
+    "android_app_id": "ca-app-pub-5905621617389782~1103254797",
+    "ios_app_id": "ca-app-pub-5905621617389782~7723469623"
+  }
 }

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-v16/values-v16.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-v16/values-v16.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/917e654b6a411f53f1b89172ad8ea629/transformed/core-1.12.0/res/values-v16/values-v16.xml",

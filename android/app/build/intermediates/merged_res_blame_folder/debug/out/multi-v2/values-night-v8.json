@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-night-v8/values-night-v8.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-night-v8/values-night-v8.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/030e34105c4e1cdba8ed5ad6344fe63a/transformed/jetified-payments-core-20.48.6/res/values-night-v8/values-night-v8.xml",

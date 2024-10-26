@@ -8,7 +8,7 @@ export function calculProductPrices(
   data,
   remiseValue,
   RemiseProduct,
-  type = 'avion',
+  type = "avion"
 ) {
   let prix = 0;
   let quantite = 1;
@@ -19,7 +19,6 @@ export function calculProductPrices(
   let prixFretRegroupement = 0;
   let productToApplyRemisePrice = 0;
   let validationManuelle = false;
-  
 
   data.forEach(function (item) {
     if (item.product && item.product.validationManuelle) {
@@ -36,7 +35,7 @@ export function calculProductPrices(
 
     // Prix quantite
     prixQuantite =
-      item.product.service == 'demandes-d-achat' ? prix : prix * quantite;
+      item.product.service == "demandes-d-achat" ? prix : prix * quantite;
 
     if (RemiseProduct == item.ProductId) {
       productToApplyRemisePrice = prixQuantite;
@@ -50,11 +49,11 @@ export function calculProductPrices(
 
     if (douane) {
       let forfaitDouane =
-        'New' == item.stateValue
+        "New" == item.stateValue
           ? douane.forfait
           : douane.forfaitProduitOccasion;
       let coefficientDouane =
-        'New' == item.stateValue
+        "New" == item.stateValue
           ? douane.coefficient
           : douane.coefficientProduitOccasion;
 
@@ -74,7 +73,7 @@ export function calculProductPrices(
     // Classe regroupement
     let classeRegroupements = item.product.productSpecificites[0].expedition;
 
-    if ('avion' == type) {
+    if ("avion" == type) {
       classeRegroupements = classeRegroupements
         ? classeRegroupements.classeRegroupementFretAvion
         : null;
@@ -88,7 +87,7 @@ export function calculProductPrices(
       classeRegroupements = [];
     }
 
-    classeRegroupements.map(regroupement => {
+    classeRegroupements.map((regroupement) => {
       let classeRegroupementPrix = parseFloat(regroupement.prix);
       classeRegroupementPrix = isNaN(classeRegroupementPrix)
         ? 0
@@ -131,18 +130,18 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
 
   let isDemandeAchat = false;
 
-  const createAttributeString = attributs => {
-    if (!attributs || typeof attributs !== 'object') {
-      return '';
+  const createAttributeString = (attributs) => {
+    if (!attributs || typeof attributs !== "object") {
+      return "";
     }
 
     // Obtenir toutes les valeurs de l'objet et les filtrer pour enlever les valeurs vides ou undefined
     const values = Object.values(attributs).filter(
-      value => value && value.trim() !== '',
+      (value) => value && value.trim() !== ""
     );
 
     // Joindre toutes les valeurs avec un espace
-    return values.join(', ');
+    return values.join(", ");
   };
 
   data.forEach(function (item) {
@@ -151,20 +150,20 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
     let stock = [];
     stock.push(item.product.stocks);
 
-    if (item.product.service == 'demandes-d-achat') {
+    if (item.product.service == "demandes-d-achat") {
       isDemandeAchat = true;
       prix = parseFloat(item.prixAchat);
-    } else if (item.product.service == 'ventes-privees') {
-      stock.forEach(item => {
-        item.map(obj => {
+    } else if (item.product.service == "ventes-privees") {
+      stock.forEach((item) => {
+        item.map((obj) => {
           // Fonction pour normaliser et diviser une chaîne en ensemble de mots
-          const normalizeAndSplit = str => {
+          const normalizeAndSplit = (str) => {
             return new Set(
               str
                 .toLowerCase()
-                .replace(/,/g, '')
-                .split(' ')
-                .filter(word => word.trim() !== ''),
+                .replace(/,/g, "")
+                .split(" ")
+                .filter((word) => word.trim() !== "")
             );
           };
 
@@ -174,10 +173,10 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
 
           // Vérifier si les ensembles sont égaux
           const setsAreEqual = (a, b) =>
-            a.size === b.size && [...a].every(value => b.has(value));
+            a.size === b.size && [...a].every((value) => b.has(value));
 
           if (setsAreEqual(combinaisonSet, itemCommandPriceSet)) {
-            console.log({obj}, 'obj');
+            console.log({ obj }, "obj");
             prix = parseFloat(obj.prix);
           }
         });
@@ -192,7 +191,7 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
     quantite = isNaN(quantite) ? 1 : quantite;
 
     // Prix quantite
-    if (item.product.service == 'demandes-d-achat') {
+    if (item.product.service == "demandes-d-achat") {
       prixQuantite = prix;
     } else {
       prixQuantite = prix * quantite;
@@ -203,7 +202,7 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
     }
 
     // Frais de douane
-    if (item.product.service == 'demandes-d-achat') {
+    if (item.product.service == "demandes-d-achat") {
       frais = 0;
     } else {
       frais = 0;
@@ -211,9 +210,9 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
 
       if (douane) {
         let forfaitDouane =
-          'New' == item.etat ? douane.forfait : douane.forfaitProduitOccasion;
+          "New" == item.etat ? douane.forfait : douane.forfaitProduitOccasion;
         let coefficientDouane =
-          'New' == item.etat
+          "New" == item.etat
             ? douane.coefficient
             : douane.coefficientProduitOccasion;
 
@@ -254,21 +253,35 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
   };
 }
 
-const createAttributeString = attributs => {
-  if (!attributs || typeof attributs !== 'object') {
-    return '';
+const createAttributeString = (attributs) => {
+  if (!attributs || typeof attributs !== "object") {
+    return "";
   }
 
   // Obtenir toutes les valeurs de l'objet et les filtrer pour enlever les valeurs vides ou undefined
   const values = Object.values(attributs).filter(
-    value => value && value.trim() !== '',
+    (value) => value && value.trim() !== ""
   );
 
   // Joindre toutes les valeurs avec un espace
-  return values.join(', ');
+  return values.join(", ");
 };
 
-export function calculProductPricesContent(
+export function calculProductPricesContent(data) {
+  let totalPrix = 0;
+
+  data.forEach(function (item) {
+    const prix = parseFloat(item.prix) || 0;
+    const quantite = parseInt(item.quantite) || 1;
+    totalPrix += prix * quantite;
+  });
+
+  return {
+    totalPrix: totalPrix,
+  };
+}
+
+export function calculProductPricesContentDemandeDachat(
   data,
   remiseValue,
   RemiseProduct,
@@ -590,7 +603,7 @@ export function calculFraisLivraison(produits) {
   // Calcul du prix de livraison
   somme = Math.ceil(
     (quantiteAgregee / palierMinLienClasseRegroupementLivraison) *
-      prixMinLienClasseRegroupementLivraison,
+      prixMinLienClasseRegroupementLivraison
   );
 
   if (
@@ -618,7 +631,7 @@ export function calculFraisLivraisonCommand(produits) {
   Data.push(produits[0].product);
 
   Data.forEach(function (produit) {
-    produit.map(obj => {
+    produit.map((obj) => {
       let livraison = obj.product.productSpecificites[0].livraison;
 
       if (livraison && livraison.classeRegroupement) {
@@ -697,7 +710,7 @@ export function calculFraisLivraisonCommand(produits) {
   // Calcul du prix de livraison
   somme = Math.ceil(
     (quantiteAgregee / palierMinLienClasseRegroupementLivraison) *
-      prixMinLienClasseRegroupementLivraison,
+      prixMinLienClasseRegroupementLivraison
   );
 
   if (
@@ -725,7 +738,7 @@ export function calculFraisLivraisonContent(produits) {
   DataProduct.push(produits.commandeProducts);
 
   DataProduct.forEach(function (produit) {
-    produit.map(obj => {
+    produit.map((obj) => {
       let livraison = obj.product.productSpecificites[0].livraison;
 
       if (livraison && livraison.classeRegroupement) {
@@ -804,7 +817,7 @@ export function calculFraisLivraisonContent(produits) {
   // Calcul du prix de livraison
   somme = Math.ceil(
     (quantiteAgregee / palierMinLienClasseRegroupementLivraison) *
-      prixMinLienClasseRegroupementLivraison,
+      prixMinLienClasseRegroupementLivraison
   );
 
   if (
@@ -831,7 +844,7 @@ export async function calculFraisTransit(produits, type) {
   produits.forEach(function (produit) {
     let prodSpecificites = produit.product.productSpecificites[0];
 
-    if ('avion' == type) {
+    if ("avion" == type) {
       if (prodSpecificites.lienClasseTransitAvion) {
         produitsAvecLienClasseRegroupement.push(produit);
 
@@ -880,15 +893,15 @@ export async function calculFraisTransit(produits, type) {
 
     let quantite = produit.quantite;
     let palier =
-      'avion' == type
+      "avion" == type
         ? prodSpecificites.palierFretAvion
         : prodSpecificites.palierFretBateau;
     let prix =
-      'avion' == type
+      "avion" == type
         ? prodSpecificites.prixFretAvion
         : prodSpecificites.prixFretBateau;
     let prixMax =
-      'avion' == type
+      "avion" == type
         ? prodSpecificites.prixMaxTransitAvion
         : prodSpecificites.prixMaxTransitBateau;
 
@@ -900,7 +913,7 @@ export async function calculFraisTransit(produits, type) {
 
     fraisTransit = fraisTransit + somme;
   });
-  console.log('The Frais transit => ', fraisTransit);
+  console.log("The Frais transit => ", fraisTransit);
 
   // Produits avec lien classe de regroupement
   // Avant de calculer le prix , on doit ramener les autres quantités à la quantite du lien
@@ -911,7 +924,7 @@ export async function calculFraisTransit(produits, type) {
     let prodSpecificites = produit.product.productSpecificites[0];
 
     let lienClasseRegroupement =
-      'avion' == type
+      "avion" == type
         ? prodSpecificites.lienClasseTransitAvion
         : prodSpecificites.lienClasseTransitBateau;
 
@@ -928,7 +941,7 @@ export async function calculFraisTransit(produits, type) {
   // Calcul du prix de livraison
   somme = Math.ceil(
     (quantiteAgregee / palierMinLienClasseRegroupement) *
-      prixMinLienClasseRegroupement,
+      prixMinLienClasseRegroupement
   );
 
   if (

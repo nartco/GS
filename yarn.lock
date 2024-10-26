@@ -1190,7 +1190,7 @@
   resolved "https://registry.npmjs.org/@babel/regjsgen/-/regjsgen-0.8.0.tgz"
   integrity sha512-x/rqGMdzj+fWZvCOYForTghzbtqPDZ5gPwaoNGHdgDfF2QA/XZbCBp4Moo5scrkAMPhB7z26XM/AaHuIJdgauA==
 
-"@babel/runtime@^7.0.0", "@babel/runtime@^7.20.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.23.9", "@babel/runtime@^7.8.4":
+"@babel/runtime@^7.0.0", "@babel/runtime@^7.12.5", "@babel/runtime@^7.20.0", "@babel/runtime@^7.23.2", "@babel/runtime@^7.23.9", "@babel/runtime@^7.8.4":
   version "7.24.4"
   resolved "https://registry.npmjs.org/@babel/runtime/-/runtime-7.24.4.tgz"
   integrity sha512-dkxf7+hn8mFBwKjs9bvBlArzLVxVbS8usaPUDd5p2a9JCL9tB8OaOVN1isD4+Xyk4ns89/xeOmbQvgdK7IIVdA==
@@ -2085,6 +2085,11 @@
   resolved "https://registry.npmjs.org/@humanwhocodes/object-schema/-/object-schema-2.0.3.tgz"
   integrity sha512-93zYdMES/c1D69yZiKDBj0V24vqNzB/koF26KPaagAfd3P/4gUlh3Dys5ogAK+Exi9QyzlD8x/08Zt7wIKcDcA==
 
+"@iabtcf/core@^1.5.3":
+  version "1.5.6"
+  resolved "https://registry.npmjs.org/@iabtcf/core/-/core-1.5.6.tgz"
+  integrity sha512-u2q9thI9vLurYZdGtyJsDYOqoeLc4EgQsYGSc+UVibYII61B/ENJPZS6eFlML1F0hSoTR/goptpo5nGRDkKd2w==
+
 "@isaacs/cliui@^8.0.2":
   version "8.0.2"
   resolved "https://registry.npmjs.org/@isaacs/cliui/-/cliui-8.0.2.tgz"
@@ -2620,9 +2625,9 @@
     semver "^7.5.2"
 
 "@react-native-community/netinfo@>= 9.4.1":
-  version "11.3.2"
-  resolved "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-11.3.2.tgz"
-  integrity sha512-YsaS3Dutnzqd1BEoeC+DEcuNJedYRkN6Ef3kftT5Sm8ExnCF94C/nl4laNxuvFli3+Jz8Df3jO25Jn8A9S0h4w==
+  version "11.4.1"
+  resolved "https://registry.npmjs.org/@react-native-community/netinfo/-/netinfo-11.4.1.tgz"
+  integrity sha512-B0BYAkghz3Q2V09BF88RA601XursIEA111tnc2JOaN7axJWmNefmfjZqw/KdSxKZp7CZUuPpjBmz/WCR9uaHYg==
 
 "@react-native-community/push-notification-ios@^1.10.1", "@react-native-community/push-notification-ios@^1.11.0":
   version "1.11.0"
@@ -4772,6 +4777,11 @@ deprecated-react-native-prop-types@^5.0.0:
     "@react-native/normalize-colors" "^0.73.0"
     invariant "^2.2.4"
     prop-types "^15.8.1"
+
+dequal@^2.0.2:
+  version "2.0.3"
+  resolved "https://registry.npmjs.org/dequal/-/dequal-2.0.3.tgz"
+  integrity sha512-0je+qPKHEMohvfRTCEo3CrPG6cAzAYgmzKyxRiYSSDkS6eGJdyVJm7WaYA5ECaAD9wLB2T4EEeymA5aFVcYXCA==
 
 destroy@1.2.0:
   version "1.2.0"
@@ -8874,6 +8884,11 @@ react-native-exception-handler@^2.10.10:
   resolved "https://registry.npmjs.org/react-native-exception-handler/-/react-native-exception-handler-2.10.10.tgz"
   integrity sha512-otAXGoZDl1689OoUJWN/rXxVbdoZ3xcmyF1uq/CsizdLwwyZqVGd6d+p/vbYvnF996FfEyAEBnHrdFxulTn51w==
 
+react-native-fbsdk-next@^13.1.3:
+  version "13.1.3"
+  resolved "https://registry.npmjs.org/react-native-fbsdk-next/-/react-native-fbsdk-next-13.1.3.tgz"
+  integrity sha512-/QhYBNHfYYjaq4cFq3aLgDXh3EfM+AKDt7/k5bssKjFY6gddOHWR/tLhyKCerniAr072eVzqrjaifZVbw4AQ9g==
+
 react-native-file-access@^3.1.0, "react-native-file-access@>=1.7.1 <4.0.0":
   version "3.1.0"
   resolved "https://registry.npmjs.org/react-native-file-access/-/react-native-file-access-3.1.0.tgz"
@@ -8883,6 +8898,14 @@ react-native-flags@^1.0.0:
   version "1.0.0"
   resolved "https://registry.npmjs.org/react-native-flags/-/react-native-flags-1.0.0.tgz"
   integrity sha512-Lx0/2Rv4oN5M3YmgGZPnxsTOEud6pMGX3HWrvw8Yftp9Bl+ORxdG8xjF2Gmm68iKP8T7NnQoJ8iMirjj5+qrgQ==
+
+react-native-google-mobile-ads@^14.2.5:
+  version "14.2.5"
+  resolved "https://registry.npmjs.org/react-native-google-mobile-ads/-/react-native-google-mobile-ads-14.2.5.tgz"
+  integrity sha512-Py1eJz+8jd3Jzj6OglaIs61M9lWMz5HiAEx60K3tB7HZtKgwZoyIX/M1h6WbFtyOh1c0vdC+umfxrq5ny0+0qw==
+  dependencies:
+    "@iabtcf/core" "^1.5.3"
+    use-deep-compare-effect "^1.8.1"
 
 react-native-image-picker@^7.1.0:
   version "7.1.2"
@@ -9054,7 +9077,7 @@ react-native-web@*, react-native-web@0.9.x:
     prop-types "^15.6.0"
     react-timer-mixin "^0.13.4"
 
-react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.25", "react-native@>= 0.30.0", "react-native@>= 0.64.3", react-native@>=0.33, react-native@>=0.35, react-native@>=0.42.0, react-native@>=0.44.0, react-native@>=0.48.4, react-native@>=0.57.7, react-native@>=0.58, react-native@>=0.58.4, react-native@>=0.59, react-native@>=0.61.3, react-native@>=0.65.0, react-native@0.73.6:
+react-native@*, "react-native@^0.0.0-0 || >=0.60 <1.0", "react-native@>= 0.25", "react-native@>= 0.30.0", "react-native@>= 0.64.3", react-native@>=0.33, react-native@>=0.35, react-native@>=0.42.0, react-native@>=0.44.0, react-native@>=0.48.4, react-native@>=0.57.7, react-native@>=0.58, react-native@>=0.58.4, react-native@>=0.59, react-native@>=0.61.3, react-native@>=0.63.3, react-native@>=0.65.0, react-native@0.73.6:
   version "0.73.6"
   resolved "https://registry.npmjs.org/react-native/-/react-native-0.73.6.tgz"
   integrity sha512-oqmZe8D2/VolIzSPZw+oUd6j/bEmeRHwsLn1xLA5wllEYsZ5zNuMsDus235ONOnCRwexqof/J3aztyQswSmiaA==
@@ -9125,7 +9148,7 @@ react-timer-mixin@^0.13.4:
   resolved "https://registry.npmjs.org/react-timer-mixin/-/react-timer-mixin-0.13.4.tgz"
   integrity sha512-4+ow23tp/Tv7hBM5Az5/Be/eKKF7DIvJ09voz5LyHGQaqqz9WV8YMs31eFvcYQs7d451LSg7kDJV70XYN/Ug/Q==
 
-react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", react@^16.13.1, react@^16.3.0, "react@^16.8.0 || ^17 || ^18 || ^19", react@^18.2.0, "react@>= 15.2.1", "react@>= 16.8.0", "react@>= 17.0.1", react@>=15.0.0, react@>=15.2.0, react@>=16.0.0, react@>=16.11.0, react@>=16.3.0, react@>=16.5.1, react@>=16.6.0, react@>=16.6.3, react@>=16.8, react@>=16.8.0, react@>=16.9, react@>=17.0.0, "react@15.x || 16.x || 17.x || 18.x", react@16.x.x, react@18.2.0:
+react@*, "react@^16.0.0 || ^17.0.0 || ^18.0.0", react@^16.13.1, react@^16.3.0, "react@^16.8.0 || ^17 || ^18 || ^19", react@^18.2.0, "react@>= 15.2.1", "react@>= 16.8.0", "react@>= 17.0.1", react@>=15.0.0, react@>=15.2.0, react@>=16.0.0, react@>=16.11.0, react@>=16.13, react@>=16.3.0, react@>=16.5.1, react@>=16.6.0, react@>=16.6.3, react@>=16.8, react@>=16.8.0, react@>=16.9, react@>=17.0.0, "react@15.x || 16.x || 17.x || 18.x", react@16.x.x, react@18.2.0:
   version "18.2.0"
   resolved "https://registry.npmjs.org/react/-/react-18.2.0.tgz"
   integrity sha512-/3IjMdb2L9QbBdWiW5e3P2/npwMBaU9mHCSCUzNln0ZCYbcfTsGbTJrU/kGemdH2IWmB2ioZ+zkxtmq6g09fGQ==
@@ -10459,6 +10482,14 @@ url-join@4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/url-join/-/url-join-4.0.0.tgz"
   integrity sha512-EGXjXJZhIHiQMK2pQukuFcL303nskqIRzWvPvV5O8miOfwoUb9G+a/Cld60kUyeaybEI94wvVClT10DtfeAExA==
+
+use-deep-compare-effect@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.npmjs.org/use-deep-compare-effect/-/use-deep-compare-effect-1.8.1.tgz"
+  integrity sha512-kbeNVZ9Zkc0RFGpfMN3MNfaKNvcLNyxOAAd9O4CBZ+kCBXXscn9s/4I+8ytUER4RDpEYs5+O6Rs4PqiZ+rHr5Q==
+  dependencies:
+    "@babel/runtime" "^7.12.5"
+    dequal "^2.0.2"
 
 use-latest-callback@^0.1.9:
   version "0.1.9"

@@ -499,7 +499,7 @@ const ConversationList = ({ navigation, route }) => {
                                   style={{ flex: 1, color: "#000", height: 45 }}
                                 />
                                 <TouchableOpacity onPress={handleSendMessage}>
-                                  <Icon
+                                <Icon
                                     name="paper-airplane"
                                     size={25}
                                     color="#999"

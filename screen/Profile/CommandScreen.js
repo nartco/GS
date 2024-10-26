@@ -1180,7 +1180,7 @@ const CommandScreen = (props) => {
             <Text
               style={[
                 t(item.statut).length > 15
-                  ? { fontSize: 11 }
+                  ? { fontSize: 14 }
                   : { fontSize: 14 },
                 {
                   color: "#292625",
@@ -1207,7 +1207,29 @@ const CommandScreen = (props) => {
 
   return (
     <View style={{ flex: 1 }}>
-      <HeaderActions navigation={() => props.navigation.goBack()} />
+      <HeaderActions
+        navigation={() => {
+          const { navigation } = props;
+
+          // Récupérer l'état de navigation actuel
+          const routes = navigation.getState().routes;
+
+          // Vérifiez si l'écran précédent est ResumeCardScreen et celui avant CommandeScreen
+          const previousRoute = routes[routes.length - 1]; // ResumeCardScreen
+          const secondPreviousRoute = routes[routes.length - 2]; // CommandeScreen
+
+          if (
+            previousRoute.name === "CommandeScreen" &&
+            secondPreviousRoute.name === "ResumeCardScreen"
+          ) {
+            // Si l'écran précédent est ResumeCardScreen et celui d'avant est CommandeScreen, naviguez vers Profile
+            navigation.navigate("Profile");
+          } else {
+            // Sinon, revenez à l'écran précédent
+            navigation.goBack();
+          }
+        }}
+      />
 
       <ScrollView showsVerticalScrollIndicator={false}>
         <View style={{ flex: 1, marginBottom: 50 }}>

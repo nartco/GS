@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-watch-v20/values-watch-v20.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-watch-v20/values-watch-v20.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/54306153394adc0c53ce822d940042af/transformed/jetified-play-services-auth-21.2.0/res/values-watch-v20/values.xml",

@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-en-rSG/values-en-rSG.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-en-rSG/values-en-rSG.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/6ca2155a778a83b06fad8dea302db259/transformed/jetified-play-services-wallet-19.3.0/res/values-en-rSG/values.xml",

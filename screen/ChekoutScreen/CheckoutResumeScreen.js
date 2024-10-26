@@ -8,14 +8,14 @@ import {
   ActivityIndicator,
   FlatList,
   Dimensions,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import Feather from 'react-native-vector-icons/Feather';
-import Entypo from 'react-native-vector-icons/Entypo';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import {ButtonPrix} from '../../components/Button';
-import {useIsFocused} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import Feather from "react-native-vector-icons/Feather";
+import Entypo from "react-native-vector-icons/Entypo";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { ButtonPrix } from "../../components/Button";
+import { useIsFocused } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
 import {
   saveCommand,
   savePaysLivraison,
@@ -26,31 +26,33 @@ import {
   savePrixFinalPanier,
   saveSelectedCountry,
   saveSelectedService,
-} from '../../modules/GestionStorage';
-import axiosInstance from '../../axiosInstance';
+  removePanier,
+  removeCommand,
+} from "../../modules/GestionStorage";
+import axiosInstance from "../../axiosInstance";
 import {
   calculProductPricesCommand,
   calculCommandeDemandeAchatPrices,
-} from '../../modules/CalculPrix';
-import {Dropdown} from 'react-native-element-dropdown';
-import Icon from 'react-native-vector-icons/Feather';
-import ServiceHeader from '../../components/ServiceHeader';
-import styles from './styles';
-import Checkbox from 'expo-checkbox';
-import {useBag} from '../../modules/BagContext';
-import DropDownPicker from 'react-native-dropdown-picker';
-import auth from '@react-native-firebase/auth';
-import {parse} from 'date-fns';
+} from "../../modules/CalculPrix";
+import { Dropdown } from "react-native-element-dropdown";
+import Icon from "react-native-vector-icons/Feather";
+import ServiceHeader from "../../components/ServiceHeader";
+import styles from "./styles";
+import Checkbox from "expo-checkbox";
+import { useBag } from "../../modules/BagContext";
+import DropDownPicker from "react-native-dropdown-picker";
+import auth from "@react-native-firebase/auth";
+import { parse } from "date-fns";
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
-const CheckoutResumeScreen = props => {
+const CheckoutResumeScreen = (props) => {
   var isFocused = useIsFocused();
-  const {setBagCount, bagCount} = useBag();
-
-  const {t, i18n} = useTranslation();
+  const { setBagCount, bagCount } = useBag();
+  const { t, i18n } = useTranslation();
   const [Loader, setLoader] = useState(false);
+  const [RedirectionLoader, setRedirectionLoader] = useState(false);
   const [Avoirs, setAvoirs] = useState([]);
   const [AvoirValue, setAvoirValue] = useState(0);
   const [RemiseValue, setRemiseValue] = useState(0);
@@ -74,19 +76,19 @@ const CheckoutResumeScreen = props => {
 
   const [CartTotalPriceSansRemiseAvoir, setCartTotalPriceSansRemiseAvoir] =
     useState(0);
-  const [Language, setLanguage] = useState('fr');
+  const [Language, setLanguage] = useState("fr");
   const [LivraisonData, setLivraisonData] = useState({});
   const [DepotData, setDepotData] = useState({});
   const [AdresseFacturationDifferente, setAdresseFacturationDifferente] =
     useState(false);
   const [Adresses, setAdresses] = useState([]);
-  const [AdresseFacturationId, setAdresseFacturationId] = useState('');
-  const [NomFacturation, setNomFacturation] = useState('');
+  const [AdresseFacturationId, setAdresseFacturationId] = useState("");
+  const [NomFacturation, setNomFacturation] = useState("");
   const [TVA, setTVA] = useState(0);
   const [LoadingPayment, setLoadingPayment] = useState(false);
   const [prixTotalLivraison, setPrixTotalLivraison] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [isValue, setIsValue] = useState('');
+  const [isValue, setIsValue] = useState("");
   const [paysCommand, setPayCommand] = useState([]);
   const [CommandBasket, setCommandBasket] = useState([]);
   const [ServiceCommand, setServiceCommand] = useState([]);
@@ -98,6 +100,13 @@ const CheckoutResumeScreen = props => {
   const [CommandePrixTotal, setCommandePrixTotal] = useState(0);
   const [TotalWithLivraison, setTotalWithLivraison] = useState(0);
   const user = auth().currentUser;
+
+  console.log(props.route.params);
+
+  useEffect(() => {
+    if (Service && "demandes-d-achat" != Service.code && Avoirs.length > 0)
+      setRedirectionLoader(false);
+  }, [Service, Avoirs]);
 
   useEffect(() => {
     // Pour eviter un probleme de memoire, il faut ajouter un cleanup
@@ -123,18 +132,18 @@ const CheckoutResumeScreen = props => {
         setLanguage(currentLanguage);
 
         try {
-          const response = await axiosInstance.get('adresses/user/' + user.uid);
+          const response = await axiosInstance.get("adresses/user/" + user.uid);
 
-          let formatted = response.data.map(ls => {
+          let formatted = response.data.map((ls) => {
             return {
               id: ls.id,
               label:
                 ls?.adresse +
-                ' ' +
+                " " +
                 ls.codePostal +
-                ' ' +
+                " " +
                 ls.ville +
-                ' ' +
+                " " +
                 ls.pays,
               value: ls.id,
               codePostal: ls.codePostal,
@@ -146,50 +155,52 @@ const CheckoutResumeScreen = props => {
 
           setAdresses(formatted);
 
-          setLoader(false);
+          // setLoader(false);
         } catch (erreur) {
-          console.log('adresse fetch error', erreur);
+          console.log("adresse fetch error", erreur);
         }
 
         // commande
         let prixTotal = 0;
+        console.log(
+          commande,
+          "239482082349329408023949023489023902390234084239023490423908490238"
+        );
         const safeParseFloat = (value) => {
           const parsed = parseFloat(value);
           return isNaN(parsed) ? 0 : parsed;
         };
 
         if ("Demandes d'achat" == commande.service) {
-        const remiseNegative = safeParseFloat(commande.remise) > 0
-  ? safeParseFloat(commande.remise) * -1
-  : 0;
+          const remiseNegative =
+            safeParseFloat(commande.remise) > 0
+              ? safeParseFloat(commande.remise) * -1
+              : 0;
 
- prixTotal = safeParseFloat(commande.totalPrice) -
-  (remiseNegative +
-   safeParseFloat(commande.commission) +
-   safeParseFloat(commande.fraisDouane) +
-   safeParseFloat(commande.prixLivraison) +
-   safeParseFloat(commande.fraisExpedition));
+          prixTotal =
+            safeParseFloat(commande.totalPrice) -
+            (remiseNegative +
+              safeParseFloat(commande.commission) +
+              safeParseFloat(commande.fraisDouane) +
+              safeParseFloat(commande.prixLivraison) +
+              safeParseFloat(commande.fraisExpedition));
           prixTotal = parseFloat(prixTotal);
           prixTotal = isNaN(prixTotal) ? 0 : prixTotal;
           console.log(
-            {prixTotal},
-            'prixTotal',
+            { prixTotal },
+            "prixTotal",
             parseFloat(commande.totalPrice),
             parseFloat(commande.commission),
             parseFloat(commande.fraisDouane),
             parseFloat(commande.prixLivraison),
             parseFloat(commande.fraisExpedition),
-            parseFloat(commande.remise),
+            parseFloat(commande.remise)
           );
         } else {
           let prixFretRegroupement = 0;
 
           commande.commandeProducts.forEach(function (commandeProduct) {
-            let prix = parseFloat(
-              commandeProduct.product.productSpecificites
-                ? commandeProduct.product.productSpecificites[0].prix
-                : 0,
-            );
+            let prix = parseFloat(commandeProduct.prix);
             prix = isNaN(prix) ? 0 : prix;
 
             quantite = parseInt(commandeProduct.quantite);
@@ -203,7 +214,7 @@ const CheckoutResumeScreen = props => {
               ? commandeProduct.product.productSpecificites[0].expedition
               : 0;
 
-            if ('Fret par avion' == commande.service) {
+            if ("Fret par avion" == commande.service) {
               classeRegroupements = classeRegroupements
                 ? classeRegroupements.classeRegroupementFretAvion
                 : null;
@@ -217,7 +228,7 @@ const CheckoutResumeScreen = props => {
               classeRegroupements = [];
             }
 
-            classeRegroupements.map(regroupement => {
+            classeRegroupements.map((regroupement) => {
               let classeRegroupementPrix = parseFloat(regroupement.prix);
               classeRegroupementPrix = isNaN(classeRegroupementPrix)
                 ? 0
@@ -226,6 +237,12 @@ const CheckoutResumeScreen = props => {
                 prixFretRegroupement + classeRegroupementPrix;
             });
 
+            console.log(
+              prixTotal,
+              prixQuantite,
+              prixFretRegroupement,
+              "23932309230239239023023090323290"
+            );
             prixTotal = prixTotal + prixQuantite + prixFretRegroupement;
           });
         }
@@ -236,23 +253,23 @@ const CheckoutResumeScreen = props => {
 
         setSommeFraisDouane(prixDouane);
 
-        console.log({prixTotal});
+        console.log({ prixTotal }, "2332423");
         // Remise
         let remiseTotal = commande.remiseTotal;
         remiseTotal = parseFloat(remiseTotal);
         remiseTotal = isNaN(remiseTotal) ? 0 : remiseTotal;
         remiseTotal = remiseTotal + commande.remise;
-        prixTotal = prixTotal + prixDouane;
-
+        prixTotal = prixTotal;
         if ("Demandes d'achat" == commande.service) {
-          prixTotal = prixTotal - prixDouane;
+          prixTotal = prixTotal;
         }
+        console.log(prixTotal, "293903209233290");
         setCommandePrixTotal(prixTotal);
 
         let totalPrixAvecDouaneRemiseAvoir = prixTotal - remiseTotal;
 
         setLivraisonTotalPrixAvecDouaneRemiseAvoir(
-          totalPrixAvecDouaneRemiseAvoir,
+          totalPrixAvecDouaneRemiseAvoir
         );
 
         let prixLivraison = commande.prixLivraison;
@@ -295,7 +312,7 @@ const CheckoutResumeScreen = props => {
           let adresseId = null;
           let magasinId = null;
 
-          if ('domicile' == commande.livraison.mode) {
+          if ("domicile" == commande.livraison.mode) {
             if (commande.livraison.commandeAdresse) {
               adresseId = commande.livraison.commandeAdresse?.id;
             }
@@ -319,7 +336,7 @@ const CheckoutResumeScreen = props => {
           livraison.livraisonAdresseId = adresseId;
 
           livraison.horaire =
-            'fr' == Language
+            "fr" == Language
               ? commande.livraison?.magasin?.horaireOuverture
               : commande.livraison?.magasin?.horaireOuvertureEN;
 
@@ -356,7 +373,7 @@ const CheckoutResumeScreen = props => {
         let service = null;
         try {
           const response = await axiosInstance.get(
-            '/pays/' + commande.paysLivraisonId,
+            "/pays/" + commande.paysLivraisonId
           );
 
           await savePaysLivraison(response.data);
@@ -372,13 +389,13 @@ const CheckoutResumeScreen = props => {
           await saveSelectedService(service);
           await saveSelectedCountry(paysLivraisonObject);
         } catch (erreur) {
-          console.log('error pays de livraison', erreur);
+          console.log("error pays de livraison", erreur);
         }
-
+        let av;
         // Get avoir
         axiosInstance
-          .get('/avoirs/active/all/' + user.uid)
-          .then(response => {
+          .get("/avoirs/active/all/" + user.uid)
+          .then((response) => {
             if (response.data) {
               let data = response.data;
 
@@ -389,7 +406,13 @@ const CheckoutResumeScreen = props => {
                   parseFloat(value.montant) -
                   parseFloat(value.montantConsomme ? value.montantConsomme : 0);
               });
-
+              console.log(
+                { somme },
+                av,
+                props.route.params,
+                props.route?.params?.CommandeResteApayer &&
+                  (av?.length === 0 || !av)
+              );
               if (somme > 0) {
                 let formatted = [
                   {
@@ -397,15 +420,37 @@ const CheckoutResumeScreen = props => {
                     value: somme,
                   },
                 ];
-
+                av = formatted;
                 setAvoirs(formatted);
+                console.log(
+                  props.route.params,
+                  av,
+                  "AVAVAAVVVAAAVV",
+                  props.route?.params?.CommandeResteApayer &&
+                    (av?.length === 0 || !av)
+                );
+                if (
+                  props.route?.params?.CommandeResteApayer &&
+                  (av?.length === 0 || !av)
+                ) {
+                  NavigateToPayment(
+                    props.route?.params?.CommandeResteApayer,
+                    0
+                  );
+                }
+              } else if (
+                props.route?.params?.CommandeResteApayer &&
+                (av?.length === 0 || !av)
+              ) {
+                console.log("AVAVAAVVVAAAVV");
+                NavigateToPayment(props.route?.params?.CommandeResteApayer, 0);
               }
             }
 
             // console.log("Avoir:",Avoirs);
           })
           .catch(function (error) {
-            console.log('error', error);
+            console.log("error", error);
           });
 
         // Recuperer les Product de Comand
@@ -431,7 +476,7 @@ const CheckoutResumeScreen = props => {
           depot.nom = commande.depot.nom;
           depot.telephone = commande.depot.telephone;
 
-          if ('enlevement' == commande.depot.mode) {
+          if ("enlevement" == commande.depot.mode) {
             if (commande.depot.commandeAdresse) {
               depot.adresseId = commande.depot.commandeAdresse?.id;
             }
@@ -451,12 +496,12 @@ const CheckoutResumeScreen = props => {
 
         let commandeProducts = [];
         let productImages = [];
-        commande.commandeProducts.forEach(commandeProduct => {
+        commande.commandeProducts.forEach((commandeProduct) => {
           obj = {
             quantite: commandeProduct.quantite,
             productId: commandeProduct.product?.id,
             prixAchat:
-              'demandes-d-achat' == commandeProduct.product.service
+              "demandes-d-achat" == commandeProduct.product.service
                 ? commandeProduct.prixAchat
                 : null,
             informationsComplementaire:
@@ -465,7 +510,7 @@ const CheckoutResumeScreen = props => {
               ? commandeProduct.product.productSpecificites[0].prix
               : 0,
             attributs:
-              'ventes-privees' == commandeProduct.product.service
+              "ventes-privees" == commandeProduct.product.service
                 ? commandeProduct.attributs
                 : commandeProduct.attributes,
             url: commandeProduct.url,
@@ -505,55 +550,70 @@ const CheckoutResumeScreen = props => {
         });
 
         setService(service);
+        console.log(Avoirs, av, "avoirs checkpoint");
+        if ("demandes-d-achat" == service.code) {
+          setRedirectionLoader(false);
+          setLoader(false);
+        } else if (Avoirs.length > 0) {
+          setRedirectionLoader(false);
 
-        setLoader(false);
+          setLoader(false);
+        } else if (Avoirs.length === 0) {
+          setLoader(false);
+          return setRedirectionLoader(true);
+        }
       } catch (error) {
-        console.log('error', error);
+        setLoader(false);
+        console.log("error", error);
       }
     }
 
     fetchValue();
 
-    return mounted => (mounted = false);
+    return (mounted) => (mounted = false);
   }, [isFocused]);
 
   // Paiement
   async function NavigateToPayment(totalPrice, remiseTotal) {
+    await removePanier();
+    await removeCommand();
     await savePrixFinalPanier(
       totalPrice,
       CartTotalPriceSansRemiseAvoir,
       remiseTotal,
-      TVA,
+      TVA
     );
-
+    console.log({ totalPrice }, { remiseTotal }, "#$@$#@##$@@##$$#@@#");
     let adresseFacturation = AdresseFacturationId;
-    let type = 'user_adresse';
+    let type = "user_adresse";
 
     if (!adresseFacturation) {
       adresseFacturation =
-        'relais' == LivraisonData.livraisonMode
+        "relais" == LivraisonData.livraisonMode
           ? LivraisonData.livraisonRelaisId
           : LivraisonData.livraisonAdresseId;
 
       type =
-        'relais' == LivraisonData.livraisonMode ? 'livraison' : 'user_adresse';
+        "relais" == LivraisonData.livraisonMode ? "livraison" : "user_adresse";
 
       setAdresseFacturationId(adresseFacturation);
     }
 
     await saveAdresseIdFacturation(adresseFacturation, NomFacturation, type);
 
-    props.navigation.navigate('ResumeCardScreen');
+    props.navigation.navigate("ResumeCardScreen", {
+      redirectGoBack: Avoirs.length === 0,
+    });
   }
 
   const NavigateToUserAddress = () => {
-    props.navigation.navigate('AddAdresseScreen', {
-      pageFrom: 'summary',
+    props.navigation.navigate("AddAdresseScreen", {
+      pageFrom: "summary",
     });
   };
 
   // Afficher les attributs
-  const RenderAttribute = props => {
+  const RenderAttribute = (props) => {
     const product = props.product;
 
     const attributeValues = product.attributes
@@ -563,18 +623,18 @@ const CheckoutResumeScreen = props => {
     return (
       <View>
         <Text style={styles.WeightCalSubText}>
-          {attributeValues.join(', ')}
+          {attributeValues.join(", ")}
         </Text>
         {
           <>
-            <Text style={{marginBottom: 5}}>
-              {t('URL')}:{' '}
+            <Text style={{ marginBottom: 5 }}>
+              {t("URL")}:{" "}
               {product.url.length > 30
-                ? product.url.substring(0, 30 - 3) + '...'
+                ? product.url.substring(0, 30 - 3) + "..."
                 : product.url}
             </Text>
             <Text>
-              {t('Infos complementaires')}:{' '}
+              {t("Infos complementaires")}:{" "}
               {product.informationsComplementaires}
             </Text>
           </>
@@ -584,7 +644,7 @@ const CheckoutResumeScreen = props => {
   };
 
   // Afficher les attributs
-  const RenderAttributeCommand = props => {
+  const RenderAttributeCommand = (props) => {
     const product = props.product;
 
     const attributeValues = product.attributs
@@ -594,16 +654,16 @@ const CheckoutResumeScreen = props => {
     return (
       <View>
         <Text style={styles.WeightCalSubText}>
-          {attributeValues.join(', ')}
+          {attributeValues.join(", ")}
         </Text>
         {
           <>
-            <Text style={{marginBottom: 5}}>
-              {t('URL')}:{' '}
+            <Text style={{ marginBottom: 5 }}>
+              {t("URL")}:{" "}
               {product.url == null ? (
                 <></>
               ) : product.url.length > 30 ? (
-                product.url.substring(0, 30 - 3) + '...'
+                product.url.substring(0, 30 - 3) + "..."
               ) : (
                 product.url
               )}
@@ -615,8 +675,8 @@ const CheckoutResumeScreen = props => {
                   :
                   <Text style={{marginBottom: 5}}>{product.attributes.name}: { product.url }</Text>
                 } */}
-            <Text style={{maxWidth: 250}}>
-              {t('Infos complementaires')}:{' '}
+            <Text style={{ maxWidth: 250 }}>
+              {t("Infos complementaires")}:{" "}
               {product.informationsComplementaires}
             </Text>
           </>
@@ -626,33 +686,34 @@ const CheckoutResumeScreen = props => {
   };
 
   // Afficher les produits
-  const RenderItem = ({item}) => {
+  const RenderItem = ({ item }) => {
     let prix = isNaN(parseFloat(item.Price)) ? 0 : parseFloat(item.Price);
 
     return (
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           paddingLeft: 28,
           paddingVertical: 12,
           marginBottom: 16,
           borderRadius: 18,
-        }}>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           {/* First Row */}
-          <View style={{position: 'relative'}}>
+          <View style={{ position: "relative" }}>
             <View>
               {
                 <View>
-                  {item.image !== '' ? (
+                  {item.image !== "" ? (
                     <Image
-                      source={{uri: item.image}}
+                      source={{ uri: item.image }}
                       resizeMode="contain"
-                      style={{width: wp(18), height: wp(28)}}
+                      style={{ width: wp(18), height: wp(28) }}
                     />
                   ) : (
                     <>
-                      <View style={{width: wp(10), height: wp(28)}}></View>
+                      <View style={{ width: wp(10), height: wp(28) }}></View>
                     </>
                   )}
                 </View>
@@ -666,20 +727,22 @@ const CheckoutResumeScreen = props => {
               <Text
                 style={{
                   fontSize: 14,
-                  fontFamily: 'Poppins-Regular',
-                  color: '#000',
+                  fontFamily: "Poppins-Regular",
+                  color: "#000",
                   maxWidth: 190,
-                }}>
-                {'fr' == Language ? item.product.name : item.product.nameEN}
+                }}
+              >
+                {"fr" == Language ? item.product.name : item.product.nameEN}
               </Text>
 
               <>
                 <View
                   style={{
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
+                    flexDirection: "column",
+                    alignItems: "flex-start",
                     gap: 10,
-                  }}>
+                  }}
+                >
                   <RenderAttribute service={Service} product={item} />
                   <ButtonPrix title={prix} language={Language} />
                 </View>
@@ -692,7 +755,7 @@ const CheckoutResumeScreen = props => {
   };
 
   // Afficher les produits
-  const RenderItemCommand = ({item}) => {
+  const RenderItemCommand = ({ item }) => {
     let prix = 0;
 
     let stock = [];
@@ -703,25 +766,26 @@ const CheckoutResumeScreen = props => {
     return (
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           paddingLeft: 28,
           paddingVertical: 12,
           marginBottom: 16,
           borderRadius: 18,
-        }}>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           {/* First Row */}
-          <View style={{position: 'relative'}}>
+          <View style={{ position: "relative" }}>
             <View>
               <>
                 {item.photo != null ? (
                   <Image
-                    source={{uri: item.photo}}
+                    source={{ uri: item.photo }}
                     resizeMode="contain"
-                    style={{width: wp(18), height: wp(28)}}
+                    style={{ width: wp(18), height: wp(28) }}
                   />
                 ) : (
-                  <View style={{width: wp(10), height: wp(28)}}></View>
+                  <View style={{ width: wp(10), height: wp(28) }}></View>
                 )}
               </>
             </View>
@@ -733,19 +797,21 @@ const CheckoutResumeScreen = props => {
               <Text
                 style={{
                   fontSize: 14,
-                  fontFamily: 'Poppins-Regular',
-                  color: '#000',
+                  fontFamily: "Poppins-Regular",
+                  color: "#000",
                   maxWidth: 190,
-                }}>
-                {'fr' == Language ? item.product.name : item.product.nameEN}
+                }}
+              >
+                {"fr" == Language ? item.product.name : item.product.nameEN}
               </Text>
 
               <View
                 style={{
-                  flexDirection: 'column',
-                  alignItems: 'flex-start',
+                  flexDirection: "column",
+                  alignItems: "flex-start",
                   gap: 10,
-                }}>
+                }}
+              >
                 <RenderAttributeCommand service={Service} product={item} />
                 <ButtonPrix title={prix} language={Language} />
               </View>
@@ -757,7 +823,7 @@ const CheckoutResumeScreen = props => {
   };
 
   // Afficher le total
-  const RenderTotal = ({data}) => {
+  const RenderTotal = ({ data }) => {
     let prices = calculProductPricesCommand(data, RemiseValue, RemiseProduct);
 
     let valuesDemandeAchat =
@@ -804,86 +870,100 @@ const CheckoutResumeScreen = props => {
       resteApayer = (resteApayer - AvoirValue).toFixed(2);
     }
 
+    if (RedirectionLoader) {
+      return <View></View>;
+    }
+
+    resteApayer = resteApayer.toFixed(2);
+    montantApayer = montantApayer.toFixed(2);
+
     return (
       <View>
-        <View style={{marginTop: 13, paddingHorizontal: 12}}>
+        <View style={{ marginTop: 13, paddingHorizontal: 12 }}>
           {
             <View
               style={{
-                backgroundColor: '#fff',
+                backgroundColor: "#fff",
                 paddingTop: 22,
                 paddingHorizontal: 13,
                 paddingBottom: 30,
                 borderRadius: 8,
-              }}>
+              }}
+            >
               <>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Sous Total')}
+                    }}
+                  >
+                    {t("Sous Total")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {subTotal.toFixed(2)} €
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant remise')}
+                    }}
+                  >
+                    {t("Montant remise")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
-                    {remiseTotal == 0.0 ? '"-"' : '-' + remiseTotal + '€'}
+                    }}
+                  >
+                    {remiseTotal == 0.0 ? '"-"' : "-" + remiseTotal + "€"}
                   </Text>
                 </View>
-                {'domicile' == modeLivraison ? (
+                {"domicile" == modeLivraison ? (
                   <View style={styles.secondContainer}>
                     <View style={styles.totalContainer}>
                       <Text style={styles.totalText}>
-                        {t('Prix de livraison')}
+                        {t("Prix de livraison")}
                       </Text>
                       <Text style={styles.totalText}>
                         {cartLivraisonPrice > 0
-                          ? cartLivraisonPrice + '€'
-                          : t('Offert')}
+                          ? cartLivraisonPrice + "€"
+                          : t("Offert")}
                       </Text>
                     </View>
                   </View>
@@ -892,215 +972,239 @@ const CheckoutResumeScreen = props => {
                 )}
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Sous-Total aprés remise')}
+                    }}
+                  >
+                    {t("Sous-Total aprés remise")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {apreRemise}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingTop: 19,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('fais douane')}
+                    }}
+                  >
+                    {t("fais douane")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {prices.sommeFraisDouane}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Frais livraison')}
+                    }}
+                  >
+                    {t("Frais livraison")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {prices.fraisLivraison}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {t("Frais d'expédition")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {prices.fraisExpedition}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Commission')}
+                    }}
+                  >
+                    {t("Commission")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {prices.fraisCommission}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant à payer')}
+                    }}
+                  >
+                    {t("Montant à payer")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {montantApayer}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant avoir')}
+                    }}
+                  >
+                    {t("Montant avoir")}
                   </Text>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      alignItems: "center",
                       gap: 10,
-                    }}>
+                    }}
+                  >
                     <Entypo name="check" color="#01962A" size={15} />
                     <Feather name="x" color="#E10303" size={15} />
                   </View>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingTop: 19,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-SemiBold',
+                      fontFamily: "Poppins-SemiBold",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Reste à payer')}
+                    }}
+                  >
+                    {t("Reste à payer")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {resteApayer} €
                   </Text>
                 </View>
@@ -1113,16 +1217,17 @@ const CheckoutResumeScreen = props => {
           <View
             style={[
               styles.dropContainerStyle,
-              {position: 'relative', zIndex: 1000},
-            ]}>
+              { position: "relative", zIndex: 1000 },
+            ]}
+          >
             <DropDownPicker
               style={[styles.dropdown]}
               containerStyle={styles.containerDepotStyle}
               dropDownContainerStyle={styles.selectedTextStyle}
-              selectedItemContainerStyle={{backgroundColor: '#d5d6d7'}}
+              selectedItemContainerStyle={{ backgroundColor: "#d5d6d7" }}
               items={Avoirs}
-              placeholder={!isFocusAvoir ? t('Avoirs') : '...'}
-              onSelectItem={item => {
+              placeholder={!isFocusAvoir ? t("Avoirs") : "..."}
+              onSelectItem={(item) => {
                 setAvoirValue(item.value);
                 setAvoirChoice(true);
                 setIsFocusAvoir(false);
@@ -1133,7 +1238,7 @@ const CheckoutResumeScreen = props => {
               open={isOpen}
               setOpen={() => setIsOpen(!isOpen)}
               value={isValue}
-              setValue={val => setIsValue(val)}
+              setValue={(val) => setIsValue(val)}
             />
           </View>
         )}
@@ -1142,35 +1247,39 @@ const CheckoutResumeScreen = props => {
           <View
             style={{
               width: wp(95),
-              alignSelf: 'center',
-              backgroundColor: '#fff',
+              alignSelf: "center",
+              backgroundColor: "#fff",
               paddingHorizontal: 13,
               borderRadius: 8,
               paddingBottom: 18,
-            }}>
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
                 paddingTop: 19,
-              }}>
+              }}
+            >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: "Poppins-SemiBold",
                   fontSize: 12,
-                  color: '#000',
+                  color: "#000",
                   letterSpacing: 0.8,
-                }}>
-                {t('Reste à payer')}
+                }}
+              >
+                {t("Reste à payer")}
               </Text>
               <Text
                 style={{
-                  fontFamily: 'Poppins-Medium',
+                  fontFamily: "Poppins-Medium",
                   fontSize: 14,
-                  color: '#262A2B',
+                  color: "#262A2B",
                   letterSpacing: 0.8,
-                }}>
+                }}
+              >
                 {resteApayer} €
               </Text>
             </View>
@@ -1180,24 +1289,25 @@ const CheckoutResumeScreen = props => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: 30,
-            position: 'relative',
+            position: "relative",
             zIndex: -100,
             marginBottom: wp(3),
-          }}>
+          }}
+        >
           <TouchableOpacity
             style={[
               LoadingPayment
-                ? {backgroundColor: '#666'}
-                : {backgroundColor: '#4E8FDA'},
+                ? { backgroundColor: "#666" }
+                : { backgroundColor: "#4E8FDA" },
               {
                 paddingVertical: 8,
                 paddingHorizontal: 22,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
                 borderRadius: 25,
               },
             ]}
@@ -1205,17 +1315,19 @@ const CheckoutResumeScreen = props => {
             onPress={() => {
               NavigateToPayment(resteApayer, remiseTotal);
             }}
-            disabled={LoadingPayment}>
+            disabled={LoadingPayment}
+          >
             <Text
               style={{
-                fontFamily: 'Poppins-Medium',
+                fontFamily: "Poppins-Medium",
                 fontSize: 12,
-                color: '#fff',
-              }}>
+                color: "#fff",
+              }}
+            >
               {LoadingPayment ? (
-                <ActivityIndicator color={'#fff'} size={'small'} />
+                <ActivityIndicator color={"#fff"} size={"small"} />
               ) : (
-                t('Valider la commande')
+                t("Valider la commande")
               )}
             </Text>
           </TouchableOpacity>
@@ -1226,13 +1338,13 @@ const CheckoutResumeScreen = props => {
     );
   };
 
-  const RenderTotalCommand = ({data}) => {
+  const RenderTotalCommand = ({ data }) => {
     let prices = {};
     let resteApayer = 0;
     let resteAvoir = 0;
     let apreRemise = 0;
 
-    console.log({CommandePrixTotal});
+    console.log({ CommandePrixTotal });
     prices.sommeFraisDouane = sommeFraisDouane;
     prices.totalPrix = CommandePrixTotal;
     prices.totalPrixAvecDouaneRemiseAvoir = LivraisonData
@@ -1280,294 +1392,331 @@ const CheckoutResumeScreen = props => {
     if (AvoirValue) {
       resteApayer = (resteApayer - AvoirValue).toFixed(2);
     }
-
+    resteApayer = resteApayer.toFixed(2);
+    montantApayer = montantApayer.toFixed(2);
     return (
       <View>
-        <View style={{marginTop: 13, paddingHorizontal: 12}}>
+        <View style={{ marginTop: 13, paddingHorizontal: 12 }}>
           {
             <>
               <View
                 style={{
-                  backgroundColor: '#fff',
+                  backgroundColor: "#fff",
                   paddingTop: 22,
                   paddingHorizontal: 13,
                   paddingBottom: 30,
                   borderRadius: 8,
-                }}>
+                }}
+              >
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Sous Total')}
+                    }}
+                  >
+                    {t("Sous Total")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {subTotal.toFixed(2)} €
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant remise')}
+                    }}
+                  >
+                    {t("Montant remise")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
-                    {remiseTotal == 0.0 ? '"-"' : '-' + remiseTotal + '€'}
+                    }}
+                  >
+                    {remiseTotal == 0.0 ? '"-"' : "-" + remiseTotal + "€"}
                   </Text>
                 </View>
-                {'domicile' != modeLivraison && <></>}
+                {"domicile" != modeLivraison && <></>}
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Sous-Total aprés remise')}
+                    }}
+                  >
+                    {t("Sous-Total aprés remise")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {apreRemise}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingTop: 19,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('fais douane')}
+                    }}
+                  >
+                    {t("fais douane")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {prices.sommeFraisDouane}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Frais livraison')}
+                    }}
+                  >
+                    {t("Frais livraison")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {prices.fraisLivraison}€
                   </Text>
                 </View>
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: 'Poppins-Regular',
-                      fontSize: 12,
-                      color: '#ACB2B2',
-                      letterSpacing: 0.8,
-                    }}>
-                    {t("Frais d'expédition")}
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: 'Poppins-Medium',
-                      fontSize: 14,
-                      color: '#262A2B',
-                      letterSpacing: 0.8,
-                    }}>
-                    {prices.fraisExpedition}€
-                  </Text>
-                </View>
+                {"fret-par-avion" != Service.code ||
+                  ("fret-par-bateau" != Service.code && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: "Poppins-Regular",
+                          fontSize: 12,
+                          color: "#ACB2B2",
+                          letterSpacing: 0.8,
+                        }}
+                      >
+                        {t("Frais d'expédition")}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: "Poppins-Medium",
+                          fontSize: 14,
+                          color: "#262A2B",
+                          letterSpacing: 0.8,
+                        }}
+                      >
+                        {prices.fraisExpedition}€
+                      </Text>
+                    </View>
+                  ))}
+                {"fret-par-avion" != Service.code &&
+                  "fret-par-bateau" != Service.code && (
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                        paddingBottom: 15,
+                        borderBottomWidth: 1,
+                        borderColor: "#E9E9E9",
+                      }}
+                    >
+                      <Text
+                        style={{
+                          fontFamily: "Poppins-Regular",
+                          fontSize: 12,
+                          color: "#ACB2B2",
+                          letterSpacing: 0.8,
+                        }}
+                      >
+                        {t("Commission")}
+                      </Text>
+                      <Text
+                        style={{
+                          fontFamily: "Poppins-Medium",
+                          fontSize: 14,
+                          color: "#262A2B",
+                          letterSpacing: 0.8,
+                        }}
+                      >
+                        {prices.fraisCommission}€
+                      </Text>
+                    </View>
+                  )}
 
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
-                    paddingBottom: 15,
-                    borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
-                  <Text
-                    style={{
-                      fontFamily: 'Poppins-Regular',
-                      fontSize: 12,
-                      color: '#ACB2B2',
-                      letterSpacing: 0.8,
-                    }}>
-                    {t('Commission')}
-                  </Text>
-                  <Text
-                    style={{
-                      fontFamily: 'Poppins-Medium',
-                      fontSize: 14,
-                      color: '#262A2B',
-                      letterSpacing: 0.8,
-                    }}>
-                    {prices.fraisCommission}€
-                  </Text>
-                </View>
-
-                <View
-                  style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant à payer')}
+                    }}
+                  >
+                    {t("Montant à payer")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {montantApayer}€
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant avoir')}
+                    }}
+                  >
+                    {t("Montant avoir")}
                   </Text>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      alignItems: "center",
                       gap: 10,
-                    }}>
+                    }}
+                  >
                     <Entypo name="check" color="#01962A" size={15} />
                     <Feather name="x" color="#E10303" size={15} />
                   </View>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingTop: 19,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-SemiBold',
+                      fontFamily: "Poppins-SemiBold",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Reste à payer')}
+                    }}
+                  >
+                    {t("Reste à payer")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {resteApayer} €
                   </Text>
                 </View>
@@ -1580,16 +1729,17 @@ const CheckoutResumeScreen = props => {
           <View
             style={[
               styles.dropContainerStyle,
-              {position: 'relative', zIndex: 1000},
-            ]}>
+              { position: "relative", zIndex: 1000 },
+            ]}
+          >
             <DropDownPicker
               style={[styles.dropdown]}
               containerStyle={styles.containerDepotStyle}
               dropDownContainerStyle={styles.selectedTextStyle}
-              selectedItemContainerStyle={{backgroundColor: '#d5d6d7'}}
+              selectedItemContainerStyle={{ backgroundColor: "#d5d6d7" }}
               items={Avoirs}
-              placeholder={!isFocusAvoir ? t('Avoirs') : '...'}
-              onSelectItem={item => {
+              placeholder={!isFocusAvoir ? t("Avoirs") : "..."}
+              onSelectItem={(item) => {
                 setAvoirValue(item.value);
                 setAvoirChoice(true);
                 setIsFocusAvoir(false);
@@ -1600,7 +1750,7 @@ const CheckoutResumeScreen = props => {
               open={isOpen}
               setOpen={() => setIsOpen(!isOpen)}
               value={isValue}
-              setValue={val => setIsValue(val)}
+              setValue={(val) => setIsValue(val)}
             />
           </View>
         )}
@@ -1609,35 +1759,39 @@ const CheckoutResumeScreen = props => {
           <View
             style={{
               width: wp(95),
-              alignSelf: 'center',
-              backgroundColor: '#fff',
+              alignSelf: "center",
+              backgroundColor: "#fff",
               paddingHorizontal: 13,
               borderRadius: 8,
               paddingBottom: 18,
-            }}>
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
                 paddingTop: 19,
-              }}>
+              }}
+            >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: "Poppins-SemiBold",
                   fontSize: 12,
-                  color: '#000',
+                  color: "#000",
                   letterSpacing: 0.8,
-                }}>
-                {t('Reste à payer')}
+                }}
+              >
+                {t("Reste à payer")}
               </Text>
               <Text
                 style={{
-                  fontFamily: 'Poppins-Medium',
+                  fontFamily: "Poppins-Medium",
                   fontSize: 14,
-                  color: '#262A2B',
+                  color: "#262A2B",
                   letterSpacing: 0.8,
-                }}>
+                }}
+              >
                 {resteApayer} €
               </Text>
             </View>
@@ -1647,24 +1801,25 @@ const CheckoutResumeScreen = props => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: 30,
-            position: 'relative',
+            position: "relative",
             zIndex: -100,
             marginBottom: wp(3),
-          }}>
+          }}
+        >
           <TouchableOpacity
             style={[
               LoadingPayment
-                ? {backgroundColor: '#666'}
-                : {backgroundColor: '#4E8FDA'},
+                ? { backgroundColor: "#666" }
+                : { backgroundColor: "#4E8FDA" },
               {
                 paddingVertical: 8,
                 paddingHorizontal: 22,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
                 borderRadius: 25,
               },
             ]}
@@ -1672,17 +1827,19 @@ const CheckoutResumeScreen = props => {
             onPress={() => {
               NavigateToPayment(resteApayer, remiseTotal);
             }}
-            disabled={LoadingPayment}>
+            disabled={LoadingPayment}
+          >
             <Text
               style={{
-                fontFamily: 'Poppins-Medium',
+                fontFamily: "Poppins-Medium",
                 fontSize: 12,
-                color: '#fff',
-              }}>
+                color: "#fff",
+              }}
+            >
               {LoadingPayment ? (
-                <ActivityIndicator color={'#fff'} size={'small'} />
+                <ActivityIndicator color={"#fff"} size={"small"} />
               ) : (
-                t('Valider la commande')
+                t("Valider la commande")
               )}
             </Text>
           </TouchableOpacity>
@@ -1695,30 +1852,32 @@ const CheckoutResumeScreen = props => {
 
   if (Loader || !Service) {
     return (
-      <View style={{justifyContent: 'center', height: '80%'}}>
-        <ActivityIndicator size={'large'} color="#3292E0" />
+      <View style={{ justifyContent: "center", height: "80%" }}>
+        <ActivityIndicator size={"large"} color="#3292E0" />
       </View>
     );
   }
 
   if (EmptyCommande) {
     return (
-      <View style={{justifyContent: 'center', alignItems: 'center'}}>
+      <View style={{ justifyContent: "center", alignItems: "center" }}>
         <View>
           <View
             style={{
-              alignSelf: 'center',
+              alignSelf: "center",
               height: windowHeight * 0.3,
               width: windowWidth * 0.95,
               borderTopLeftRadius: 30,
               borderRadius: 30,
-              alignItems: 'center',
-              justifyContent: 'space-evenly',
+              alignItems: "center",
+              justifyContent: "space-evenly",
               marginTop: windowHeight * 0.03,
-            }}>
+            }}
+          >
             <Text
-              style={{color: '#000', fontSize: 18, fontFamily: 'Roboto-Bold'}}>
-              {t('Vous devez sélectionner une commande')}
+              style={{ color: "#000", fontSize: 18, fontFamily: "Roboto-Bold" }}
+            >
+              {t("Vous devez sélectionner une commande")}
             </Text>
           </View>
         </View>
@@ -1727,9 +1886,9 @@ const CheckoutResumeScreen = props => {
   }
 
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{paddingBottom: 80, flex: 1}}>
+        <View style={{ paddingBottom: 80, flex: 1 }}>
           <ServiceHeader
             navigation={props.navigation}
             service={Service}
@@ -1738,48 +1897,50 @@ const CheckoutResumeScreen = props => {
           />
 
           <View>
-            <View style={{marginTop: 16}}>
+            <View style={{ marginTop: 16 }}>
               <FlatList
                 showsVerticalScrollIndicator={false}
                 data={cartProducts}
-                renderItem={({item}) => <RenderItem item={item} />}
-                keyExtractor={item => item?.id}
+                renderItem={({ item }) => <RenderItem item={item} />}
+                keyExtractor={(item) => item?.id}
               />
             </View>
 
-            {'fret-par-avion' == Service.code ||
-            'fret-par-bateau' == Service.code ? (
+            {"fret-par-avion" == Service.code ||
+            "fret-par-bateau" == Service.code ? (
               <>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
                   <View style={styles.superCartContainer}>
                     <View style={styles.firstContainerInformation}>
                       <View style={styles.secondRow}>
                         <View>
                           <Text style={styles.WeightCalText}>
-                            {t('Information de dépôt')}
+                            {t("Information de dépôt")}
                           </Text>
                           <Text style={styles.WeightCalSubText}>
-                            {t('Mode')} :{' '}
+                            {t("Mode")} :{" "}
                             {t(
-                              DepotData.mode == 'magasin'
-                                ? 'Depot magasin'
-                                : DepotData.mode,
+                              DepotData.mode == "magasin"
+                                ? "Depot magasin"
+                                : DepotData.mode
                             )}
                           </Text>
 
                           <Text style={styles.WeightCalSubText}>
-                            {t('Adresse: ')} : {DepotData?.adresse}
+                            {t("Adresse: ")} : {DepotData?.adresse}
                           </Text>
 
                           {DepotData.nom && (
                             <Text style={styles.WeightCalSubText}>
-                              {t('Nom')} : {DepotData.nom}
+                              {t("Nom")} : {DepotData.nom}
                             </Text>
                           )}
 
                           {DepotData.telephone && (
                             <Text style={styles.WeightCalSubText}>
-                              {t('Téléphone')} : {DepotData.telephone}
+                              {t("Téléphone")} : {DepotData.telephone}
                             </Text>
                           )}
 
@@ -1787,17 +1948,17 @@ const CheckoutResumeScreen = props => {
                             CartCommand.depot.creneauEnlevementPlage && (
                               <>
                                 <Text style={styles.WeightCalSubText}>
-                                  {t('Créneau Date')} :{' '}
+                                  {t("Créneau Date")} :{" "}
                                   {
                                     CartCommand.depot.creneauEnlevementPlage
                                       .date
                                   }
                                 </Text>
                                 <Text style={styles.WeightCalSubText}>
-                                  {t('Créneau heure')} :{' '}
+                                  {t("Créneau heure")} :{" "}
                                   {CartCommand.depot.creneauEnlevementPlage
                                     .horaireDebut +
-                                    ' - ' +
+                                    " - " +
                                     CartCommand.depot.creneauEnlevementPlage
                                       .horaireFin}
                                 </Text>
@@ -1813,37 +1974,37 @@ const CheckoutResumeScreen = props => {
               <></>
             )}
 
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
               <View style={styles.superCartContainer}>
                 <View style={styles.firstContainerInformation}>
                   <View style={styles.secondRow}>
                     <View>
                       <Text style={styles.WeightCalText}>
-                        {t('Information de livraison')}
+                        {t("Information de livraison")}
                       </Text>
                       <Text style={styles.WeightCalSubText}>
-                        {t('Mode')} : {LivraisonData.livraisonMode}
+                        {t("Mode")} : {LivraisonData.livraisonMode}
                       </Text>
 
                       <Text style={styles.WeightCalSubText}>
-                        {t('Adresse')} : {LivraisonData.livraisonAdresse}
+                        {t("Adresse")} : {LivraisonData.livraisonAdresse}
                       </Text>
 
                       {LivraisonData.livraisonNom && (
                         <Text style={styles.WeightCalSubText}>
-                          {t('Nom')} : {LivraisonData.livraisonNom}
+                          {t("Nom")} : {LivraisonData.livraisonNom}
                         </Text>
                       )}
 
                       {LivraisonData.livraisonTelephone && (
                         <Text style={styles.WeightCalSubText}>
-                          {t('Téléphone')} : {LivraisonData.livraisonTelephone}
+                          {t("Téléphone")} : {LivraisonData.livraisonTelephone}
                         </Text>
                       )}
 
                       {LivraisonData.horaire && (
                         <Text style={styles.WeightCalSubText}>
-                          {t('Horaire')} : {LivraisonData.horaire}
+                          {t("Horaire")} : {LivraisonData.horaire}
                         </Text>
                       )}
                     </View>
@@ -1852,27 +2013,28 @@ const CheckoutResumeScreen = props => {
               </View>
             </View>
 
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
               <View style={styles.superCartContainer}>
                 <View style={styles.firstContainerInformation}>
                   <View style={styles.secondRow}>
                     <View>
                       <Text style={styles.WeightCalText}>
-                        {t('Information de facturation')}
+                        {t("Information de facturation")}
                       </Text>
                       <View
                         style={{
-                          flexDirection: 'row',
+                          flexDirection: "row",
                           gap: 10,
-                          alignItems: 'center',
-                        }}>
+                          alignItems: "center",
+                        }}
+                      >
                         <Checkbox
                           value={AdresseFacturationDifferente}
-                          onValueChange={value =>
+                          onValueChange={(value) =>
                             setAdresseFacturationDifferente(value)
                           }
                         />
-                        <Text>{t('Adresse de facturation differente')}</Text>
+                        <Text>{t("Adresse de facturation differente")}</Text>
                       </View>
 
                       {AdresseFacturationDifferente && (
@@ -1880,7 +2042,7 @@ const CheckoutResumeScreen = props => {
                           <View style={styles.dropContainerStyle}>
                             <Dropdown
                               style={{
-                                borderColor: '#000',
+                                borderColor: "#000",
                                 borderWidth: 1,
                                 padding: 10,
                                 borderRadius: 8,
@@ -1893,10 +2055,10 @@ const CheckoutResumeScreen = props => {
                               maxHeight={120}
                               labelField="label"
                               valueField="value"
-                              placeholder={t('Choisir une adresse existante')}
-                              placeholderStyle={{color: '#000'}}
+                              placeholder={t("Choisir une adresse existante")}
+                              placeholderStyle={{ color: "#000" }}
                               showsVerticalScrollIndicator={false}
-                              onChange={item => {
+                              onChange={(item) => {
                                 setAdresseFacturationId(item.id);
                               }}
                             />
@@ -1907,30 +2069,31 @@ const CheckoutResumeScreen = props => {
                               NavigateToUserAddress();
                             }}
                             style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              flexDirection: "row",
+                              alignItems: "center",
                               gap: 10,
                               marginTop: 10,
-                            }}>
+                            }}
+                          >
                             <Icon name="plus" size={23} color="#000" />
                             <Text>
-                              {t('(ou) Ajouter une nouvelle adresse')}
+                              {t("(ou) Ajouter une nouvelle adresse")}
                             </Text>
                           </TouchableOpacity>
 
                           <TextInput
                             layout="first"
-                            placeholder={t('Prénom et Nom')}
-                            placeholderTextColor={'#666'}
+                            placeholder={t("Prénom et Nom")}
+                            placeholderTextColor={"#666"}
                             value={NomFacturation}
                             style={{
                               borderWidth: 1,
                               borderRadius: 8,
                               padding: 12,
-                              borderColor: '#000',
+                              borderColor: "#000",
                               marginTop: 20,
                             }}
-                            onChangeText={text => {
+                            onChangeText={(text) => {
                               setNomFacturation(text);
                             }}
                           />

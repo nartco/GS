@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-fil/values-fil.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-fil/values-fil.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/45f486c552d616905e73782e1bc51b0c/transformed/jetified-payments-ui-core-20.48.6/res/values-fil/values-fil.xml",

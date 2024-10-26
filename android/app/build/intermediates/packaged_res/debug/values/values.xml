@@ -5,6 +5,8 @@
     <integer name="react_native_inspector_proxy_port">8081</integer>
     <string name="app_name">GS</string>
     <string name="default_web_client_id" translatable="false">733360957399-ui7lg7486jhas4c1d0uh8ojtoc409l8q.apps.googleusercontent.com</string>
+    <string name="facebook_app_id">489944126838623</string>
+    <string name="facebook_client_token">747f478de09f270a41e2f7643a8901bf</string>
     <string name="gcm_defaultSenderId" translatable="false">733360957399</string>
     <string name="google_api_key" translatable="false">AIzaSyDS66q7xy0-F3jdxbKQWZXR1bgos3weQDo</string>
     <string name="google_app_id" translatable="false">1:733360957399:android:03f272a525ca49d4d0cd92</string>

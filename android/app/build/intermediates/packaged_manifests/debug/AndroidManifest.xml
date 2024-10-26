@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.godareapp.app"
-    android:versionCode="48"
-    android:versionName="1.0.4" >
+    android:versionCode="49"
+    android:versionName="1.0.5" >
 
     <uses-sdk
         android:minSdkVersion="23"
@@ -22,23 +22,34 @@
     This manifest file is used only by Gradle to configure debug-only capabilities
     for React Native Apps.
     -->
-    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" /> <!-- See https://developer.android.com/training/package-visibility/declaring for more details. -->
-    <queries>
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
 
+    <queries>
+        <package android:name="com.facebook.katana" />
         <!-- Added to check the default browser that will host the AuthFlow. -->
         <intent>
             <action android:name="android.intent.action.VIEW" />
 
             <data android:scheme="http" />
-        </intent>
-        <!-- Added to check if Chrome is installed for browser-based payment authentication (e.g. 3DS1). -->
+        </intent> <!-- Added to check if Chrome is installed for browser-based payment authentication (e.g. 3DS1). -->
         <package android:name="com.android.chrome" /> <!-- Needs to be explicitly declared on Android R+ -->
-        <package android:name="com.google.android.apps.maps" />
+        <package android:name="com.google.android.apps.maps" /> <!-- For browser content -->
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+
+            <category android:name="android.intent.category.BROWSABLE" />
+
+            <data android:scheme="https" />
+        </intent> <!-- End of browser content -->
+        <!-- For CustomTabsService -->
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
     </queries>
 
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" /> <!-- Required by older versions of Google Play services to create IID tokens -->
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="com.google.android.gms.permission.AD_ID" />
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_ATTRIBUTION" />
     <uses-permission android:name="android.permission.ACCESS_ADSERVICES_AD_ID" />
 
@@ -46,8 +57,10 @@
         android:glEsVersion="0x00020000"
         android:required="true" />
 
+    <uses-permission android:name="android.permission.ACCESS_ADSERVICES_TOPICS" />
     <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
     <uses-permission android:name="com.google.android.providers.gsf.permission.READ_GSERVICES" />
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <permission
         android:name="com.godareapp.app.DYNAMIC_RECEIVER_NOT_EXPORTED_PERMISSION"
@@ -85,6 +98,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
+        android:supportsRtl="true"
+        android:testOnly="true"
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true" >
         <activity
@@ -101,6 +116,13 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
+        <meta-data
+            android:name="com.facebook.sdk.ApplicationId"
+            android:value="@string/facebook_app_id" />
+        <meta-data
+            android:name="com.facebook.sdk.ClientToken"
+            android:value="@string/facebook_client_token" />
         <!--
  Change the value to true to enable pop-up for in foreground on receiving remote
         notifications (for prevent duplicating while showing local notifications set this to false)
@@ -234,6 +256,19 @@
         <activity android:name="com.masteratul.exceptionhandler.DefaultErrorScreen" >
         </activity>
 
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-5905621617389782~1103254797" />
+        <meta-data
+            android:name="com.google.android.gms.ads.DELAY_APP_MEASUREMENT_INIT"
+            android:value="false" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_INITIALIZATION"
+            android:value="true" />
+        <meta-data
+            android:name="com.google.android.gms.ads.flag.OPTIMIZE_AD_LOADING"
+            android:value="true" />
+
         <provider
             android:name="com.imagepicker.ImagePickerProvider"
             android:authorities="com.godareapp.app.imagepickerprovider"
@@ -247,6 +282,25 @@
         <activity
             android:name="com.facebook.react.devsupport.DevSettingsActivity"
             android:exported="false" />
+        <activity
+            android:name="com.facebook.FacebookActivity"
+            android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
+            android:theme="@style/com_facebook_activity_theme" />
+        <activity android:name="com.facebook.CustomTabMainActivity" />
+        <activity
+            android:name="com.facebook.CustomTabActivity"
+            android:exported="true" >
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+
+                <data
+                    android:host="cct.com.godareapp.app"
+                    android:scheme="fbconnect" />
+            </intent-filter>
+        </activity>
         <activity
             android:name="com.stripe.android.financialconnections.FinancialConnectionsSheetRedirectActivity"
             android:exported="true"
@@ -435,6 +489,35 @@
             android:name="com.stripe.android.stripe3ds2.views.ChallengeActivity"
             android:exported="false"
             android:theme="@style/Stripe3DS2Theme" />
+        <!--
+         The initialization ContentProvider will call FacebookSdk.sdkInitialize automatically
+         with the application context. This config is merged in with the host app's manifest,
+         but there can only be one provider with the same authority activated at any given
+         point; so if the end user has two or more different apps that use Facebook SDK, only the
+         first one will be able to use the provider. To work around this problem, we use the
+         following placeholder in the authority to identify each host application as if it was
+         a completely different provider.
+        -->
+        <provider
+            android:name="com.facebook.internal.FacebookInitProvider"
+            android:authorities="com.godareapp.app.FacebookInitProvider"
+            android:exported="false" />
+
+        <receiver
+            android:name="com.facebook.CurrentAccessTokenExpirationBroadcastReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.facebook.sdk.ACTION_CURRENT_ACCESS_TOKEN_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="com.facebook.AuthenticationTokenManager$CurrentAuthenticationTokenChangedBroadcastReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.facebook.sdk.ACTION_CURRENT_AUTHENTICATION_TOKEN_CHANGED" />
+            </intent-filter>
+        </receiver>
+
         <activity
             android:name="com.google.firebase.auth.internal.GenericIdpActivity"
             android:excludeFromRecents="true"
@@ -546,16 +629,39 @@
         <activity
             android:name="com.google.android.gms.common.api.GoogleApiActivity"
             android:exported="false"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" /> <!-- 'android:authorities' must be unique in the device, across all apps -->
-        <provider
-            android:name="io.sentry.android.core.SentryInitProvider"
-            android:authorities="com.godareapp.app.SentryInitProvider"
-            android:exported="false" />
-        <provider
-            android:name="io.sentry.android.core.SentryPerformanceProvider"
-            android:authorities="com.godareapp.app.SentryPerformanceProvider"
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" /> <!-- Include the AdActivity and InAppPurchaseActivity configChanges and themes. -->
+        <activity
+            android:name="com.google.android.gms.ads.AdActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
             android:exported="false"
-            android:initOrder="200" />
+            android:theme="@android:style/Theme.Translucent" />
+
+        <provider
+            android:name="com.google.android.gms.ads.MobileAdsInitProvider"
+            android:authorities="com.godareapp.app.mobileadsinitprovider"
+            android:exported="false"
+            android:initOrder="100" />
+
+        <service
+            android:name="com.google.android.gms.ads.AdService"
+            android:enabled="true"
+            android:exported="false" />
+
+        <activity
+            android:name="com.google.android.gms.ads.OutOfContextTestingActivity"
+            android:configChanges="keyboard|keyboardHidden|orientation|screenLayout|uiMode|screenSize|smallestScreenSize"
+            android:exported="false" />
+        <activity
+            android:name="com.google.android.gms.ads.NotificationHandlerActivity"
+            android:excludeFromRecents="true"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:taskAffinity=""
+            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
+
+        <property
+            android:name="android.adservices.AD_SERVICES_CONFIG"
+            android:resource="@xml/gma_ad_services_config" />
 
         <receiver
             android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
@@ -571,8 +677,16 @@
             android:name="com.google.android.gms.measurement.AppMeasurementJobService"
             android:enabled="true"
             android:exported="false"
-            android:permission="android.permission.BIND_JOB_SERVICE" />
-
+            android:permission="android.permission.BIND_JOB_SERVICE" /> <!-- 'android:authorities' must be unique in the device, across all apps -->
+        <provider
+            android:name="io.sentry.android.core.SentryInitProvider"
+            android:authorities="com.godareapp.app.SentryInitProvider"
+            android:exported="false" />
+        <provider
+            android:name="io.sentry.android.core.SentryPerformanceProvider"
+            android:authorities="com.godareapp.app.SentryPerformanceProvider"
+            android:exported="false"
+            android:initOrder="200" />
         <provider
             android:name="androidx.startup.InitializationProvider"
             android:authorities="com.godareapp.app.androidx-startup"
@@ -581,12 +695,107 @@
                 android:name="androidx.emoji2.text.EmojiCompatInitializer"
                 android:value="androidx.startup" />
             <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup" />
+            <meta-data
                 android:name="androidx.lifecycle.ProcessLifecycleInitializer"
                 android:value="androidx.startup" />
             <meta-data
                 android:name="androidx.profileinstaller.ProfileInstallerInitializer"
                 android:value="androidx.startup" />
         </provider>
+
+        <service
+            android:name="androidx.work.impl.background.systemalarm.SystemAlarmService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" />
+        <service
+            android:name="androidx.work.impl.background.systemjob.SystemJobService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_job_service_default"
+            android:exported="true"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="androidx.work.impl.foreground.SystemForegroundService"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_foreground_service_default"
+            android:exported="false" />
+
+        <receiver
+            android:name="androidx.work.impl.utils.ForceStopRunnable$BroadcastReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="false" />
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryChargingProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED" />
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$BatteryNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_OKAY" />
+                <action android:name="android.intent.action.BATTERY_LOW" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$StorageNotLowProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.DEVICE_STORAGE_LOW" />
+                <action android:name="android.intent.action.DEVICE_STORAGE_OK" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxy$NetworkStateProxy"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.RescheduleReceiver"
+            android:directBootAware="false"
+            android:enabled="false"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="android.intent.action.TIME_SET" />
+                <action android:name="android.intent.action.TIMEZONE_CHANGED" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.background.systemalarm.ConstraintProxyUpdateReceiver"
+            android:directBootAware="false"
+            android:enabled="@bool/enable_system_alarm_service_default"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="androidx.work.impl.background.systemalarm.UpdateProxies" />
+            </intent-filter>
+        </receiver>
+        <receiver
+            android:name="androidx.work.impl.diagnostics.DiagnosticsReceiver"
+            android:directBootAware="false"
+            android:enabled="true"
+            android:exported="true"
+            android:permission="android.permission.DUMP" >
+            <intent-filter>
+                <action android:name="androidx.work.diagnostics.REQUEST_DIAGNOSTICS" />
+            </intent-filter>
+        </receiver>
 
         <uses-library
             android:name="android.ext.adservices"
@@ -616,6 +825,10 @@
             </intent-filter>
         </receiver>
 
+        <service
+            android:name="androidx.room.MultiInstanceInvalidationService"
+            android:directBootAware="true"
+            android:exported="false" />
         <service
             android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
             android:exported="false" >

@@ -10,24 +10,24 @@ import {
   FlatList,
   Alert,
   Dimensions,
-} from 'react-native';
-import React, {useEffect, useState} from 'react';
-import {SafeAreaView} from 'react-native-safe-area-context';
-import Feather from 'react-native-vector-icons/Feather';
-import Entypo from 'react-native-vector-icons/Entypo';
+} from "react-native";
+import React, { useEffect, useState } from "react";
+import { SafeAreaView } from "react-native-safe-area-context";
+import Feather from "react-native-vector-icons/Feather";
+import Entypo from "react-native-vector-icons/Entypo";
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-} from 'react-native-responsive-screen';
-import France from '../../assets/images/france.png';
-import CoteIvoire from '../../assets/images/cote_ivoire.png';
-import SmallEarth from '../../assets/images/small_earth.png';
-import Stepper from '../Stepper';
-import {productCart} from '../../constant/data';
-import Button, {ButtonPrix} from '../../components/Button';
-import {useIsFocused} from '@react-navigation/native';
-import {useTranslation} from 'react-i18next';
-import auth from '@react-native-firebase/auth';
+} from "react-native-responsive-screen";
+import France from "../../assets/images/france.png";
+import CoteIvoire from "../../assets/images/cote_ivoire.png";
+import SmallEarth from "../../assets/images/small_earth.png";
+import Stepper from "../Stepper";
+import { productCart } from "../../constant/data";
+import Button, { ButtonPrix } from "../../components/Button";
+import { useIsFocused } from "@react-navigation/native";
+import { useTranslation } from "react-i18next";
+import auth from "@react-native-firebase/auth";
 import {
   getCommand,
   getDepotValues,
@@ -46,36 +46,36 @@ import {
   saveSelectedCountry,
   saveSelectedService,
   saveLivraisonPrices,
-} from '../../modules/GestionStorage';
-import axiosInstance from '../../axiosInstance';
+} from "../../modules/GestionStorage";
+import axiosInstance from "../../axiosInstance";
 import {
   calculFraisLivraison,
   calculFraisLivraisonCommand,
   calculProductPrices,
   calculProductPricesCommand,
-} from '../../modules/CalculPrix';
-import {Dropdown} from 'react-native-element-dropdown';
-import Icon from 'react-native-vector-icons/Feather';
-import {getImageType} from '../../modules/TraitementImage';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import ServiceHeader from '../../components/ServiceHeader';
-import styles from './styles';
-import Checkbox from 'expo-checkbox';
+} from "../../modules/CalculPrix";
+import { Dropdown } from "react-native-element-dropdown";
+import Icon from "react-native-vector-icons/Feather";
+import { getImageType } from "../../modules/TraitementImage";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import ServiceHeader from "../../components/ServiceHeader";
+import styles from "./styles";
+import Checkbox from "expo-checkbox";
 import {
   buildCommande,
   buildGetCommande,
-} from '../../modules/GestionFinalisationPanier';
-import {useBag} from '../../modules/BagContext';
-import DropDownPicker from 'react-native-dropdown-picker';
-import {formatEuroPrice} from '../../modules/DateFinanceUtils';
-import BoldTranslatedText from '../../modules/BoldText';
-import {formatDateToFrench} from '../../components/formatDateToFrench';
+} from "../../modules/GestionFinalisationPanier";
+import { useBag } from "../../modules/BagContext";
+import DropDownPicker from "react-native-dropdown-picker";
+import { formatEuroPrice } from "../../modules/DateFinanceUtils";
+import BoldTranslatedText from "../../modules/BoldText";
+import { formatDateToFrench } from "../../components/formatDateToFrench";
 
-const CheckoutScreen = props => {
+const CheckoutScreen = (props) => {
   var isFocused = useIsFocused();
-  const {setBagCount, bagCount} = useBag();
+  const { setBagCount, bagCount } = useBag();
 
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   const [Loader, setLoader] = useState(false);
   const [Avoirs, setAvoirs] = useState([]);
   const [AvoirValue, setAvoirValue] = useState(0);
@@ -92,19 +92,19 @@ const CheckoutScreen = props => {
 
   const [CartTotalPriceSansRemiseAvoir, setCartTotalPriceSansRemiseAvoir] =
     useState(0);
-  const [Language, setLanguage] = useState('fr');
+  const [Language, setLanguage] = useState("fr");
   const [LivraisonData, setLivraisonData] = useState({});
   const [DepotData, setDepotData] = useState({});
   const [AdresseFacturationDifferente, setAdresseFacturationDifferente] =
     useState(false);
   const [Adresses, setAdresses] = useState([]);
-  const [AdresseFacturationId, setAdresseFacturationId] = useState('');
-  const [NomFacturation, setNomFacturation] = useState('');
+  const [AdresseFacturationId, setAdresseFacturationId] = useState("");
+  const [NomFacturation, setNomFacturation] = useState("");
   const [TVA, setTVA] = useState(0);
   const [LoadingPayment, setLoadingPayment] = useState(false);
   const [prixTotalLivraison, setPrixTotalLivraison] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
-  const [isValue, setIsValue] = useState('');
+  const [isValue, setIsValue] = useState("");
   const [paysCommand, setPayCommand] = useState([]);
   const [CommandBasket, setCommandBasket] = useState([]);
   const [ServiceCommand, setServiceCommand] = useState([]);
@@ -117,7 +117,7 @@ const CheckoutScreen = props => {
     useState(false);
   const [user, setUser] = useState(null);
 
-  const windowWidth = Dimensions.get('window').width;
+  const windowWidth = Dimensions.get("window").width;
 
   useEffect(() => {
     const user = auth().currentUser;
@@ -140,18 +140,18 @@ const CheckoutScreen = props => {
         setLanguage(currentLanguage);
 
         try {
-          const response = await axiosInstance.get('adresses/user/' + user.uid);
+          const response = await axiosInstance.get("adresses/user/" + user.uid);
 
-          let formatted = response.data.map(ls => {
+          let formatted = response.data.map((ls) => {
             return {
               id: ls.id,
               label:
                 ls.adresse +
-                ' ' +
+                " " +
                 ls.codePostal +
-                ' ' +
+                " " +
                 ls.ville +
-                ' ' +
+                " " +
                 ls.pays,
               value: ls.id,
               codePostal: ls.codePostal,
@@ -165,13 +165,13 @@ const CheckoutScreen = props => {
 
           setLoader(false);
         } catch (erreur) {
-          console.log('adresse fetch error', erreur);
+          console.log("adresse fetch error", erreur);
         }
 
         // Depot
         let depotValues = await getDepotValues();
         setDepotData(depotValues);
-        console.log(depotValues, 'depotValues');
+        console.log(depotValues, "depotValues");
 
         // Prix de livraison
         let livraisonValues = await getLivraisonValues();
@@ -196,8 +196,8 @@ const CheckoutScreen = props => {
 
         // Get avoir
         axiosInstance
-          .get('/avoirs/active/all/' + user.uid)
-          .then(response => {
+          .get("/avoirs/active/all/" + user.uid)
+          .then((response) => {
             if (response.data) {
               let data = response.data;
 
@@ -224,7 +224,7 @@ const CheckoutScreen = props => {
             // console.log("Avoir:",Avoirs);
           })
           .catch(function (error) {
-            console.log('error', error);
+            console.log("error", error);
           });
 
         // Remise
@@ -244,7 +244,7 @@ const CheckoutScreen = props => {
         if (basketCommnd.length > 0) {
           let livraisonMin = null;
           let livraisonMax = null;
-          basketCommnd.forEach(item => {
+          basketCommnd.forEach((item) => {
             setCartCommand(item.product);
 
             let product = item.product;
@@ -276,7 +276,7 @@ const CheckoutScreen = props => {
           setLivraisonDelaiMax(livraisonMax);
 
           const response = await axiosInstance.get(
-            '/pays/' + basketCommnd[0].paysLivraison,
+            "/pays/" + basketCommnd[0].paysLivraison
           );
 
           Data = response.data;
@@ -293,7 +293,7 @@ const CheckoutScreen = props => {
         let basketData = await getPanier();
 
         if (basketData.length > 0) {
-          basketData.forEach(item => {
+          basketData.forEach((item) => {
             if (item.product && item.product.validationManuelle) {
               validationManuelle = true;
             }
@@ -305,7 +305,7 @@ const CheckoutScreen = props => {
         if (basketData.length > 0) {
           let livraisonMin = null;
           let livraisonMax = null;
-          basketData.forEach(commande => {
+          basketData.forEach((commande) => {
             let product = commande.product;
             let specificites = product ? product.productSpecificites[0] : null;
 
@@ -332,10 +332,10 @@ const CheckoutScreen = props => {
           let cartService = basketData[0].service;
 
           if (cartService != service.code) {
-            let services = await AsyncStorage.getItem('services');
+            let services = await AsyncStorage.getItem("services");
             services = JSON.parse(services);
 
-            var newData = services.filter(ls => {
+            var newData = services.filter((ls) => {
               if (ls.code == cartService) {
                 return ls;
               }
@@ -361,7 +361,7 @@ const CheckoutScreen = props => {
           if (cartService.code != service.code) {
             let services = await getServices();
 
-            var newData = services.filter(ls => {
+            var newData = services.filter((ls) => {
               if (ls.code == cartService.code) {
                 return ls;
               }
@@ -419,13 +419,13 @@ const CheckoutScreen = props => {
 
         setLoader(false);
       } catch (error) {
-        console.log('error', error);
+        console.log("error", error);
       }
     }
 
     fetchValue();
 
-    return mounted => (mounted = false);
+    return (mounted) => (mounted = false);
   }, [isFocused]);
 
   // Paiement
@@ -434,75 +434,81 @@ const CheckoutScreen = props => {
       totalPrice,
       CartTotalPriceSansRemiseAvoir,
       remiseTotal,
-      TVA,
+      TVA
     );
 
     let adresseFacturation = AdresseFacturationId;
-    let type = 'user_adresse';
+    let type = "user_adresse";
 
     if (!adresseFacturation) {
       adresseFacturation =
-        'relais' == LivraisonData.livraisonMode
+        "relais" == LivraisonData.livraisonMode
           ? LivraisonData.livraisonRelaisId
           : LivraisonData.livraisonAdresseId;
 
       type =
-        'relais' == LivraisonData.livraisonMode ? 'livraison' : 'user_adresse';
+        "relais" == LivraisonData.livraisonMode ? "livraison" : "user_adresse";
 
       setAdresseFacturationId(adresseFacturation);
     }
 
     await saveAdresseIdFacturation(adresseFacturation, NomFacturation, type);
 
-    if ('demandes-d-achat' == Service.code) {
-      let statut = 'Cotation demandée';
+    if ("demandes-d-achat" == Service.code) {
+      let statut = "Cotation demandée";
 
       return Alert.alert(
-        t('Validation'),
+        t("Validation"),
         t(
-          'Votre commande va être transmise pour cotation. Validez-vous la commande ?',
+          "Votre commande va être transmise pour cotation. Validez-vous la commande ?"
         ),
         [
           {
-            text: t('Annuler'),
-            style: 'cancel',
+            text: t("Annuler"),
+            style: "cancel",
           },
-          {text: t('OK'), onPress: () => validateCommande(statut, remiseTotal)},
-        ],
+          {
+            text: t("OK"),
+            onPress: () => validateCommande(statut, remiseTotal),
+          },
+        ]
       );
     } else if (CommandeHasManualValidation) {
-      let statut = 'Cotation commande manuelle';
+      let statut = "Cotation commande manuelle";
 
       return Alert.alert(
-        t('Validation'),
-        t('Nous allons vous contacter pour finaliser votre commande.') +
-          ' ' +
-          t('Cliquez sur OK pour valider'),
+        t("Validation"),
+        t("Nous allons vous contacter pour finaliser votre commande.") +
+          " " +
+          t("Cliquez sur OK pour valider"),
         [
           {
-            text: t('Annuler'),
-            style: 'cancel',
+            text: t("Annuler"),
+            style: "cancel",
           },
-          {text: t('OK'), onPress: () => validateCommande(statut, remiseTotal)},
-        ],
+          {
+            text: t("OK"),
+            onPress: () => validateCommande(statut, remiseTotal),
+          },
+        ]
       );
     }
 
     if (totalPrice == 0) {
-      let statut = 'Payée';
+      let statut = "Payée";
 
       validateCommande(statut, remiseTotal);
 
       return;
     }
 
-    saveLivraisonPrices(prixTotalLivraison, '', sommeFraisDouane);
-    props.navigation.navigate('AddCardScreen');
+    saveLivraisonPrices(prixTotalLivraison, "", sommeFraisDouane);
+    props.navigation.navigate("AddCardScreen");
   }
 
   const NavigateToUserAddress = () => {
-    props.navigation.navigate('AddAdresseScreen', {
-      pageFrom: 'summary',
+    props.navigation.navigate("AddAdresseScreen", {
+      pageFrom: "summary",
     });
   };
 
@@ -534,30 +540,30 @@ const CheckoutScreen = props => {
     }
 
     let DataProduct = [];
-    BasketCommand.forEach(item => {
+    BasketCommand.forEach((item) => {
       DataProduct.push(item.product[0].product);
     });
     let prices = calculProductPricesCommand(
       CartCommand,
       RemiseValue,
-      RemiseProduct,
+      RemiseProduct
     );
 
     let priceDemande = 0;
     let priceDeomandCammand = 0;
 
-    cartProducts.map(item => {
+    cartProducts.map((item) => {
       priceDemande = parseFloat(priceDemande) + parseFloat(item.Price);
     });
 
-    CartCommand.map(item => {
+    CartCommand.map((item) => {
       priceDeomandCammand =
         parseFloat(priceDeomandCammand) + parseFloat(item.prixAchat);
     });
     data.commande.statut = statut;
 
     data.commande.totalPaye = 0;
-    if (Service.code == 'demandes-d-achat') {
+    if (Service.code == "demandes-d-achat") {
       if (basket.length == 0) {
         data.commande.totalPrice = priceDeomandCammand;
       } else {
@@ -567,8 +573,8 @@ const CheckoutScreen = props => {
       data.commande.totalPrice = prices.totalPrix;
     }
 
-    if ('Payée' == statut) {
-      data.commande.modePaiement = 'Avoir';
+    if ("Payée" == statut) {
+      data.commande.modePaiement = "Avoir";
       data.commande.totalPaye = avoir;
       data.montantPayeEnAvoir = avoir;
 
@@ -581,29 +587,29 @@ const CheckoutScreen = props => {
 
     const formData = new FormData();
 
-    formData.append('livraison', JSON.stringify(data.livraison));
-    formData.append('depot', JSON.stringify(data.depot));
-    formData.append('remise', JSON.stringify(data.remise));
-    formData.append('avoir', avoir);
-    formData.append('paysLivraison', paysLivraisonObject.id);
-    formData.append('service', Service.id);
-    formData.append('client', user.uid);
-    formData.append('commande', JSON.stringify(data.commande));
-    formData.append('products', JSON.stringify(data.products));
-    formData.append('adresseFacturation', data.adresseFacturation);
-    formData.append('adresseFacturationType', data.adresseFacturationType);
-    formData.append('facturationNom', NomFacturation);
+    formData.append("livraison", JSON.stringify(data.livraison));
+    formData.append("depot", JSON.stringify(data.depot));
+    formData.append("remise", JSON.stringify(data.remise));
+    formData.append("avoir", avoir);
+    formData.append("paysLivraison", paysLivraisonObject.id);
+    formData.append("service", Service.id);
+    formData.append("client", user.uid);
+    formData.append("commande", JSON.stringify(data.commande));
+    formData.append("products", JSON.stringify(data.products));
+    formData.append("adresseFacturation", data.adresseFacturation);
+    formData.append("adresseFacturationType", data.adresseFacturationType);
+    formData.append("facturationNom", NomFacturation);
 
     let index = 0;
-    data.productImages.forEach(productImage => {
+    data.productImages.forEach((productImage) => {
       let productId = productImage.productId;
       let image = productImage.image;
 
       if (image) {
-        formData.append('image_' + productId + '_' + index, {
+        formData.append("image_" + productId + "_" + index, {
           uri: image,
           type: getImageType(image),
-          name: 'image_' + productId,
+          name: "image_" + productId,
         });
 
         index++;
@@ -611,20 +617,20 @@ const CheckoutScreen = props => {
     });
 
     try {
-      const response = await axiosInstance.post('/commandes/new', formData, {
+      const response = await axiosInstance.post("/commandes/new", formData, {
         headers: {
-          'Content-Type': 'multipart/form-data',
+          "Content-Type": "multipart/form-data",
         },
       });
 
       removePanier();
       removeCommand();
       setBagCount(0);
-      return Alert.alert(t('Succès'), t('Votre commande a été validée'), [
+      return Alert.alert(t("Succès"), t("Votre commande a été validée"), [
         {
-          text: 'OK',
+          text: "OK",
           onPress: () => {
-            props.navigation.navigate('CommandeScreen', {pageForm: 'reload'});
+            props.navigation.navigate("CommandeScreen", { pageForm: "reload" });
           },
         },
       ]);
@@ -632,17 +638,17 @@ const CheckoutScreen = props => {
       if (error.response) {
         // The request was made and the server responded with a status code
         // that falls out of the range of 2xx
-        console.log('Error response', error.response.data);
-        console.log('Error response', error.response.status);
-        console.log('Error response', error.response.headers);
+        console.log("Error response", error.response.data);
+        console.log("Error response", error.response.status);
+        console.log("Error response", error.response.headers);
       } else if (error.request) {
         // The request was made but no response was received
         // `error.request` is an instance of XMLHttpRequest in the browser and an instance of
         // http.ClientRequest in node.js
-        console.log('request', error.request);
+        console.log("request", error.request);
       } else {
         // Something happened in setting up the request that triggered an Error
-        console.log('Error', error.message);
+        console.log("Error", error.message);
       }
       console.log(error.config);
     }
@@ -651,14 +657,14 @@ const CheckoutScreen = props => {
   }
 
   // Afficher les attributs
-  const RenderAttribute = props => {
+  const RenderAttribute = (props) => {
     const service = props.service;
 
     const product = props.product;
 
     if (
-      'ventes-privees' == service.code ||
-      'demandes-d-achat' == service.code
+      "ventes-privees" == service.code ||
+      "demandes-d-achat" == service.code
     ) {
       const attributeValues = product.attributes
         ? Object.values(product.attributes)
@@ -667,17 +673,17 @@ const CheckoutScreen = props => {
       return (
         <View>
           <Text style={styles.WeightCalSubText}>
-            {attributeValues.join(', ')}
+            {attributeValues.join(", ")}
           </Text>
-          {'demandes-d-achat' == service.code ? (
+          {"demandes-d-achat" == service.code ? (
             <>
-              <Text style={{marginBottom: 5}}>
+              <Text style={{ marginBottom: 5 }}>
                 {product.url.length > 30
-                  ? product.url.substring(0, 30 - 3) + '...'
+                  ? product.url.substring(0, 30 - 3) + "..."
                   : product.url}
               </Text>
               <Text>
-                {t('Infos complementaires')}:{' '}
+                {t("Infos complementaires")}:{" "}
                 {product.informationsComplementaires}
               </Text>
             </>
@@ -690,22 +696,22 @@ const CheckoutScreen = props => {
 
     return (
       <Text style={styles.WeightCalSubText}>
-        {t('Etat')} : {'Used' == product.stateValue ? t('Occasion') : t('Neuf')}{' '}
+        {t("Etat")} : {"Used" == product.stateValue ? t("Occasion") : t("Neuf")}{" "}
         {product.productValue
-          ? ' - ' + t('Valeur') + ' : ' + product.productValue
-          : ''}
+          ? " - " + t("Valeur") + " : " + product.productValue
+          : ""}
       </Text>
     );
   };
 
   // Afficher les attributs
-  const RenderAttributeCommand = props => {
+  const RenderAttributeCommand = (props) => {
     const service = props.service;
 
     const product = props.product;
     if (
-      'ventes-privees' == service.code ||
-      'demandes-d-achat' == service.code
+      "ventes-privees" == service.code ||
+      "demandes-d-achat" == service.code
     ) {
       const attributeValues = product.attributs
         ? Object.values(product.attributs)
@@ -714,22 +720,22 @@ const CheckoutScreen = props => {
       return (
         <View>
           <Text style={styles.WeightCalSubText}>
-            {attributeValues.join(', ')}
+            {attributeValues.join(", ")}
           </Text>
-          {'demandes-d-achat' == service.code ? (
+          {"demandes-d-achat" == service.code ? (
             <>
-              <Text style={{marginBottom: 5}}>
+              <Text style={{ marginBottom: 5 }}>
                 {product.url == null ? (
                   <></>
                 ) : product.url.length > 30 ? (
-                  product.url.substring(0, 30 - 3) + '...'
+                  product.url.substring(0, 30 - 3) + "..."
                 ) : (
                   product.url
                 )}
               </Text>
 
-              <Text style={{maxWidth: 250}}>
-                {t('Infos complementaires')}:{' '}
+              <Text style={{ maxWidth: 250 }}>
+                {t("Infos complementaires")}:{" "}
                 {product.informationsComplementaires}
               </Text>
             </>
@@ -742,16 +748,16 @@ const CheckoutScreen = props => {
 
     return (
       <>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 5}}>
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 5 }}>
           <Text style={styles.WeightCalSubText}>
-            Etat : {'Used' == product.etat ? t('Used') : t('Neuf')}
+            Etat : {"Used" == product.etat ? t("Used") : t("Neuf")}
           </Text>
           <Text style={[styles.WeightCalSubText]}>
             {product.valeur
-              ? t('Valeur') +
-                ' : ' +
-                formatEuroPrice(product.valeur + '.00', Language)
-              : ''}
+              ? t("Valeur") +
+                " : " +
+                formatEuroPrice(product.valeur + ".00", Language)
+              : ""}
           </Text>
         </View>
       </>
@@ -761,37 +767,38 @@ const CheckoutScreen = props => {
   // Afficher les produits
 
   const getAttributeImages = (item, Service) => {
-    let {product, attributes, attributs} = item;
+    let { product, attributes, attributs } = item;
     if (!attributes) attributes = attributs;
 
     // Si le service n'est pas ventes-privees ou si le produit n'a pas d'attributs, retourner les images par défaut du produit
     if (
-      Service.code !== 'ventes-privees' ||
+      Service.code !== "ventes-privees" ||
       !product.attributs ||
       product.attributs.length === 0
     ) {
-      return item.ProductImage ? [{url: item.ProductImage[0].url}] : [];
+      return item.ProductImage ? [{ url: item.ProductImage[0].url }] : [];
     }
 
     let matchingImages = [];
 
     // Parcourir chaque attribut du produit
-    product.attributs.forEach(attr => {
+    product.attributs.forEach((attr) => {
       const attributId = attr.attribut.id.toString();
       const selectedValue = attributes[attributId];
       if (selectedValue) {
         // Trouver la valeur d'attribut correspondante
         const matchingAttributeValue = attr.attributValues.find(
-          val => val.valeur === selectedValue || val.valeurEN === selectedValue,
+          (val) =>
+            val.valeur === selectedValue || val.valeurEN === selectedValue
         );
         // Si une correspondance est trouvée et qu'elle a des images, les ajouter
         if (matchingAttributeValue && matchingAttributeValue.attributImages) {
           matchingImages = matchingImages.concat(
-            matchingAttributeValue.attributImages.map(img => ({
-              url: img?.reference.includes('http')
+            matchingAttributeValue.attributImages.map((img) => ({
+              url: img?.reference.includes("http")
                 ? img.reference
                 : `https://godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
-            })),
+            }))
           );
         }
       }
@@ -799,17 +806,16 @@ const CheckoutScreen = props => {
 
     // Si aucune image d'attribut n'est trouvée, utiliser les images par défaut du produit
     if (matchingImages.length === 0 && item.ProductImage) {
-      return [{url: item.ProductImage[0].url}];
+      return [{ url: item.ProductImage[0].url }];
     }
-
 
     return matchingImages;
   };
-  const RenderItem = ({item}) => {
+  const RenderItem = ({ item }) => {
     let prix = 0;
 
     {
-      Service.code == 'demandes-d-achat'
+      Service.code == "demandes-d-achat"
         ? (prix = isNaN(parseFloat(item.Price)) ? 0 : parseFloat(item.Price))
         : (prix = isNaN(parseFloat(item.Price)) ? 0 : parseFloat(item.Price));
     }
@@ -818,28 +824,29 @@ const CheckoutScreen = props => {
     let quantite = isNaN(parseInt(item.quantite)) ? 0 : parseInt(item.quantite);
 
     let totalPrice =
-      Service.code == 'demandes-d-achat' ? prix : prix * quantite;
+      Service.code == "demandes-d-achat" ? prix : prix * quantite;
 
     return (
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           paddingLeft: 28,
           paddingVertical: 12,
           marginBottom: 16,
           borderRadius: 18,
-        }}>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           {/* First Row */}
-          <View style={{position: 'relative'}}>
+          <View style={{ position: "relative" }}>
             <View>
-              {'ventes-privees' == Service.code ? (
+              {"ventes-privees" == Service.code ? (
                 <View>
                   {item.ProductImage ? (
                     <Image
-                      source={{uri: attributeImages[0].url}}
+                      source={{ uri: attributeImages[0].url }}
                       resizeMode="contain"
-                      style={{width: wp(18), height: wp(28)}}
+                      style={{ width: wp(18), height: wp(28) }}
                     />
                   ) : (
                     <Text></Text>
@@ -847,15 +854,15 @@ const CheckoutScreen = props => {
                 </View>
               ) : (
                 <View>
-                  {item.image !== '' ? (
+                  {item.image !== "" ? (
                     <Image
-                      source={{uri: item.image}}
+                      source={{ uri: item.image }}
                       resizeMode="contain"
-                      style={{width: wp(18), height: wp(28)}}
+                      style={{ width: wp(18), height: wp(28) }}
                     />
                   ) : (
                     <>
-                      <View style={{width: wp(10), height: wp(28)}}></View>
+                      <View style={{ width: wp(10), height: wp(28) }}></View>
                     </>
                   )}
                 </View>
@@ -869,63 +876,99 @@ const CheckoutScreen = props => {
               <Text
                 style={{
                   fontSize: 14,
-                  fontFamily: 'Poppins-Regular',
-                  color: '#000',
+                  fontFamily: "Poppins-Regular",
+                  color: "#000",
                   maxWidth: 190,
-                }}>
-                {'fr' == Language ? item.product.name : item.product.nameEN}
+                }}
+              >
+                {"fr" == Language ? item.product.name : item.product.nameEN}
               </Text>
 
-              {Service.code == 'fret-par-avion' ||
-              Service.code == 'fret-par-bateau' ? (
+              {Service.code == "fret-par-avion" ||
+              Service.code == "fret-par-bateau" ? (
                 <View
                   style={{
-                    flexDirection: 'row',
-                    gap: 10,
-                    // justifyContent: 'space-between',
-                    alignItems: 'flex-start',
-                    flexWrap: 'wrap',
-
-                  }}>
-                  <RenderAttribute service={Service} product={item} />
-                  <ButtonPrix title={totalPrice} language={Language} />
+                    width: "100%",
+                    paddingHorizontal: 10,
+                  }}
+                >
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      gap: 25,
-                      backgroundColor: '#EFEFEF',
-                      borderRadius: 18,
-                      minWidth: windowWidth * 0.15,
-                      paddingVertical: 5,
-                    }}>
-                    <Text>{quantite}</Text>
+                      flexDirection: "row",
+                      flexWrap: "wrap",
+                      alignItems: "center",
+                      gap: 10,
+                      width: "100%",
+                    }}
+                  >
+                    {/* Premier groupe : RenderAttribute */}
+                    <View style={{ flex: 1, minWidth: windowWidth * 0.4 }}>
+                      <RenderAttribute service={Service} product={item} />
+                    </View>
+
+                    {/* Deuxième groupe : Prix et Quantité */}
+                    <View
+                      style={{
+                        flexDirection: "row",
+                        alignItems: "center",
+                        gap: 10,
+                        flexWrap: "wrap",
+                      }}
+                    >
+                      {/* Prix */}
+                      <ButtonPrix
+                        title={totalPrice}
+                        language={Language}
+                        style={{ flexShrink: 1 }}
+                      />
+
+                      {/* Quantité */}
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          gap: 25,
+                          backgroundColor: "#EFEFEF",
+                          borderRadius: 18,
+                          minWidth: windowWidth * 0.15,
+                          maxWidth: windowWidth * 0.2,
+                          paddingVertical: 5,
+                          paddingHorizontal: 10,
+                        }}
+                      >
+                        <Text numberOfLines={1} ellipsizeMode="tail">
+                          {quantite}
+                        </Text>
+                      </View>
+                    </View>
                   </View>
                 </View>
               ) : (
                 <>
-                  {Service.code == 'demandes-d-achat' ? (
+                  {Service.code == "demandes-d-achat" ? (
                     <View
                       style={{
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
+                        flexDirection: "column",
+                        alignItems: "flex-start",
                         gap: 10,
-                      }}>
+                      }}
+                    >
                       <RenderAttribute service={Service} product={item} />
-                      <View style={{flexDirection: 'row', gap: 10}}>
+                      <View style={{ flexDirection: "row", gap: 10 }}>
                         <ButtonPrix title={prix} language={Language} />
                         <View
                           style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
                             gap: 25,
-                            backgroundColor: '#EFEFEF',
+                            backgroundColor: "#EFEFEF",
                             borderRadius: 18,
                             minWidth: windowWidth * 0.15,
                             paddingVertical: 5,
-                          }}>
+                          }}
+                        >
                           <Text>{quantite}</Text>
                         </View>
                       </View>
@@ -933,30 +976,33 @@ const CheckoutScreen = props => {
                   ) : (
                     <View
                       style={{
-                        flexDirection: 'column',
-                        alignItems: 'flex-start',
+                        flexDirection: "column",
+                        alignItems: "flex-start",
                         gap: 10,
-                      }}>
+                      }}
+                    >
                       <RenderAttribute service={Service} product={item} />
                       <View
                         style={{
-                          flexDirection: 'row',
+                          flexDirection: "row",
                           gap: 10,
-                          justifyContent: 'space-between',
-                          alignItems: 'center',
-                        }}>
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                        }}
+                      >
                         <ButtonPrix title={totalPrice} language={Language} />
                         <View
                           style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
-                            justifyContent: 'center',
+                            flexDirection: "row",
+                            alignItems: "center",
+                            justifyContent: "center",
                             gap: 25,
-                            backgroundColor: '#EFEFEF',
+                            backgroundColor: "#EFEFEF",
                             borderRadius: 18,
                             minWidth: windowWidth * 0.15,
                             paddingVertical: 5,
-                          }}>
+                          }}
+                        >
                           <Text>{quantite}</Text>
                         </View>
                       </View>
@@ -973,21 +1019,21 @@ const CheckoutScreen = props => {
 
   // Afficher les produits
 
-  const createAttributeString = attributs => {
-    if (!attributs || typeof attributs !== 'object') {
-      return '';
+  const createAttributeString = (attributs) => {
+    if (!attributs || typeof attributs !== "object") {
+      return "";
     }
 
     // Obtenir toutes les valeurs de l'objet et les filtrer pour enlever les valeurs vides ou undefined
     const values = Object.values(attributs).filter(
-      value => value && value.trim() !== '',
+      (value) => value && value.trim() !== ""
     );
 
     // Joindre toutes les valeurs avec un espace
-    return values.join(', ');
+    return values.join(", ");
   };
 
-  const RenderItemCommand = ({item}) => {
+  const RenderItemCommand = ({ item }) => {
     // let prix = 0;
 
     // {
@@ -1006,19 +1052,19 @@ const CheckoutScreen = props => {
 
     const attributeImages = getAttributeImages(item, Service);
 
-    if (Service.code == 'demandes-d-achat') {
+    if (Service.code == "demandes-d-achat") {
       prix = parseFloat(item.prixAchat);
-    } else if (Service.code == 'ventes-privees') {
-      stock.forEach(item => {
-        item.map(obj => {
+    } else if (Service.code == "ventes-privees") {
+      stock.forEach((item) => {
+        item.map((obj) => {
           // Fonction pour normaliser et diviser une chaîne en ensemble de mots
-          const normalizeAndSplit = str => {
+          const normalizeAndSplit = (str) => {
             return new Set(
               str
                 .toLowerCase()
-                .replace(/,/g, '')
-                .split(' ')
-                .filter(word => word.trim() !== ''),
+                .replace(/,/g, "")
+                .split(" ")
+                .filter((word) => word.trim() !== "")
             );
           };
 
@@ -1028,10 +1074,9 @@ const CheckoutScreen = props => {
 
           // Vérifier si les ensembles sont égaux
           const setsAreEqual = (a, b) =>
-            a.size === b.size && [...a].every(value => b.has(value));
+            a.size === b.size && [...a].every((value) => b.has(value));
 
           if (setsAreEqual(combinaisonSet, itemCommandPriceSet)) {
-
             prix = parseFloat(obj.prix);
           }
         });
@@ -1046,27 +1091,28 @@ const CheckoutScreen = props => {
     return (
       <View
         style={{
-          backgroundColor: '#fff',
+          backgroundColor: "#fff",
           paddingLeft: 28,
           paddingVertical: 12,
           marginBottom: 16,
           borderRadius: 18,
-        }}>
-        <View style={{flexDirection: 'row', alignItems: 'center', gap: 20}}>
+        }}
+      >
+        <View style={{ flexDirection: "row", alignItems: "center", gap: 20 }}>
           {/* First Row */}
-          <View style={{position: 'relative'}}>
+          <View style={{ position: "relative" }}>
             <View>
-              {'ventes-privees' == item.product.service ? (
+              {"ventes-privees" == item.product.service ? (
                 <>
                   {item.product.productImages != null ? (
                     <Image
-                      source={{uri: attributeImages[0]?.url}}
+                      source={{ uri: attributeImages[0]?.url }}
                       resizeMode="contain"
-                      style={{width: wp(18), height: wp(28)}}
+                      style={{ width: wp(18), height: wp(28) }}
                     />
                   ) : (
                     <>
-                      <View style={{width: wp(10), height: wp(28)}}></View>
+                      <View style={{ width: wp(10), height: wp(28) }}></View>
                     </>
                   )}
                 </>
@@ -1074,12 +1120,12 @@ const CheckoutScreen = props => {
                 <>
                   {item.photo != null ? (
                     <Image
-                      source={{uri: item.photo}}
+                      source={{ uri: item.photo }}
                       resizeMode="contain"
-                      style={{width: wp(18), height: wp(28)}}
+                      style={{ width: wp(18), height: wp(28) }}
                     />
                   ) : (
-                    <View style={{width: wp(10), height: wp(28)}}></View>
+                    <View style={{ width: wp(10), height: wp(28) }}></View>
                   )}
                 </>
               )}
@@ -1092,32 +1138,35 @@ const CheckoutScreen = props => {
               <Text
                 style={{
                   fontSize: 14,
-                  fontFamily: 'Poppins-Regular',
-                  color: '#000',
+                  fontFamily: "Poppins-Regular",
+                  color: "#000",
                   maxWidth: 190,
-                }}>
-                {'fr' == Language ? item.product.name : item.product.nameEN}
+                }}
+              >
+                {"fr" == Language ? item.product.name : item.product.nameEN}
               </Text>
 
-              {Service.code == 'fret-par-avion' ||
-              Service.code == 'fret-par-bateau' ? (
+              {Service.code == "fret-par-avion" ||
+              Service.code == "fret-par-bateau" ? (
                 <View
                   style={{
-                    flexDirection: 'column',
+                    flexDirection: "column",
                     gap: 10,
-                    justifyContent: 'flex-start',
-                    alignItems: 'flex-start',
-                  }}>
+                    justifyContent: "flex-start",
+                    alignItems: "flex-start",
+                  }}
+                >
                   <RenderAttributeCommand service={Service} product={item} />
                   <ButtonPrix title={prix} language={Language} />
                 </View>
               ) : (
                 <View
                   style={{
-                    flexDirection: 'column',
-                    alignItems: 'flex-start',
+                    flexDirection: "column",
+                    alignItems: "flex-start",
                     gap: 10,
-                  }}>
+                  }}
+                >
                   <RenderAttributeCommand service={Service} product={item} />
                   <ButtonPrix title={prix} language={Language} />
                 </View>
@@ -1131,13 +1180,13 @@ const CheckoutScreen = props => {
 
   const items = [
     {
-      label: 'test',
-      value: 'test',
+      label: "test",
+      value: "test",
     },
   ];
 
   // Afficher le total
-  const RenderTotal = ({data}) => {
+  const RenderTotal = ({ data }) => {
     let prices = calculProductPrices(data, RemiseValue, RemiseProduct);
 
     // console.log("Prices :", prices);
@@ -1203,86 +1252,93 @@ const CheckoutScreen = props => {
 
     return (
       <View>
-        <View style={{marginTop: 13, paddingHorizontal: 12}}>
+        <View style={{ marginTop: 13, paddingHorizontal: 12 }}>
           <View
             style={{
-              backgroundColor: '#fff',
+              backgroundColor: "#fff",
               paddingTop: 22,
               paddingHorizontal: 13,
               paddingBottom: 30,
               borderRadius: 8,
-            }}>
+            }}
+          >
             <>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingBottom: 15,
                   borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                }}>
+                  borderColor: "#E9E9E9",
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#000',
+                    color: "#000",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Sous Total')}
+                  }}
+                >
+                  {t("Sous Total")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {formatEuroPrice(subTotal.toFixed(2), Language)}
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingBottom: 15,
                   paddingTop: 19,
                   borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                }}>
+                  borderColor: "#E9E9E9",
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#ACB2B2',
+                    color: "#ACB2B2",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Montant remise')}
+                  }}
+                >
+                  {t("Montant remise")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {formatEuroPrice(
-                    remiseTotal == 0.0 ? '"-"' : '-' + remiseTotal,
-                    Language,
+                    remiseTotal == 0.0 ? '"-"' : "-" + remiseTotal,
+                    Language
                   )}
                 </Text>
               </View>
-              {'domicile' == modeLivraison ? (
+              {"domicile" == modeLivraison ? (
                 <View style={styles.secondContainer}>
                   <View style={styles.totalContainer}>
                     <Text style={styles.totalText}>
-                      {t('Prix de livraison')}
+                      {t("Prix de livraison")}
                     </Text>
                     <Text style={styles.totalText}>
                       {cartLivraisonPrice > 0
                         ? formatEuroPrice(cartLivraisonPrice, Language)
-                        : t('Offert')}
+                        : t("Offert")}
                     </Text>
                   </View>
                 </View>
@@ -1291,182 +1347,200 @@ const CheckoutScreen = props => {
               )}
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingBottom: 15,
                   paddingTop: 19,
                   borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                }}>
+                  borderColor: "#E9E9E9",
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#000',
+                    color: "#000",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Sous-Total aprés remise')}
+                  }}
+                >
+                  {t("Sous-Total aprés remise")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {formatEuroPrice(apreRemise, Language)}
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingTop: 19,
-                }}>
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#ACB2B2',
+                    color: "#ACB2B2",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('fais douane')}
+                  }}
+                >
+                  {t("fais douane")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {CommandeHasManualValidation
-                    ? t('à définir')
+                    ? t("à définir")
                     : formatEuroPrice(
                         sommeFraisDouane == null
                           ? 0
                           : sommeFraisDouane.toFixed(2),
-                        Language,
+                        Language
                       )}
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingBottom: 15,
                   borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                }}>
+                  borderColor: "#E9E9E9",
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#ACB2B2',
+                    color: "#ACB2B2",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Frais livraison')}
+                  }}
+                >
+                  {t("Frais livraison")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {CommandeHasManualValidation
-                    ? t('à définir')
+                    ? t("à définir")
                     : formatEuroPrice(
                         prixTotalLivraison == null
                           ? 0
                           : prixTotalLivraison.toFixed(2),
-                        Language,
+                        Language
                       )}
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingBottom: 15,
                   paddingTop: 19,
                   borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                }}>
+                  borderColor: "#E9E9E9",
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#000',
+                    color: "#000",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Montant à payer')}
+                  }}
+                >
+                  {t("Montant à payer")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {formatEuroPrice(montantApayer, Language)}
                 </Text>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingBottom: 15,
                   paddingTop: 19,
                   borderBottomWidth: 1,
-                  borderColor: '#E9E9E9',
-                }}>
+                  borderColor: "#E9E9E9",
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Regular',
+                    fontFamily: "Poppins-Regular",
                     fontSize: 12,
-                    color: '#000',
+                    color: "#000",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Montant avoir')}
+                  }}
+                >
+                  {t("Montant avoir")}
                 </Text>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    alignItems: "center",
                     gap: 10,
-                  }}>
+                  }}
+                >
                   <Entypo name="check" color="#01962A" size={15} />
                   <Feather name="x" color="#E10303" size={15} />
                 </View>
               </View>
               <View
                 style={{
-                  flexDirection: 'row',
-                  justifyContent: 'space-between',
-                  alignItems: 'center',
+                  flexDirection: "row",
+                  justifyContent: "space-between",
+                  alignItems: "center",
                   paddingTop: 19,
-                }}>
+                }}
+              >
                 <Text
                   style={{
-                    fontFamily: 'Poppins-SemiBold',
+                    fontFamily: "Poppins-SemiBold",
                     fontSize: 12,
-                    color: '#000',
+                    color: "#000",
                     letterSpacing: 0.8,
-                  }}>
-                  {t('Reste à payer')}
+                  }}
+                >
+                  {t("Reste à payer")}
                 </Text>
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#262A2B',
+                    color: "#262A2B",
                     letterSpacing: 0.8,
-                  }}>
+                  }}
+                >
                   {formatEuroPrice(resteApayer, Language)}
                 </Text>
               </View>
@@ -1474,20 +1548,21 @@ const CheckoutScreen = props => {
           </View>
         </View>
 
-        {'demandes-d-achat' != Service.code && Avoirs.length > 0 && (
+        {"demandes-d-achat" != Service.code && Avoirs.length > 0 && (
           <View
             style={[
               styles.dropContainerStyle,
-              {position: 'relative', zIndex: 1000},
-            ]}>
+              { position: "relative", zIndex: 1000 },
+            ]}
+          >
             <DropDownPicker
               style={[styles.dropdown]}
               containerStyle={styles.containerDepotStyle}
               dropDownContainerStyle={styles.selectedTextStyle}
-              selectedItemContainerStyle={{backgroundColor: '#d5d6d7'}}
+              selectedItemContainerStyle={{ backgroundColor: "#d5d6d7" }}
               items={Avoirs}
-              placeholder={!isFocusAvoir ? t('Avoirs') : '...'}
-              onSelectItem={item => {
+              placeholder={!isFocusAvoir ? t("Avoirs") : "..."}
+              onSelectItem={(item) => {
                 setAvoirValue(item.value);
                 setAvoirChoice(true);
                 setIsFocusAvoir(false);
@@ -1498,44 +1573,48 @@ const CheckoutScreen = props => {
               open={isOpen}
               setOpen={() => setIsOpen(!isOpen)}
               value={isValue}
-              setValue={val => setIsValue(val)}
+              setValue={(val) => setIsValue(val)}
             />
           </View>
         )}
 
-        {'demandes-d-achat' != Service.code && AvoirChoice && (
+        {"demandes-d-achat" != Service.code && AvoirChoice && (
           <View
             style={{
               width: wp(95),
-              alignSelf: 'center',
-              backgroundColor: '#fff',
+              alignSelf: "center",
+              backgroundColor: "#fff",
               paddingHorizontal: 13,
               borderRadius: 8,
               paddingBottom: 18,
-            }}>
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
                 paddingTop: 19,
-              }}>
+              }}
+            >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: "Poppins-SemiBold",
                   fontSize: 12,
-                  color: '#000',
+                  color: "#000",
                   letterSpacing: 0.8,
-                }}>
-                {t('Reste à payer')}
+                }}
+              >
+                {t("Reste à payer")}
               </Text>
               <Text
                 style={{
-                  fontFamily: 'Poppins-Medium',
+                  fontFamily: "Poppins-Medium",
                   fontSize: 14,
-                  color: '#262A2B',
+                  color: "#262A2B",
                   letterSpacing: 0.8,
-                }}>
+                }}
+              >
                 {formatEuroPrice(resteApayer, Language)}
               </Text>
             </View>
@@ -1545,24 +1624,25 @@ const CheckoutScreen = props => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: 30,
-            position: 'relative',
+            position: "relative",
             zIndex: -100,
             marginBottom: wp(3),
-          }}>
+          }}
+        >
           <TouchableOpacity
             style={[
               LoadingPayment
-                ? {backgroundColor: '#666'}
-                : {backgroundColor: '#4E8FDA'},
+                ? { backgroundColor: "#666" }
+                : { backgroundColor: "#4E8FDA" },
               {
                 paddingVertical: 8,
                 paddingHorizontal: 22,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
                 borderRadius: 25,
               },
             ]}
@@ -1571,23 +1651,25 @@ const CheckoutScreen = props => {
               NavigateToPayment(resteApayer, remiseTotal);
               // validateCommande("payeé", remiseTotal)
             }}
-            disabled={LoadingPayment}>
+            disabled={LoadingPayment}
+          >
             <Text
               style={{
-                fontFamily: 'Poppins-Medium',
+                fontFamily: "Poppins-Medium",
                 fontSize: 12,
-                color: '#fff',
-              }}>
-              {'demandes-d-achat' == Service.code ? (
+                color: "#fff",
+              }}
+            >
+              {"demandes-d-achat" == Service.code ? (
                 LoadingPayment ? (
-                  <ActivityIndicator color={'#fff'} size={'small'} />
+                  <ActivityIndicator color={"#fff"} size={"small"} />
                 ) : (
-                  t('Transmettre pour cotation')
+                  t("Transmettre pour cotation")
                 )
               ) : CommandeHasManualValidation ? (
-                t('Transmettre pour cotation')
+                t("Transmettre pour cotation")
               ) : (
-                t('Valider la commande')
+                t("Valider la commande")
               )}
             </Text>
           </TouchableOpacity>
@@ -1598,7 +1680,7 @@ const CheckoutScreen = props => {
     );
   };
 
-  const RenderTotalCommand = ({data}) => {
+  const RenderTotalCommand = ({ data }) => {
     let prices = calculProductPricesCommand(data, RemiseValue, RemiseProduct);
 
     // console.log("Prices :", prices);
@@ -1662,84 +1744,91 @@ const CheckoutScreen = props => {
     }
     return (
       <View>
-        <View style={{marginTop: 13, paddingHorizontal: 12}}>
-          {'demandes-d-achat' != Service.code ? (
+        <View style={{ marginTop: 13, paddingHorizontal: 12 }}>
+          {"demandes-d-achat" != Service.code ? (
             <>
               <View
                 style={{
-                  backgroundColor: '#fff',
+                  backgroundColor: "#fff",
                   paddingTop: 22,
                   paddingHorizontal: 13,
                   paddingBottom: 30,
                   borderRadius: 8,
-                }}>
+                }}
+              >
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Sous Total')}
+                    }}
+                  >
+                    {t("Sous Total")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {formatEuroPrice(subTotal.toFixed(2), Language)}
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant remise')}
+                    }}
+                  >
+                    {t("Montant remise")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
-                    {remiseTotal == 0.0 ? '"-"' : '-' + remiseTotal + '%'}
+                    }}
+                  >
+                    {remiseTotal == 0.0 ? '"-"' : "-" + remiseTotal + "%"}
                   </Text>
                 </View>
-                {'domicile' == modeLivraison ? (
+                {"domicile" == modeLivraison ? (
                   <View style={styles.secondContainer}>
                     <View style={styles.totalContainer}>
                       <Text style={styles.totalText}>
-                        {t('Prix de livraison')}
+                        {t("Prix de livraison")}
                       </Text>
                       <Text style={styles.totalText}>
                         {cartLivraisonPrice > 0
                           ? formatEuroPrice(cartLivraisonPrice, Language)
-                          : t('Offert')}
+                          : t("Offert")}
                       </Text>
                     </View>
                   </View>
@@ -1748,173 +1837,191 @@ const CheckoutScreen = props => {
                 )}
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Sous-Total aprés remise')}
+                    }}
+                  >
+                    {t("Sous-Total aprés remise")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {formatEuroPrice(apreRemise, Language)}
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingTop: 19,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('fais douane')}
+                    }}
+                  >
+                    {t("fais douane")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {formatEuroPrice(
                       sommeFraisDouane == null
                         ? 0
                         : sommeFraisDouane.toFixed(2),
-                      Language,
+                      Language
                     )}
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#ACB2B2',
+                      color: "#ACB2B2",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Frais livraison')}
+                    }}
+                  >
+                    {t("Frais livraison")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {formatEuroPrice(prixTotalLivraison, Language)}
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant à payer')}
+                    }}
+                  >
+                    {t("Montant à payer")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {formatEuroPrice(montantApayer, Language)}
                   </Text>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingBottom: 15,
                     paddingTop: 19,
                     borderBottomWidth: 1,
-                    borderColor: '#E9E9E9',
-                  }}>
+                    borderColor: "#E9E9E9",
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Regular',
+                      fontFamily: "Poppins-Regular",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Montant avoir')}
+                    }}
+                  >
+                    {t("Montant avoir")}
                   </Text>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      alignItems: 'center',
+                      flexDirection: "row",
+                      alignItems: "center",
                       gap: 10,
-                    }}>
+                    }}
+                  >
                     <Entypo name="check" color="#01962A" size={15} />
                     <Feather name="x" color="#E10303" size={15} />
                   </View>
                 </View>
                 <View
                   style={{
-                    flexDirection: 'row',
-                    justifyContent: 'space-between',
-                    alignItems: 'center',
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
                     paddingTop: 19,
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-SemiBold',
+                      fontFamily: "Poppins-SemiBold",
                       fontSize: 12,
-                      color: '#000',
+                      color: "#000",
                       letterSpacing: 0.8,
-                    }}>
-                    {t('Reste à payer')}
+                    }}
+                  >
+                    {t("Reste à payer")}
                   </Text>
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 14,
-                      color: '#262A2B',
+                      color: "#262A2B",
                       letterSpacing: 0.8,
-                    }}>
+                    }}
+                  >
                     {formatEuroPrice(resteApayer, Language)}
                   </Text>
                 </View>
@@ -1925,20 +2032,21 @@ const CheckoutScreen = props => {
           )}
         </View>
 
-        {'demandes-d-achat' != Service.code && Avoirs.length > 0 && (
+        {"demandes-d-achat" != Service.code && Avoirs.length > 0 && (
           <View
             style={[
               styles.dropContainerStyle,
-              {position: 'relative', zIndex: 1000},
-            ]}>
+              { position: "relative", zIndex: 1000 },
+            ]}
+          >
             <DropDownPicker
               style={[styles.dropdown]}
               containerStyle={styles.containerDepotStyle}
               dropDownContainerStyle={styles.selectedTextStyle}
-              selectedItemContainerStyle={{backgroundColor: '#d5d6d7'}}
+              selectedItemContainerStyle={{ backgroundColor: "#d5d6d7" }}
               items={Avoirs}
-              placeholder={!isFocusAvoir ? t('Avoirs') : '...'}
-              onSelectItem={item => {
+              placeholder={!isFocusAvoir ? t("Avoirs") : "..."}
+              onSelectItem={(item) => {
                 setAvoirValue(item.value);
                 setAvoirChoice(true);
                 setIsFocusAvoir(false);
@@ -1949,44 +2057,48 @@ const CheckoutScreen = props => {
               open={isOpen}
               setOpen={() => setIsOpen(!isOpen)}
               value={isValue}
-              setValue={val => setIsValue(val)}
+              setValue={(val) => setIsValue(val)}
             />
           </View>
         )}
 
-        {'demandes-d-achat' != Service.code && AvoirChoice && (
+        {"demandes-d-achat" != Service.code && AvoirChoice && (
           <View
             style={{
               width: wp(95),
-              alignSelf: 'center',
-              backgroundColor: '#fff',
+              alignSelf: "center",
+              backgroundColor: "#fff",
               paddingHorizontal: 13,
               borderRadius: 8,
               paddingBottom: 18,
-            }}>
+            }}
+          >
             <View
               style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between',
-                alignItems: 'center',
+                flexDirection: "row",
+                justifyContent: "space-between",
+                alignItems: "center",
                 paddingTop: 19,
-              }}>
+              }}
+            >
               <Text
                 style={{
-                  fontFamily: 'Poppins-SemiBold',
+                  fontFamily: "Poppins-SemiBold",
                   fontSize: 12,
-                  color: '#000',
+                  color: "#000",
                   letterSpacing: 0.8,
-                }}>
-                {t('Reste à payer')}
+                }}
+              >
+                {t("Reste à payer")}
               </Text>
               <Text
                 style={{
-                  fontFamily: 'Poppins-Medium',
+                  fontFamily: "Poppins-Medium",
                   fontSize: 14,
-                  color: '#262A2B',
+                  color: "#262A2B",
                   letterSpacing: 0.8,
-                }}>
+                }}
+              >
                 {formatEuroPrice(resteApayer, Language)}
               </Text>
             </View>
@@ -1996,24 +2108,25 @@ const CheckoutScreen = props => {
         <View
           style={{
             flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
+            justifyContent: "center",
+            alignItems: "center",
             marginTop: 30,
-            position: 'relative',
+            position: "relative",
             zIndex: -100,
             marginBottom: wp(3),
-          }}>
+          }}
+        >
           <TouchableOpacity
             style={[
               LoadingPayment
-                ? {backgroundColor: '#666'}
-                : {backgroundColor: '#4E8FDA'},
+                ? { backgroundColor: "#666" }
+                : { backgroundColor: "#4E8FDA" },
               {
                 paddingVertical: 8,
                 paddingHorizontal: 22,
-                flexDirection: 'row',
-                alignItems: 'center',
-                justifyContent: 'center',
+                flexDirection: "row",
+                alignItems: "center",
+                justifyContent: "center",
                 borderRadius: 25,
               },
             ]}
@@ -2022,21 +2135,23 @@ const CheckoutScreen = props => {
               NavigateToPayment(resteApayer, remiseTotal);
               // validateCommande("payeé", remiseTotal)
             }}
-            disabled={LoadingPayment}>
+            disabled={LoadingPayment}
+          >
             <Text
               style={{
-                fontFamily: 'Poppins-Medium',
+                fontFamily: "Poppins-Medium",
                 fontSize: 12,
-                color: '#fff',
-              }}>
-              {'demandes-d-achat' == Service.code ? (
+                color: "#fff",
+              }}
+            >
+              {"demandes-d-achat" == Service.code ? (
                 LoadingPayment ? (
-                  <ActivityIndicator color={'#fff'} size={'small'} />
+                  <ActivityIndicator color={"#fff"} size={"small"} />
                 ) : (
-                  t('Transmettre pour cotation')
+                  t("Transmettre pour cotation")
                 )
               ) : (
-                t('Valider la commande')
+                t("Valider la commande")
               )}
             </Text>
           </TouchableOpacity>
@@ -2049,15 +2164,15 @@ const CheckoutScreen = props => {
 
   if (Loader || !Service) {
     return (
-      <View style={{justifyContent: 'center', height: '80%'}}>
-        <ActivityIndicator size={'large'} color="#3292E0" />
+      <View style={{ justifyContent: "center", height: "80%" }}>
+        <ActivityIndicator size={"large"} color="#3292E0" />
       </View>
     );
   }
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ScrollView showsVerticalScrollIndicator={false}>
-        <View style={{paddingBottom: 80, flex: 1}}>
+        <View style={{ paddingBottom: 80, flex: 1 }}>
           <ServiceHeader
             navigation={props.navigation}
             service={Service}
@@ -2066,8 +2181,8 @@ const CheckoutScreen = props => {
           />
 
           <View>
-            {Service.code == 'fret-par-avion' ||
-            Service.code == 'fret-par-bateau' ? (
+            {Service.code == "fret-par-avion" ||
+            Service.code == "fret-par-bateau" ? (
               <Stepper position={3} Service={Service.code} />
             ) : (
               <Stepper position={2} Service={Service.code} />
@@ -2075,43 +2190,45 @@ const CheckoutScreen = props => {
           </View>
 
           <View>
-            <View style={{marginTop: 16}}>
+            <View style={{ marginTop: 16 }}>
               {cartProducts.length == 0 ? (
                 <FlatList
                   showsVerticalScrollIndicator={false}
                   data={CartCommand}
-                  renderItem={({item}) => <RenderItemCommand item={item} />}
-                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => <RenderItemCommand item={item} />}
+                  keyExtractor={(item) => item.id}
                 />
               ) : (
                 <FlatList
                   showsVerticalScrollIndicator={false}
                   data={cartProducts}
-                  renderItem={({item}) => <RenderItem item={item} />}
-                  keyExtractor={item => item.id}
+                  renderItem={({ item }) => <RenderItem item={item} />}
+                  keyExtractor={(item) => item.id}
                 />
               )}
             </View>
 
-            {'fret-par-avion' == Service.code ||
-            'fret-par-bateau' == Service.code ? (
+            {"fret-par-avion" == Service.code ||
+            "fret-par-bateau" == Service.code ? (
               <>
-                <View style={{justifyContent: 'center', alignItems: 'center'}}>
+                <View
+                  style={{ justifyContent: "center", alignItems: "center" }}
+                >
                   <View style={styles.superCartContainer}>
                     <View style={styles.firstContainerInformation}>
                       <View style={styles.secondRow}>
                         <View>
                           <Text style={styles.WeightCalText}>
                             {CommandeHasManualValidation
-                              ? t('Information de prise en charge')
-                              : t('Information de dépôt')}
+                              ? t("Information de prise en charge")
+                              : t("Information de dépôt")}
                           </Text>
                           <BoldTranslatedText
                             textKey="Mode"
                             normalText={t(
-                              DepotData.depotMode == 'magasin'
-                                ? ' Depot magasin'
-                                : ` ${DepotData.depotMode}`,
+                              DepotData.depotMode == "magasin"
+                                ? " Depot magasin"
+                                : ` ${DepotData.depotMode}`
                             )}
                             style={styles.WeightCalSubText}
                           />
@@ -2124,7 +2241,7 @@ const CheckoutScreen = props => {
                             />
                           )}
                           {DepotData.depotMagasinSchedule &&
-                            DepotData.depotMode !== 'domicile' && (
+                            DepotData.depotMode !== "domicile" && (
                               <>
                                 <BoldTranslatedText
                                   textKey="Horaires d'ouverture"
@@ -2138,7 +2255,7 @@ const CheckoutScreen = props => {
                             )}
                           {DepotData.depotVille && (
                             <Text style={styles.WeightCalSubText}>
-                              {t('Ville')} : {DepotData.depotVille}
+                              {t("Ville")} : {DepotData.depotVille}
                             </Text>
                           )}
                           {DepotData.depotMagasinAdresse ? (
@@ -2157,28 +2274,28 @@ const CheckoutScreen = props => {
 
                           {DepotData.depotNom && (
                             <Text style={styles.WeightCalSubText}>
-                              {t('Nom')} : {DepotData.depotNom}
+                              {t("Nom")} : {DepotData.depotNom}
                             </Text>
                           )}
 
                           {DepotData.depotTelephone && (
                             <Text style={styles.WeightCalSubText}>
-                              {t('Téléphone')} : {DepotData.depotTelephone}
+                              {t("Téléphone")} : {DepotData.depotTelephone}
                             </Text>
                           )}
 
                           {DepotData.depotCreneau && (
                             <>
                               <Text style={styles.WeightCalSubText}>
-                                {t('Créneau Date')} :{' '}
+                                {t("Créneau Date")} :{" "}
                                 {formatDateToFrench(
-                                  DepotData.depotCreneau.date,
+                                  DepotData.depotCreneau.date
                                 )}
                               </Text>
                               <Text style={styles.WeightCalSubText}>
-                                {t('Créneau heure')} :{' '}
+                                {t("Créneau heure")} :{" "}
                                 {DepotData.depotCreneau.horaireDebut +
-                                  ' - ' +
+                                  " - " +
                                   DepotData.depotCreneau.horaireFin}
                               </Text>
                             </>
@@ -2193,7 +2310,7 @@ const CheckoutScreen = props => {
               <></>
             )}
 
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
               <View style={styles.superCartContainer}>
                 <View style={styles.firstContainerInformation}>
                   <View style={styles.secondRow}>
@@ -2213,7 +2330,7 @@ const CheckoutScreen = props => {
                         style={styles.WeightCalSubText}
                       />
                       {LivraisonData.livraisonMagasinSchedule &&
-                        LivraisonData.livraisonMode !== 'domicile' && (
+                        LivraisonData.livraisonMode !== "domicile" && (
                           <>
                             <BoldTranslatedText
                               textKey="Horaires d'ouverture"
@@ -2245,27 +2362,28 @@ const CheckoutScreen = props => {
               </View>
             </View>
 
-            <View style={{justifyContent: 'center', alignItems: 'center'}}>
+            <View style={{ justifyContent: "center", alignItems: "center" }}>
               <View style={styles.superCartContainer}>
                 <View style={styles.firstContainerInformation}>
                   <View style={styles.secondRow}>
                     <View>
                       <Text style={styles.WeightCalText}>
-                        {t('Information de facturation')}
+                        {t("Information de facturation")}
                       </Text>
                       <View
                         style={{
-                          flexDirection: 'row',
+                          flexDirection: "row",
                           gap: 10,
-                          alignItems: 'center',
-                        }}>
+                          alignItems: "center",
+                        }}
+                      >
                         <Checkbox
                           value={AdresseFacturationDifferente}
-                          onValueChange={value =>
+                          onValueChange={(value) =>
                             setAdresseFacturationDifferente(value)
                           }
                         />
-                        <Text>{t('Adresse de facturation differente')}</Text>
+                        <Text>{t("Adresse de facturation differente")}</Text>
                       </View>
 
                       {AdresseFacturationDifferente && (
@@ -2273,7 +2391,7 @@ const CheckoutScreen = props => {
                           <View style={styles.dropContainerStyle}>
                             <Dropdown
                               style={{
-                                borderColor: '#000',
+                                borderColor: "#000",
                                 borderWidth: 1,
                                 padding: 10,
                                 borderRadius: 8,
@@ -2286,10 +2404,10 @@ const CheckoutScreen = props => {
                               maxHeight={120}
                               labelField="label"
                               valueField="value"
-                              placeholder={t('Choisir une adresse existante')}
-                              placeholderStyle={{color: '#000'}}
+                              placeholder={t("Choisir une adresse existante")}
+                              placeholderStyle={{ color: "#000" }}
                               showsVerticalScrollIndicator={false}
-                              onChange={item => {
+                              onChange={(item) => {
                                 setAdresseFacturationId(item.id);
                               }}
                             />
@@ -2300,33 +2418,34 @@ const CheckoutScreen = props => {
                               NavigateToUserAddress();
                             }}
                             style={{
-                              flexDirection: 'row',
-                              alignItems: 'center',
+                              flexDirection: "row",
+                              alignItems: "center",
                               gap: 10,
                               marginTop: 10,
-                            }}>
+                            }}
+                          >
                             <Icon name="plus" size={23} color="#000" />
                             <Text>
-                              {'(' +
-                                t('ou') +
-                                ') ' +
-                                t('Ajouter une nouvelle adresse')}
+                              {"(" +
+                                t("ou") +
+                                ") " +
+                                t("Ajouter une nouvelle adresse")}
                             </Text>
                           </TouchableOpacity>
 
                           <TextInput
                             layout="first"
-                            placeholder={t('Prénom et Nom')}
-                            placeholderTextColor={'#666'}
+                            placeholder={t("Prénom et Nom")}
+                            placeholderTextColor={"#666"}
                             value={NomFacturation}
                             style={{
                               borderWidth: 1,
                               borderRadius: 8,
                               padding: 12,
-                              borderColor: '#000',
+                              borderColor: "#000",
                               marginTop: 20,
                             }}
-                            onChangeText={text => {
+                            onChangeText={(text) => {
                               setNomFacturation(text);
                             }}
                           />
@@ -2338,40 +2457,40 @@ const CheckoutScreen = props => {
               </View>
             </View>
 
-            <View style={{marginTop: 10, paddingHorizontal: 12}}>
-              {'demandes-d-achat' == Service.code ? (
-                <Text style={{fontSize: 10, color: '#000'}}>
+            <View style={{ marginTop: 10, paddingHorizontal: 12 }}>
+              {"demandes-d-achat" == Service.code ? (
+                <Text style={{ fontSize: 10, color: "#000" }}>
                   {!CommandeHasManualValidation &&
                     livraisonDelaiMin &&
                     livraisonDelaiMax &&
-                    t('Livraison entre') +
-                      ' ' +
+                    t("Livraison entre") +
+                      " " +
                       livraisonDelaiMin +
-                      ' ' +
-                      t('et') +
-                      ' ' +
+                      " " +
+                      t("et") +
+                      " " +
                       livraisonDelaiMax +
-                      ' ' +
-                      t('jour(s)')}
+                      " " +
+                      t("jour(s)")}
                 </Text>
               ) : (
-                <Text style={{fontSize: 10, color: '#000'}}>
-                  {CommandeHasManualValidation && ''}
+                <Text style={{ fontSize: 10, color: "#000" }}>
+                  {CommandeHasManualValidation && ""}
                   {!CommandeHasManualValidation &&
                     (livraisonDelaiMin || livraisonDelaiMax) &&
-                    '*'}
+                    "*"}
                   {!CommandeHasManualValidation &&
                     livraisonDelaiMin &&
                     livraisonDelaiMax &&
-                    t('Livraison entre') +
-                      ' ' +
+                    t("Livraison entre") +
+                      " " +
                       livraisonDelaiMin +
-                      ' ' +
-                      t('et') +
-                      ' ' +
+                      " " +
+                      t("et") +
+                      " " +
                       livraisonDelaiMax +
-                      ' ' +
-                      t('jour(s)')}
+                      " " +
+                      t("jour(s)")}
                 </Text>
               )}
             </View>

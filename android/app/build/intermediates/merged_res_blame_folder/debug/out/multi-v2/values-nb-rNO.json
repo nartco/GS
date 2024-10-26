@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-nb-rNO/values-nb-rNO.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-nb-rNO/values-nb-rNO.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/b6cdb1cd995313f52c4e6b0545194e3d/transformed/jetified-stripe-3ds2-android-6.1.8/res/values-nb-rNO/values-nb-rNO.xml",

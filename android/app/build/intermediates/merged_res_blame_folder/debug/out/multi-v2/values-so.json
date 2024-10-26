@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-so/values-so.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-so/values-so.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/87d085c23b0e2ed67ca08078da1fe4b5/transformed/jetified-react-android-0.73.6-debug/res/values-so/values-so.xml",

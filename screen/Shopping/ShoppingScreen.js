@@ -941,7 +941,7 @@ const ShoppingScreen = props => {
                       <Text style={styles.modalText}>{t('redirect')}</Text>
                       <View style={styles.buttonContainer}>
                         <TouchableOpacity
-                          style={[styles.button, styles.cancelButton]}
+                          style={[styles.button, styles.continueButton]}
                           onPress={() => setIsModalVisible(false)}>
                           <Text style={styles.buttonText}>{t('Cancel')}</Text>
                         </TouchableOpacity>

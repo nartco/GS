@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-he/values-he.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-he/values-he.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/Desktop/GoDare/GS/node_modules/react-native-date-picker/android/build/intermediates/packaged_res/debug/values-he/values-he.xml",

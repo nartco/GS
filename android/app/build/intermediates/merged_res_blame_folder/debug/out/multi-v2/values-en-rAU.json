@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-en-rAU/values-en-rAU.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-en-rAU/values-en-rAU.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/ae07196108de8d6bd4b9dd417e77e9a3/transformed/jetified-credentials-1.2.0-rc01/res/values-en-rAU/values-en-rAU.xml",

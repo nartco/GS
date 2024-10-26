@@ -1,7 +1,7 @@
 {
     "logs": [
         {
-            "outputFile": "com.godareapp.app-mergeDebugResources-106:/values-ny/values-ny.xml",
+            "outputFile": "com.godareapp.app-mergeDebugResources-115:/values-ny/values-ny.xml",
             "map": [
                 {
                     "source": "/Users/sebastienthuillier/.gradle/caches/transforms-3/c3757e1f5a6ab06a1538711fb054e876/transformed/jetified-hcaptcha-20.48.6/res/values-ny/values-ny.xml",

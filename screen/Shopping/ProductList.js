@@ -1,4 +1,4 @@
-import React, {useState, useEffect, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useRef, useCallback } from "react";
 
 import {
   View,
@@ -12,16 +12,16 @@ import {
   ActivityIndicator,
   Platform,
   ToastAndroid,
-} from 'react-native';
-import Modal from 'react-native-modal';
-import {useNavigation, useRoute} from '@react-navigation/native';
-import commonStyle from '../../helper/commonStyle';
-import {useTranslation} from 'react-i18next';
-import {Dropdown} from 'react-native-element-dropdown';
-import Toast from 'react-native-toast-message';
-import _ from 'lodash';
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+} from "react-native";
+import Modal from "react-native-modal";
+import { useNavigation, useRoute } from "@react-navigation/native";
+import commonStyle from "../../helper/commonStyle";
+import { useTranslation } from "react-i18next";
+import { Dropdown } from "react-native-element-dropdown";
+import Toast from "react-native-toast-message";
+import _ from "lodash";
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 import {
   getCommand,
   getPanier,
@@ -31,38 +31,38 @@ import {
   savePanier,
   saveSelectedCountryProduct,
   saveSelectedServiceProduct,
-} from '../../modules/GestionStorage';
-import {HeaderEarth} from '../../components/Header';
-import Ionicons from 'react-native-vector-icons/Ionicons';
-import Octicons from 'react-native-vector-icons/Octicons';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import Button from '../../components/Button';
-import FontAwesome6 from 'react-native-vector-icons/FontAwesome6';
+} from "../../modules/GestionStorage";
+import { HeaderEarth } from "../../components/Header";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Octicons from "react-native-vector-icons/Octicons";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import Button from "../../components/Button";
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 
 /*import Pdf from 'react-native-pdf';*/
-import {onAuthStateChanged} from 'firebase/auth';
-import auth from '@react-native-firebase/auth';
-import ServiceHeader from '../../components/ServiceHeader';
-import {useBag} from '../../modules/BagContext';
-import {afficherMessageProduitServiceDifferent} from '../../modules/RegleGestion';
-import Carousel, {Pagination} from 'react-native-snap-carousel';
-import Pdf from 'react-native-pdf';
-import {ImageGallery} from '@georstat/react-native-image-gallery';
-import Feather from 'react-native-vector-icons/Feather';
-import {categories} from '../../constant/data';
+import { onAuthStateChanged } from "firebase/auth";
+import auth from "@react-native-firebase/auth";
+import ServiceHeader from "../../components/ServiceHeader";
+import { useBag } from "../../modules/BagContext";
+import { afficherMessageProduitServiceDifferent } from "../../modules/RegleGestion";
+import Carousel, { Pagination } from "react-native-snap-carousel";
+import Pdf from "react-native-pdf";
+import { ImageGallery } from "@georstat/react-native-image-gallery";
+import Feather from "react-native-vector-icons/Feather";
+import { categories } from "../../constant/data";
 
 const ProductList = () => {
-  const {setBagCount, bagCount} = useBag();
+  const { setBagCount, bagCount } = useBag();
 
   const navigation = useNavigation();
-  const {params} = useRoute();
+  const { params } = useRoute();
   const category = params?.category;
   const PaysLivraison = params?.PaysLivraison;
   const Service = params?.Service;
   const ServiceSelected = params?.ServiceSelected;
   const Language = params?.Language;
   const products = category.products || [];
-  const width = Dimensions.get('window').width;
+  const width = Dimensions.get("window").width;
   const Images = products.productImages;
   const Attributs = params?.Attributs;
   const SelectedCategorieId = params?.SelectedCategorieId;
@@ -77,18 +77,18 @@ const ProductList = () => {
   const [selectedProductValues, setSelectedProductValues] = useState({});
   const [selectedAttributes, setSelectedAttributes] = useState({});
   const [selectedAttributesOriginal, setSelectedAttributesOriginal] = useState(
-    {},
+    {}
   );
   const [selectedStock, setSelectedStock] = useState([]);
   const [isSuccess, setIsSuccess] = useState(true);
   const [choosQuantity, setChoosQuantity] = useState(null);
-  const {t} = useTranslation();
+  const { t } = useTranslation();
   const [active, setActive] = useState(0);
   const [activeIndex, setActiveIndex] = useState(
-    Array(products.length).fill(0),
+    Array(products.length).fill(0)
   );
   const [activeIndexGrid, setActiveIndexGrid] = useState(
-    Array(products.length).fill({index: 0}),
+    Array(products.length).fill({ index: 0 })
   );
 
   const [sortedProducts, setSortedProducts] = useState(products);
@@ -109,79 +109,79 @@ const ProductList = () => {
   const [open1, setOpen1] = useState(false);
   const [user, setUser] = useState([]);
   const [selected, setSelected] = useState({});
-  const colors = ['tomato', 'thistle', 'skyblue', 'teal'];
+  const colors = ["tomato", "thistle", "skyblue", "teal"];
   const [isOpen, setIsOpen] = useState(false);
   const [priceThing, setPriceThing] = useState({});
-  const [Filter, setFilter] = useState('');
-  const [sortBy, setSortBy] = useState('');
+  const [Filter, setFilter] = useState("");
+  const [sortBy, setSortBy] = useState("");
 
   const [SelectedProductStock, setSelectedProductStock] = useState({});
 
   const SortData = [
     {
-      label: t('Prix'),
-      value: 'Prix ASC',
-      filter: 'price',
-      sort: 'ASC',
+      label: t("Prix"),
+      value: "Prix ASC",
+      filter: "price",
+      sort: "ASC",
     },
     {
-      label: t('Prix'),
-      value: 'Prix DESC',
-      filter: 'price',
-      sort: 'DESC',
+      label: t("Prix"),
+      value: "Prix DESC",
+      filter: "price",
+      sort: "DESC",
     },
   ];
 
   const sortProducts = (filter, sortOrder) => {
     let sorted = [...products];
-    if (filter === 'price') {
+    if (filter === "price") {
       sorted.sort((a, b) => {
         const priceA = minPrices[a.id] || 0;
         const priceB = minPrices[b.id] || 0;
-        return sortOrder === 'ASC' ? priceA - priceB : priceB - priceA;
+        return sortOrder === "ASC" ? priceA - priceB : priceB - priceA;
       });
     }
     setSortedProducts(sorted);
   };
 
-  const createAttributeString = attributs => {
-    if (!attributs || typeof attributs !== 'object') {
-      return '';
+  const createAttributeString = (attributs) => {
+    if (!attributs || typeof attributs !== "object") {
+      return "";
     }
 
     // Obtenir toutes les valeurs de l'objet et les filtrer pour enlever les valeurs vides ou undefined
     const values = Object.values(attributs).filter(
-      value => value && value.trim() !== '',
+      (value) => value && value.trim() !== ""
     );
 
     // Joindre toutes les valeurs avec un espace
-    return values.join(', ');
+    return values.join(", ");
   };
 
   const findMatchingCombination = (combinations, attributeString) => {
     // Normaliser la chaîne d'attributs en triant ses éléments
     const normalizedAttributeString = attributeString
-      .split(', ')
+      .split(", ")
       .sort()
-      .join(', ');
+      .join(", ");
 
     // Rechercher la combinaison correspondante
-    return combinations.find(item => {
+    return combinations.find((item) => {
       const normalizedCombination = item.combinaison
-        .split(', ')
+        .split(", ")
         .sort()
-        .join(', ');
+        .join(", ");
       return normalizedCombination === normalizedAttributeString;
     });
   };
   // const openGallery = () => setIsOpen(true);
   // const closeGallery = () => setIsOpen(false);
 
-  const openGallery = productIndex => {
+  const openGallery = (productIndex) => {
     setCurrentProductIndex(productIndex);
     setIsOpen(true);
   };
-  const openGalleryGrid = productIndex => {
+  const openGalleryGrid = (productIndex) => {
     setCurrentProductIndexGrid(productIndex);
     const product = products[productIndex];
     const productImages = currentImages[product.id] || product.productImages;
@@ -197,7 +197,7 @@ const ProductList = () => {
   };
 
   const updateQuantities = useCallback((productId, quantity) => {
-    setQuantities(prev => ({
+    setQuantities((prev) => ({
       ...prev,
       [productId]: quantity,
     }));
@@ -205,17 +205,18 @@ const ProductList = () => {
 
   const getAttributeImages = (product, selectedAttributes) => {
     let images = [];
-    product.attributs.forEach(attr => {
+    product.attributs.forEach((attr) => {
       const selectedValue = selectedAttributes[attr.attribut.id];
       if (selectedValue) {
         const selectedAttributeValue = attr.attributValues.find(
-          val => val.valeur === selectedValue || val.valeurEN === selectedValue,
+          (val) =>
+            val.valeur === selectedValue || val.valeurEN === selectedValue
         );
         if (selectedAttributeValue && selectedAttributeValue.attributImages) {
           images = images.concat(
-            selectedAttributeValue.attributImages.map(img => ({
+            selectedAttributeValue.attributImages.map((img) => ({
               url: img.reference,
-            })),
+            }))
           );
         }
       }
@@ -223,20 +224,21 @@ const ProductList = () => {
     return images.length > 0 ? images : product.productImages;
   };
 
-  const renderSortItem = item => (
+  const renderSortItem = (item) => (
     <View
       style={{
-        flexDirection: 'row',
-        alignItems: 'center',
+        flexDirection: "row",
+        alignItems: "center",
         gap: 4,
         marginTop: 20,
-      }}>
+      }}
+    >
       <Text>{item.label}</Text>
-      {item.value == 'Prix DESC' && (
+      {item.value == "Prix DESC" && (
         <Feather name="arrow-down-right" color="#000" size={22} />
       )}
 
-      {item.value == 'Prix ASC' && (
+      {item.value == "Prix ASC" && (
         <Feather name="arrow-up-right" color="#000" size={22} />
       )}
     </View>
@@ -256,16 +258,16 @@ const ProductList = () => {
         let BasketCommand = await getCommand();
         let basketData = await getPanier();
       } catch (error) {
-        console.log('Error :', error);
+        console.log("Error :", error);
       }
     }
     fetchData();
-    products.forEach(product => {
+    products.forEach((product) => {
       let minPrice = null;
       let minQuantity = null;
 
       // Stock
-      product.stocks.forEach(stock => {
+      product.stocks.forEach((stock) => {
         let quantity = parseInt(stock.stock);
         quantity = isNaN(quantity) ? 1 : quantity;
 
@@ -286,7 +288,7 @@ const ProductList = () => {
         ? product.stockSpecifiques
         : [];
 
-      stockSpecifiques.forEach(stock => {
+      stockSpecifiques.forEach((stock) => {
         let quantity = parseInt(stock.stockSpecifique);
         quantity = isNaN(quantity) ? 1 : quantity;
 
@@ -325,23 +327,23 @@ const ProductList = () => {
   }, []);
 
   // Gestion panier
-  const handleCartLogin = async product => {
+  const handleCartLogin = async (product) => {
     const data = selectedProductValues[product.id];
     const numberAttributes = product.attributs ? product.attributs.length : 0;
-    const keys = Object.keys(data['attributes']);
-    const quantite = selectedProductValues[product.id]['quantite'];
+    const keys = Object.keys(data["attributes"]);
+    const quantite = selectedProductValues[product.id]["quantite"];
 
     if (keys.length != numberAttributes) {
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Attribut'),
-          text2: t('Vous devez selectionner tous les attributs du produit'),
+          type: "error",
+          text1: t("Attribut"),
+          text2: t("Vous devez selectionner tous les attributs du produit"),
         });
       } else {
         ToastAndroid.show(
-          t('Vous devez selectionner tous les attributs du produit'),
-          ToastAndroid.SHORT,
+          t("Vous devez selectionner tous les attributs du produit"),
+          ToastAndroid.SHORT
         );
       }
 
@@ -349,14 +351,14 @@ const ProductList = () => {
     }
 
     if (!quantite) {
-      if (Platform.OS == 'ios') {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Quantité'),
-          text2: t('La quantité est obligatoire'),
+          type: "error",
+          text1: t("Quantité"),
+          text2: t("La quantité est obligatoire"),
         });
       } else {
-        ToastAndroid.show(t('La quantité est obligatoire'), ToastAndroid.SHORT);
+        ToastAndroid.show(t("La quantité est obligatoire"), ToastAndroid.SHORT);
       }
 
       return;
@@ -367,105 +369,113 @@ const ProductList = () => {
 
       let BasketCommand = await getCommand();
 
+      console.log(JSON.stringify(BasketCommand), bagCount);
       if (BasketCommand.length > 0) {
-        return Alert.alert(
-          t('Information'),
-          t(
-            "Votre panier contient des produits d'un autre service (ou pays de départ ou pays de destination). Vous perdrez votre panier si vous continuez. Voulez-vous continuer ?",
-          ),
-          [
-            {
-              text: t('Non'),
-              style: 'cancel',
-            },
-            {
-              text: t('Oui'),
-              onPress: () => {
-                console.log({bagCount}, 'bag1');
-                setBagCount(0);
-                handleCartRemove(product);
-                // return;
+        if (bagCount === 0) {
+          setBagCount(0);
+          await removePanier();
+          await removeCommand();
+          
+        } else {
+          return Alert.alert(
+            t("Information"),
+            t(
+              "Votre panier contient des produits d'un autre service (ou pays de départ ou pays de destination). Vous perdrez votre panier si vous continuez. Voulez-vous continuer ?"
+            ),
+            [
+              {
+                text: t("Non"),
+                style: "cancel",
               },
-            },
-          ],
-        );
+              {
+                text: t("Oui"),
+                onPress: () => {
+                  console.log({ bagCount }, "bag1");
+                  setBagCount(0);
+                  handleCartRemove(product);
+                  // return;
+                },
+              },
+            ]
+          );
+        }
       }
       let isProductFromDifferentService =
         await afficherMessageProduitServiceDifferent(
           Service.code,
-          PaysLivraison,
+          PaysLivraison
         );
 
       if (isProductFromDifferentService) {
         return Alert.alert(
-          t('Information'),
+          t("Information"),
           t(
-            "Votre panier contient des produits d'un autre service (ou pays de départ ou pays de destination). Vous perdrez votre panier si vous continuez. Voulez-vous continuer ?",
+            "Votre panier contient des produits d'un autre service (ou pays de départ ou pays de destination). Vous perdrez votre panier si vous continuez. Voulez-vous continuer ?"
           ),
           [
             {
-              text: t('Non'),
-              style: 'cancel',
+              text: t("Non"),
+              style: "cancel",
             },
             {
-              text: t('Oui'),
+              text: t("Oui"),
               onPress: async () => {
-                console.log({bagCount}, 'bag2');
+                console.log({ bagCount }, "bag2");
 
                 await setBagCount(0);
 
                 handleCartRemove(product);
               },
             },
-          ],
+          ]
         );
       }
 
       await removeCommand();
-      console.log('2328783283203203232');
+      console.log("2328783283203203232");
       let reponse = handleCart(product);
-      console.log({reponse}, '3232323232322332');
-      reponse.then(response => {
+      console.log({ reponse }, "3232323232322332");
+      reponse.then((response) => {
         if (isSuccess) {
           // Not Login
           if (user === null) {
-            console.log('xxxxxxx');
-            navigation.navigate('Login', {fromCart: 'cart'});
+            console.log("xxxxxxx");
+            navigation.navigate("Login", { fromCart: "cart" });
             return; //should never reach
           }
         }
       });
     } catch (e) {
-      console.log('error', e);
+      console.log("error", e);
     }
   };
 
   // Ajouter au panier
-  const handleCart = async product => {
+  const handleCart = async (product) => {
     await saveSelectedCountryProduct(PaysLivraison);
     await saveSelectedServiceProduct(ServiceSelected);
     const data = selectedProductValues[product.id];
 
-    const quantite = selectedProductValues[product.id]['quantite'];
+    const quantite = selectedProductValues[product.id]["quantite"];
 
     let CatProducts = [];
 
     let match = false;
 
     const attributeValues = createAttributeString(
-      data ? data.attributes : null,
+      data ? data.attributes : null
     );
 
     const matchingCombination = findMatchingCombination(
       product.stocks,
-      attributeValues,
+      attributeValues
     );
 
     console.log(
       JSON.stringify(product),
-      'productproductproductproductproductproduct',
+      "productproductproductproductproductproduct",
       JSON.stringify(data),
-      'matchingCombinationmatchingCombinationmatchingCombination',
+      "matchingCombinationmatchingCombinationmatchingCombination"
     );
     const obj = {
       ID: (Math.random() + 1).toString(36).substring(7),
@@ -488,16 +498,16 @@ const ProductList = () => {
     if (basketData.length == 0) {
       await savePanier(CatProducts);
 
-      if (Platform.OS === 'ios') {
+      if (Platform.OS === "ios") {
         Toast.show({
-          type: 'success',
-          text1: t('Succès'),
-          text2: t('Ajouter au panier avec succès'),
+          type: "success",
+          text1: t("Succès"),
+          text2: t("Ajouter au panier avec succès"),
         });
       } else {
         ToastAndroid.show(
-          t('Ajouter au panier avec succès'),
-          ToastAndroid.SHORT,
+          t("Ajouter au panier avec succès"),
+          ToastAndroid.SHORT
         );
       }
 
@@ -506,7 +516,7 @@ const ProductList = () => {
       return true;
     }
 
-    basketData.map(ls => {
+    basketData.map((ls) => {
       if (
         ls.product.name === obj.product.name &&
         ls.service === obj.service &&
@@ -518,15 +528,15 @@ const ProductList = () => {
     });
 
     if (match === true) {
-      Platform.OS === 'ios'
+      Platform.OS === "ios"
         ? Toast.show({
-            type: 'error',
-            text1: t('Il y a un problème !'),
-            text2: t('Ce produit a déjà été ajouté'),
+            type: "error",
+            text1: t("Il y a un problème !"),
+            text2: t("Ce produit a déjà été ajouté"),
           })
         : ToastAndroid.show(
-            t('Ce produit a déjà été ajouté'),
-            ToastAndroid.SHORT,
+            t("Ce produit a déjà été ajouté"),
+            ToastAndroid.SHORT
           );
 
       setIsSuccess(false);
@@ -538,14 +548,14 @@ const ProductList = () => {
 
     await savePanier(basketData);
 
-    if (Platform.OS === 'ios') {
+    if (Platform.OS === "ios") {
       Toast.show({
-        type: 'success',
-        text1: t('Succès'),
-        text2: t('Ajouter au panier avec succès'),
+        type: "success",
+        text1: t("Succès"),
+        text2: t("Ajouter au panier avec succès"),
       });
     } else {
-      ToastAndroid.show(t('Ajouter au panier avec succès'), ToastAndroid.SHORT);
+      ToastAndroid.show(t("Ajouter au panier avec succès"), ToastAndroid.SHORT);
     }
 
     setBagCount(bagCount + 1);
@@ -554,17 +564,17 @@ const ProductList = () => {
   };
 
   // Vider le panier et ajouter les elements
-  const handleCartRemove = async product => {
+  const handleCartRemove = async (product) => {
     await removePanier();
     await removeCommand();
 
     let reponse = handleCart(product);
 
-    reponse.then(response => {
+    reponse.then((response) => {
       if (isSuccess) {
         // Not Login
         if (!user?.uid) {
-          navigation.navigate('Login', {fromCart: 'cart'});
+          navigation.navigate("Login", { fromCart: "cart" });
           return; //should never reach
         }
       }
@@ -572,10 +582,10 @@ const ProductList = () => {
   };
 
   // Gestion du scroll
-  const Change = nativeEvent => {
+  const Change = (nativeEvent) => {
     if (nativeEvent) {
       const slide = Math.ceil(
-        nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width,
+        nativeEvent.contentOffset.x / nativeEvent.layoutMeasurement.width
       );
       if (slide !== active) {
         setActive(slide);
@@ -586,7 +596,7 @@ const ProductList = () => {
   const handleAttributeChange = (product, attributeId, value, valueFR) => {
     const productId = product.id;
 
-    setSelectedAttributes(prev => ({
+    setSelectedAttributes((prev) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
@@ -594,7 +604,7 @@ const ProductList = () => {
       },
     }));
 
-    setSelectedAttributesOriginal(prev => ({
+    setSelectedAttributesOriginal((prev) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
@@ -605,12 +615,12 @@ const ProductList = () => {
     // Réinitialiser la quantité pour ce produit
     updateQuantities(productId, null);
 
-    setPrices(prev => ({
+    setPrices((prev) => ({
       ...prev,
       [productId]: null,
     }));
 
-    setSelectedProductValues(prev => ({
+    setSelectedProductValues((prev) => ({
       ...prev,
       [productId]: {
         ...prev[productId],
@@ -631,22 +641,22 @@ const ProductList = () => {
     const matchingStockInfo = findMatchingStock(product, newSelectedAttributes);
 
     if (matchingStockInfo) {
-      const {stock, quantiteMax, prix, idStock} = matchingStockInfo;
+      const { stock, quantiteMax, prix, idStock } = matchingStockInfo;
       const maxSelectableQuantity = Math.min(stock, quantiteMax);
 
       updateQuantities(productId, maxSelectableQuantity);
-      setPrices(prev => ({...prev, [productId]: prix}));
-      setSelectedProductStock(prev => ({...prev, [productId]: idStock}));
+      setPrices((prev) => ({ ...prev, [productId]: prix }));
+      setSelectedProductStock((prev) => ({ ...prev, [productId]: idStock }));
     } else {
       // Réinitialiser les valeurs si aucun stock correspondant n'est trouvé
       updateQuantities(productId, null);
-      setPrices(prev => ({...prev, [productId]: null}));
-      setSelectedProductStock(prev => ({...prev, [productId]: null}));
+      setPrices((prev) => ({ ...prev, [productId]: null }));
+      setSelectedProductStock((prev) => ({ ...prev, [productId]: null }));
     }
 
     // Mise à jour des images
     const newImages = getAttributeImages(product, newSelectedAttributes);
-    setCurrentImages(prev => ({
+    setCurrentImages((prev) => ({
       ...prev,
       [productId]: newImages,
     }));
@@ -657,41 +667,41 @@ const ProductList = () => {
   // Verifier le stock
   const findMatchingStock = (product, attributes) => {
     console.log(
-      'Product.attributs',
+      "Product.attributs",
       JSON.stringify(product.attributs),
-      'attributes:',
-      JSON.stringify(attributes),
+      "attributes:",
+      JSON.stringify(attributes)
     );
 
     if (Object.keys(attributes).length === product.attributs.length) {
       const selectedCombination = product.attributs
-        .map(attr => {
+        .map((attr) => {
           const attrId = attr.attribut.id.toString();
           const selectedValue = attributes[attrId];
           // Trouver la valeur correspondante dans les attributValues
           const matchingValue = attr.attributValues.find(
-            v => v.valeur === selectedValue || v.valeurEN === selectedValue,
+            (v) => v.valeur === selectedValue || v.valeurEN === selectedValue
           );
           return matchingValue ? matchingValue.valeur : null;
         })
         .filter(Boolean) // Enlever les valeurs null
-        .join(', ');
+        .join(", ");
 
-      console.log('Selected combination:', selectedCombination);
+      console.log("Selected combination:", selectedCombination);
 
       let matchingStock = null;
 
       // Vérifier d'abord dans stockSpecifiques
       if (product.stockSpecifiques && product.stockSpecifiques.length > 0) {
         matchingStock = product.stockSpecifiques.find(
-          stock => stock.combinaison === selectedCombination,
+          (stock) => stock.combinaison === selectedCombination
         );
       }
 
       // Si aucune correspondance n'est trouvée dans stockSpecifiques, vérifier dans stocks
       if (!matchingStock) {
         matchingStock = product.stocks.find(
-          stock => stock.combinaison === selectedCombination,
+          (stock) => stock.combinaison === selectedCombination
         );
       }
 
@@ -712,18 +722,18 @@ const ProductList = () => {
   const handleQuantiteChange = (product, quantite) => {
     let productId = product.id;
 
-    selectedProductValues[productId]['quantite'] = quantite;
+    selectedProductValues[productId]["quantite"] = quantite;
 
     setSelectedProductValues(selectedProductValues);
   };
 
   // Afficher la quantité
-  const RenderQuantite = ({product}) => {
+  const RenderQuantite = ({ product }) => {
     const productId = product.id;
     const quantiteMax = Quantities[productId];
     const attributes = selectedProductValues[productId]?.attributes || {};
     const allAttributesSelected = product.attributs.every(
-      attr => attributes[attr.attribut.id],
+      (attr) => attributes[attr.attribut.id]
     );
 
     const isOutOfStock = quantiteMax === 0 || quantiteMax === null;
@@ -734,7 +744,7 @@ const ProductList = () => {
         <View style={styles.safeContainerStyle}>
           <Dropdown
             style={styles.dropdown}
-            placeholder={t('Quantité')}
+            placeholder={t("Quantité")}
             data={[]}
             // disabled={true}
           />
@@ -747,19 +757,19 @@ const ProductList = () => {
         <View style={styles.safeContainerStyle}>
           <Dropdown
             style={styles.dropdown}
-            placeholder={t('Quantité')}
+            placeholder={t("Quantité")}
             data={[]}
             // disabled={true}
           />
-          <Text style={[styles.stockMessage, {color: 'red'}]}>
-            {t('Rupture de stock')}
+          <Text style={[styles.stockMessage, { color: "red" }]}>
+            {t("Rupture de stock")}
           </Text>
         </View>
       );
     }
 
     if (allAttributesSelected && !isOutOfStock) {
-      const sweeterArray = Array.from({length: quantiteMax}, (_, i) => ({
+      const sweeterArray = Array.from({ length: quantiteMax }, (_, i) => ({
         label: (i + 1).toString(),
         value: (i + 1).toString(),
       }));
@@ -772,15 +782,15 @@ const ProductList = () => {
             labelField="label"
             valueField="value"
             value={selectedProductValues[productId]?.quantite}
-            onChange={item => handleQuantiteChange(product, item.value)}
-            placeholder={t('Quantité')}
+            onChange={(item) => handleQuantiteChange(product, item.value)}
+            placeholder={t("Quantité")}
             placeholderStyle={styles.placeholderStyle}
             selectedTextStyle={styles.selectedTextStyle}
             autoScroll
             iconStyle={styles.iconStyle}
             containerStyle={styles.containerStyle}
-            itemTextStyle={{color: '#000'}}
-            searchPlaceholder={t('Search...')}
+            itemTextStyle={{ color: "#000" }}
+            searchPlaceholder={t("Search...")}
             showsVerticalScrollIndicator={false}
           />
         </View>
@@ -791,7 +801,7 @@ const ProductList = () => {
       <View style={styles.safeContainerStyle}>
         <Dropdown
           style={styles.dropdown}
-          placeholder={t('Quantité')}
+          placeholder={t("Quantité")}
           data={[]}
           // disabled={true}
         />
@@ -800,7 +810,7 @@ const ProductList = () => {
   };
 
   // Afficher la quantité Grid
-  const RenderQuantiteGrid = props => {
+  const RenderQuantiteGrid = (props) => {
     let product = props.product;
     let productId = props.product.id;
 
@@ -816,23 +826,24 @@ const ProductList = () => {
       if (!minQuantite && !quantite) {
         return (
           <View
-            style={[styles.safeContainerStyle, {width: windowWidth * 0.25}]}
-            key={'quantite' + productId}>
+            style={[styles.safeContainerStyle, { width: windowWidth * 0.25 }]}
+            key={"quantite" + productId}
+          >
             <Dropdown
-              style={[styles.dropdown, {height: 40}]}
-              placeholderStyle={[styles.placeholderStyle, {fontSize: wp(3)}]}
+              style={[styles.dropdown, { height: 40 }]}
+              placeholderStyle={[styles.placeholderStyle, { fontSize: wp(3) }]}
               selectedTextStyle={styles.selectedTextStyle}
               autoScroll
-              itemTextStyle={{fontSize: wp(3.5), color: '#000'}}
+              itemTextStyle={{ fontSize: wp(3.5), color: "#000" }}
               iconStyle={styles.iconStyle}
               containerStyle={styles.containerStyle}
               labelField="label"
               valueField="value"
-              placeholder={t('Quantité')}
+              placeholder={t("Quantité")}
               showsVerticalScrollIndicator={false}
               data={emptyQuantities}
             />
-            <Text style={{color: 'red'}}>{t('Rupture de stock')}</Text>
+            <Text style={{ color: "red" }}>{t("Rupture de stock")}</Text>
           </View>
         );
       }
@@ -841,23 +852,24 @@ const ProductList = () => {
     if (!minQuantite) {
       return (
         <View
-          style={[styles.safeContainerStyle, {width: windowWidth * 0.25}]}
-          key={'quantite' + productId}>
+          style={[styles.safeContainerStyle, { width: windowWidth * 0.25 }]}
+          key={"quantite" + productId}
+        >
           <Dropdown
-            style={[styles.dropdown, {height: 40}]}
-            placeholderStyle={[styles.placeholderStyle, {fontSize: wp(3)}]}
+            style={[styles.dropdown, { height: 40 }]}
+            placeholderStyle={[styles.placeholderStyle, { fontSize: wp(3) }]}
             selectedTextStyle={styles.selectedTextStyle}
             autoScroll
-            itemTextStyle={{fontSize: wp(3.5), color: '#000'}}
+            itemTextStyle={{ fontSize: wp(3.5), color: "#000" }}
             iconStyle={styles.iconStyle}
             containerStyle={styles.containerStyle}
             labelField="label"
             valueField="value"
-            placeholder={t('Quantité')}
+            placeholder={t("Quantité")}
             showsVerticalScrollIndicator={false}
             data={emptyQuantities}
           />
-          <Text style={{color: 'red'}}>{t('Rupture de stock')}</Text>
+          <Text style={{ color: "red" }}>{t("Rupture de stock")}</Text>
         </View>
       );
     }
@@ -865,33 +877,34 @@ const ProductList = () => {
     let quantiteMax = quantite ? parseInt(quantite) : parseInt(minQuantite);
     let sweeterArray = [];
     for (let i = 1; i < quantiteMax + 1; i++) {
-      sweeterArray.push({label: i.toString(), value: i.toString()});
+      sweeterArray.push({ label: i.toString(), value: i.toString() });
     }
 
     const quantiteSelectedValue = selectedProductValues[productId]
-      ? selectedProductValues[productId]['quantite']
+      ? selectedProductValues[productId]["quantite"]
       : null;
 
     return (
       <View
-        style={[styles.safeContainerStyle, {width: windowWidth * 0.25}]}
-        key={'quantite' + productId}>
+        style={[styles.safeContainerStyle, { width: windowWidth * 0.25 }]}
+        key={"quantite" + productId}
+      >
         <Dropdown
-          style={[styles.dropdown, {height: 40}]}
-          placeholderStyle={[styles.placeholderStyle, {fontSize: wp(3)}]}
+          style={[styles.dropdown, { height: 40 }]}
+          placeholderStyle={[styles.placeholderStyle, { fontSize: wp(3) }]}
           selectedTextStyle={styles.selectedTextStyle}
           autoScroll
-          itemTextStyle={{fontSize: wp(3.5), color: '#000'}}
+          itemTextStyle={{ fontSize: wp(3.5), color: "#000" }}
           iconStyle={styles.iconStyle}
           containerStyle={styles.containerStyle}
           labelField="label"
           valueField="value"
           value={quantiteSelectedValue}
-          placeholder={t('Quantité')}
-          searchPlaceholder={t('Search...')}
+          placeholder={t("Quantité")}
+          searchPlaceholder={t("Search...")}
           showsVerticalScrollIndicator={false}
           data={sweeterArray}
-          onChange={item => {
+          onChange={(item) => {
             handleQuantiteChange(product, item.value);
           }}
         />
@@ -900,23 +913,23 @@ const ProductList = () => {
   };
 
   // Afficher la description
-  const RenderLivraisonAndDescriptionLink = props => {
+  const RenderLivraisonAndDescriptionLink = (props) => {
     const product = props.product;
 
     const specificites = product.productSpecificites[0]; // On retournera tjr une specificité par pays
 
     const image =
-      'fr' == Language ? product.imageDescription : product.imageDescriptionEN;
+      "fr" == Language ? product.imageDescription : product.imageDescriptionEN;
 
     if (!image) {
       return (
-        <View style={{flex: 1}}>
-          <Text style={{paddingRight: 190}}>
+        <View style={{ flex: 1 }}>
+          <Text style={{ paddingRight: 190 }}>
             {specificites.livraison
-              ? 'fr' == Language
+              ? "fr" == Language
                 ? specificites.livraison.delai
                 : specificites.livraison.delaiEN
-              : ''}
+              : ""}
           </Text>
         </View>
       );
@@ -927,10 +940,10 @@ const ProductList = () => {
         <View>
           <Text>
             {specificites.livraison
-              ? 'fr' == Language
+              ? "fr" == Language
                 ? specificites.livraison.delai
                 : specificites.livraison.delaiEN
-              : ''}
+              : ""}
           </Text>
         </View>
         <View>
@@ -938,8 +951,11 @@ const ProductList = () => {
             onPress={() => {
               setSelectedProduct(product);
               setModalVisible(true);
-            }}>
-            <Text style={{color: 'blue', marginTop: 8}}>{t('Voir plus')}</Text>
+            }}
+          >
+            <Text style={{ color: "blue", marginTop: 8 }}>
+              {t("Voir plus")}
+            </Text>
           </TouchableOpacity>
         </View>
       </>
@@ -947,13 +963,13 @@ const ProductList = () => {
   };
 
   // Afficher la description
-  const RenderLivraisonAndDescriptionLinkGrid = props => {
+  const RenderLivraisonAndDescriptionLinkGrid = (props) => {
     const product = props.product;
 
     const specificites = product.productSpecificites[0]; // On retournera tjr une specificité par pays
 
     const image =
-      'fr' == Language ? product.imageDescription : product.imageDescriptionEN;
+      "fr" == Language ? product.imageDescription : product.imageDescriptionEN;
 
     if (!image) {
       return (
@@ -962,13 +978,14 @@ const ProductList = () => {
             style={{
               fontSize: wp(2.5),
               width: windowWidth * 0.2,
-              alignSelf: 'center',
-            }}>
+              alignSelf: "center",
+            }}
+          >
             {specificites.livraison
-              ? 'fr' == Language
+              ? "fr" == Language
                 ? specificites.livraison.delai
                 : specificites.livraison.delaiEN
-              : ''}
+              : ""}
           </Text>
         </View>
       );
@@ -976,13 +993,13 @@ const ProductList = () => {
 
     return (
       <>
-        <View style={{maxWidth: windowWidth * 0.22}}>
-          <Text style={{fontSize: wp(2.5)}}>
+        <View style={{ maxWidth: windowWidth * 0.22 }}>
+          <Text style={{ fontSize: wp(2.5) }}>
             {specificites.livraison
-              ? 'fr' == Language
+              ? "fr" == Language
                 ? specificites.livraison.delai
                 : specificites.livraison.delaiEN
-              : ''}
+              : ""}
           </Text>
         </View>
         <View>
@@ -990,9 +1007,10 @@ const ProductList = () => {
             onPress={() => {
               setSelectedProduct(product);
               setModalVisible(true);
-            }}>
-            <Text style={{color: 'blue', fontSize: wp(3)}}>
-              {t('Voir plus')}
+            }}
+          >
+            <Text style={{ color: "blue", fontSize: wp(3) }}>
+              {t("Voir plus")}
             </Text>
           </TouchableOpacity>
         </View>
@@ -1001,15 +1019,15 @@ const ProductList = () => {
   };
 
   // Afficher la description du produit
-  const RenderProductDescription = props => {
+  const RenderProductDescription = (props) => {
     const product = props.product;
     const isPdf =
-      'fr' == Language
-        ? product.imageDescription.endsWith('.pdf')
-        : product.imageDescriptionEN.endsWith('.pdf');
+      "fr" == Language
+        ? product.imageDescription.endsWith(".pdf")
+        : product.imageDescriptionEN.endsWith(".pdf");
     const source = {
       uri:
-        'fr' == Language
+        "fr" == Language
           ? product.imageDescription
           : product.imageDescriptionEN,
     };
@@ -1017,12 +1035,12 @@ const ProductList = () => {
     if (isPdf) {
       return (
         <Pdf
-          key={'pdfView'}
+          key={"pdfView"}
           trustAllCerts={false}
-          source={{uri: source.uri}}
-          style={{flex: 1, width: '100%', height: '100%'}}
-          onLoadComplete={() => console.log('PDF chargé')}
-          onError={error => console.log('Erreur de chargement du PDF', error)}
+          source={{ uri: source.uri }}
+          style={{ flex: 1, width: "100%", height: "100%" }}
+          onLoadComplete={() => console.log("PDF chargé")}
+          onError={(error) => console.log("Erreur de chargement du PDF", error)}
         />
       );
     }
@@ -1032,7 +1050,7 @@ const ProductList = () => {
         key={product.id}
         source={{
           uri:
-            'fr' == Language
+            "fr" == Language
               ? product.imageDescription
               : product.imageDescriptionEN,
         }}
@@ -1041,21 +1059,21 @@ const ProductList = () => {
           height: windowHeight * 0.25,
           borderRadius: 10,
         }}
-        resizeMode={'contain'}
+        resizeMode={"contain"}
       />
     );
   };
 
-  const formatPrice = price => {
+  const formatPrice = (price) => {
     const priceStr = price.toString();
 
-    const [dollars, cents] = priceStr.split('.');
+    const [dollars, cents] = priceStr.split(".");
 
     const formattedDollars = parseInt(dollars, 10)
       .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+      .replace(/\B(?=(\d{3})+(?!\d))/g, " ");
 
-    const formattedCents = cents ? `.${cents}` : '';
+    const formattedCents = cents ? `.${cents}` : "";
 
     const formattedPrice = `${formattedDollars}${formattedCents}`;
 
@@ -1063,7 +1081,7 @@ const ProductList = () => {
   };
 
   //Afficher le prix
-  const RenderPrices = props => {
+  const RenderPrices = (props) => {
     const product = props.product;
 
     const price = Prices[product.id];
@@ -1079,46 +1097,49 @@ const ProductList = () => {
         <Text
           style={{
             fontSize: 13,
-            fontFamily: 'Poppins-SemiBold',
-            color: '#000',
+            fontFamily: "Poppins-SemiBold",
+            color: "#000",
             marginTop: 8,
-          }}>
+          }}
+        >
           {formatPrice(price) +
-            '€' +
-            (product.unite ? ' / ' + product.unite.valeur : '')}
+            "€" +
+            (product.unite ? " / " + product.unite.valeur : "")}
         </Text>
       );
     }
 
     return (
-      <View style={{flexDirection: 'row', alignItems: 'center'}}>
+      <View style={{ flexDirection: "row", alignItems: "center" }}>
         <Text
           style={{
             fontSize: 13,
-            fontFamily: 'Poppins-Medium',
-            color: '#000',
+            fontFamily: "Poppins-Medium",
+            color: "#000",
             marginTop: 8,
-          }}>
-          {t('A partir de')}
+          }}
+        >
+          {t("A partir de")}
         </Text>
         <Text
           style={{
             fontSize: 13,
-            fontFamily: 'Poppins-SemiBold',
-            color: '#000',
+            fontFamily: "Poppins-SemiBold",
+            color: "#000",
             marginTop: 8,
-          }}>
-          {' ' +
+          }}
+        >
+          {" " +
             formatPrice(minPrice) +
-            '€' +
-            (product.unite ? ' / ' + product.unite.valeur : '')}
+            "€" +
+            (product.unite ? " / " + product.unite.valeur : "")}
         </Text>
       </View>
     );
   };
 
   // Afficher le prix
-  const RenderPricesGrid = props => {
+  const RenderPricesGrid = (props) => {
     const product = props.product;
 
     const price = Prices[product.id];
@@ -1134,13 +1155,14 @@ const ProductList = () => {
         <Text
           style={{
             fontSize: 9,
-            fontFamily: 'Poppins-SemiBold',
-            color: '#000',
+            fontFamily: "Poppins-SemiBold",
+            color: "#000",
             marginTop: 8,
-          }}>
+          }}
+        >
           {formatPrice(price) +
-            '€' +
-            (product.unite ? ' / ' + product.unite.valeur : '')}
+            "€" +
+            (product.unite ? " / " + product.unite.valeur : "")}
         </Text>
       );
     }
@@ -1148,32 +1170,35 @@ const ProductList = () => {
     return (
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: "row",
+          alignItems: "center",
           maxWidth: 50,
           paddingRight: 10,
           gap: 5,
-        }}>
+        }}
+      >
         <Text
           style={{
             fontSize: 8,
-            fontFamily: 'Poppins-Medium',
-            color: '#000',
+            fontFamily: "Poppins-Medium",
+            color: "#000",
             marginTop: 8,
-          }}>
-          {t('A partir de')}
+          }}
+        >
+          {t("A partir de")}
         </Text>
         <Text
           style={{
             fontSize: 8,
-            fontFamily: 'Poppins-SemiBold',
-            color: '#000',
+            fontFamily: "Poppins-SemiBold",
+            color: "#000",
             marginTop: 8,
-          }}>
-          {' ' +
+          }}
+        >
+          {" " +
             formatPrice(minPrice) +
-            '€' +
-            (product.unite ? ' / ' + product.unite.valeur : '')}
+            "€" +
+            (product.unite ? " / " + product.unite.valeur : "")}
         </Text>
       </View>
     );
@@ -1183,11 +1208,14 @@ const ProductList = () => {
   const [currentImageIndexGrid, setCurrentImageIndexGrid] = useState({});
 
   const openImageViewGrid = (productIndex, imageIndex) => {
-    setIsOpenModalGrid(prev => ({...prev, [productIndex]: true}));
-    setCurrentImageIndexGrid(prev => ({...prev, [productIndex]: imageIndex}));
+    setIsOpenModalGrid((prev) => ({ ...prev, [productIndex]: true }));
+    setCurrentImageIndexGrid((prev) => ({
+      ...prev,
+      [productIndex]: imageIndex,
+    }));
   };
 
-  const renderItem = ({item, index}, productIndex) => {
+  const renderItem = ({ item, index }, productIndex) => {
     return (
       <TouchableOpacity
         key={index}
@@ -1199,22 +1227,23 @@ const ProductList = () => {
           padding: 50,
           marginLeft: 25,
           marginRight: 25,
-        }}>
+        }}
+      >
         <Image
-          source={{uri: item.url}}
+          source={{ uri: item.url }}
           style={{
             height: wp(40),
             borderRadius: 22,
             width: wp(50),
-            justifyContent: 'center',
-            alignSelf: 'center',
+            justifyContent: "center",
+            alignSelf: "center",
           }}
-          resizeMode={'contain'}
+          resizeMode={"contain"}
         />
       </TouchableOpacity>
     );
   };
-  const renderItemGrid = ({item, index}, productIndex) => {
+  const renderItemGrid = ({ item, index }, productIndex) => {
     return (
       <TouchableOpacity
         key={index}
@@ -1222,29 +1251,30 @@ const ProductList = () => {
         style={{
           borderRadius: 5,
           padding: 50,
-        }}>
+        }}
+      >
         <Image
-          source={{uri: item.url}}
+          source={{ uri: item.url }}
           style={{
             height: wp(30),
             borderRadius: 22,
             width: wp(20),
-            justifyContent: 'center',
-            alignSelf: 'center',
+            justifyContent: "center",
+            alignSelf: "center",
           }}
-          resizeMode={'contain'}
+          resizeMode={"contain"}
         />
       </TouchableOpacity>
     );
   };
 
   if (!selected) {
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <HeaderEarth />
 
-      <View style={{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-        <View style={{justifyContent: 'center'}}>
-          <ActivityIndicator size={'large'} color="#3292E0" />
+      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+        <View style={{ justifyContent: "center" }}>
+          <ActivityIndicator size={"large"} color="#3292E0" />
         </View>
       </View>
     </View>;
@@ -1254,34 +1284,36 @@ const ProductList = () => {
   const carouselRefs = useRef(Array(products.length).fill(null));
   const carouselRefsGrid = useRef(Array(products.length).fill(null));
   const handleSnapToItem = (productIndex, carouselIndex) => {
-    setActiveIndex(prev => {
+    setActiveIndex((prev) => {
       const newIndices = [...prev];
       newIndices[productIndex] = carouselIndex;
       return newIndices;
     });
   };
 
-  const ImageFooter = ({imageIndex, images, onPressThumbnail}) => (
+  const ImageFooter = ({ imageIndex, images, onPressThumbnail }) => (
     <View style={styles.root}>
       <View
         style={{
-          flexDirection: 'row',
-          alignItems: 'center',
+          flexDirection: "row",
+          alignItems: "center",
           gap: 5,
-          justifyContent: 'center',
-        }}>
+          justifyContent: "center",
+        }}
+      >
         {images.map((item, idx) => (
           <TouchableOpacity
             key={idx}
             onPress={() => onPressThumbnail(idx)}
-            style={styles.thumbnailWrapper}>
+            style={styles.thumbnailWrapper}
+          >
             <Image
               key={idx}
-              source={{uri: item.url}}
+              source={{ uri: item.url }}
               style={[
                 idx === imageIndex
-                  ? {borderColor: 'red'}
-                  : {borderColor: 'transparent'},
+                  ? { borderColor: "red" }
+                  : { borderColor: "transparent" },
                 {
                   height: wp(15),
                   borderWidth: 3,
@@ -1289,7 +1321,7 @@ const ProductList = () => {
                   width: wp(15),
                 },
               ]}
-              resizeMode={'cover'}
+              resizeMode={"cover"}
             />
           </TouchableOpacity>
         ))}
@@ -1301,10 +1333,11 @@ const ProductList = () => {
     return (
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: windowWidth * 0.15,
           right: windowWidth * 0.09,
-        }}>
+        }}
+      >
         <TouchableOpacity onPress={closeGallery}>
           <FontAwesome6 name="x" size={20} color="#fff" />
         </TouchableOpacity>
@@ -1315,10 +1348,11 @@ const ProductList = () => {
     return (
       <View
         style={{
-          position: 'absolute',
+          position: "absolute",
           top: windowWidth * 0.15,
           right: windowWidth * 0.09,
-        }}>
+        }}
+      >
         <TouchableOpacity onPress={closeGalleryGrid}>
           <FontAwesome6 name="x" size={20} color="#fff" />
         </TouchableOpacity>
@@ -1326,7 +1360,7 @@ const ProductList = () => {
     );
   };
   return (
-    <View style={{flex: 1}}>
+    <View style={{ flex: 1 }}>
       <ServiceHeader
         navigation={navigation}
         service={Service}
@@ -1335,51 +1369,55 @@ const ProductList = () => {
         SelectedCategorieId={SelectedCategorieId}
       />
       <View style={styles.containerMarginBottom}>
-        <View style={{marginTop: 10, paddingHorizontal: 5}}>
+        <View style={{ marginTop: 10, paddingHorizontal: 5 }}>
           <View
             style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
               borderTopLeftRadius: 28,
               borderTopRightRadius: 28,
-              backgroundColor: '#fff',
+              backgroundColor: "#fff",
               paddingVertical: 15,
               paddingLeft: 15,
               paddingRight: 23,
-            }}>
-            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+            }}
+          >
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
               <View
-                style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+                style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+              >
                 <Dropdown
                   data={SortData}
                   style={{
                     height: 10,
                     width: windowWidth * 0.2,
                     borderRadius: 8,
-                    backgroundColor: '#FFF',
+                    backgroundColor: "#FFF",
                   }}
                   labelField="label"
                   valueField="value"
-                  placeholder={t('Trier')}
+                  placeholder={t("Trier")}
                   selectedTextStyle={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: wp(3.1),
-                    color: '#376AED',
+                    color: "#376AED",
                   }}
                   iconColor="#376AED"
                   value={sortBy}
-                  itemTextStyle={{fontSize: wp(3.35)}}
-                  itemContainerStyle={{height: 50, width: windowWidth * 1}}
+                  itemTextStyle={{ fontSize: wp(3.35) }}
+                  itemContainerStyle={{ height: 50, width: windowWidth * 1 }}
                   placeholderStyle={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: wp(3.1),
-                    color: '#376AED',
+                    color: "#376AED",
                   }}
                   showsVerticalScrollIndicator={false}
-                  containerStyle={{elevation: 0}}
-                  searchPlaceholder={t('Search')}
-                  onChange={item => {
+                  containerStyle={{ elevation: 0 }}
+                  searchPlaceholder={t("Search")}
+                  onChange={(item) => {
                     setFilter(item.filter);
                     setSortBy(item.sort);
                     sortProducts(item.filter, item.sort);
@@ -1389,7 +1427,9 @@ const ProductList = () => {
               </View>
             </View>
 
-            <View style={{flexDirection: 'row', alignItems: 'center', gap: 10}}>
+            <View
+              style={{ flexDirection: "row", alignItems: "center", gap: 10 }}
+            >
               {activeFilter === 0 ? (
                 <TouchableOpacity onPress={() => setActiveFilter(1)}>
                   <Ionicons
@@ -1428,39 +1468,43 @@ const ProductList = () => {
           </View>
         </View>
         <ScrollView showsVerticalScrollIndicator={false}>
-          <View style={{marginBottom: 150}}>
+          <View style={{ marginBottom: 150 }}>
             {activeFilter === 0 ? (
               <>
                 {sortedProducts.map((product, index) => (
                   <View
                     key={index}
-                    style={{backgroundColor: '#FFF', margin: 5}}>
+                    style={{ backgroundColor: "#FFF", margin: 5 }}
+                  >
                     <View
                       style={{
                         paddingHorizontal: 12,
                         paddingTop: 25,
                         paddingBottom: 12,
                         borderRadius: 12,
-                      }}>
+                      }}
+                    >
                       <Text
                         style={{
-                          fontFamily: 'Poppins-SemiBold',
+                          fontFamily: "Poppins-SemiBold",
                           fontSize: 13.5,
-                          textAlign: 'left',
-                          color: '#60be74',
-                        }}>
-                        {'fr' == Language ? product.name : product.nameEN}
+                          textAlign: "left",
+                          color: "#60be74",
+                        }}
+                      >
+                        {"fr" == Language ? product.name : product.nameEN}
                       </Text>
                     </View>
                     <View
                       style={{
-                        flexDirection: 'row',
-                        alignItems: 'center',
+                        flexDirection: "row",
+                        alignItems: "center",
                         gap: 10,
                         paddingBottom: 12,
                         paddingLeft: 22,
                         marginBottom: 50,
-                      }}>
+                      }}
+                    >
                       <ImageGallery
                         close={closeGallery}
                         images={
@@ -1473,17 +1517,17 @@ const ProductList = () => {
                       />
                       <View>
                         <Carousel
-                          ref={carousel =>
+                          ref={(carousel) =>
                             (carouselRefs.current[index] = carousel)
                           }
                           data={
                             currentImages[product.id] || product.productImages
                           }
-                          renderItem={item => renderItem(item, index)}
+                          renderItem={(item) => renderItem(item, index)}
                           sliderWidth={windowWidth * 0.4}
                           itemWidth={windowWidth * 0.4}
                           style={styles.imageSwiper}
-                          onSnapToItem={carouselIndex =>
+                          onSnapToItem={(carouselIndex) =>
                             handleSnapToItem(index, carouselIndex)
                           }
                         />
@@ -1492,84 +1536,86 @@ const ProductList = () => {
                           dotsLength={product.productImages.length}
                           activeDotIndex={activeIndex[index]}
                           containerStyle={{
-                            position: 'absolute',
+                            position: "absolute",
                             bottom: 20,
                             width: windowWidth * 0.3,
-                            alignSelf: 'center',
+                            alignSelf: "center",
                           }}
-                          dotColor={'rgba(255, 255, 255, 0.92)'}
+                          dotColor={"rgba(255, 255, 255, 0.92)"}
                           dotStyle={{
                             width: 10,
                             height: 10,
                             borderRadius: 8,
-                            backgroundColor: '#000',
+                            backgroundColor: "#000",
                           }}
                           inactiveDotStyle={{
                             width: 8,
                             height: 8,
                             borderRadius: 8,
-                            backgroundColor: '#000',
+                            backgroundColor: "#000",
                           }}
                         />
                       </View>
                       <View
                         style={{
-                          flexDirection: 'column',
-                          justifyContent: 'center',
-                          alignItems: 'flex-start',
-                        }}>
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          alignItems: "flex-start",
+                        }}
+                      >
                         <RenderPrices product={product} />
 
-                        {product.attributs.map(attribute => {
+                        {product.attributs.map((attribute) => {
                           const prevChoice = selectedProductValues[product.id]
-                            ? selectedProductValues[product.id]['attributes']
+                            ? selectedProductValues[product.id]["attributes"]
                             : null;
                           const selectedValue = prevChoice
                             ? prevChoice[attribute.attribut.id]
                             : null;
 
                           const buildAttributes = attribute.attributValues.map(
-                            obj => {
+                            (obj) => {
                               let valeur =
-                                'fr' == Language ? obj.valeur : obj.valeurEN;
+                                "fr" == Language ? obj.valeur : obj.valeurEN;
 
                               return {
                                 label: valeur,
                                 value: valeur,
                                 valueFR: obj.valeur,
                               };
-                            },
+                            }
                           );
 
                           return (
                             <View
                               style={styles.safeContainerStyle}
-                              key={attribute.id}>
+                              key={attribute.id}
+                            >
                               <Dropdown
                                 style={styles.dropdown}
                                 placeholderStyle={styles.placeholderStyle}
                                 selectedTextStyle={styles.selectedTextStyle}
                                 autoScroll
                                 iconStyle={styles.iconStyle}
-                                itemTextStyle={{color: '#000'}}
+                                itemTextStyle={{ color: "#000" }}
                                 containerStyle={styles.containerStyle}
                                 labelField="label"
                                 valueField="value"
                                 value={selectedValue}
                                 placeholder={
-                                  'fr' == Language
+                                  "fr" == Language
                                     ? attribute.attribut.name
                                     : attribute.attribut.nameEN
                                 }
-                                searchPlaceholder={t('Search...')}
+                                searchPlaceholder={t("Search...")}
                                 showsVerticalScrollIndicator={false}
                                 data={buildAttributes}
-                                onChange={item => {
+                                onChange={(item) => {
                                   handleAttributeChange(
                                     product,
                                     attribute.attribut.id,
                                     item.value,
-                                    item.valueFR,
+                                    item.valueFR
                                   );
                                 }}
                               />
@@ -1583,11 +1629,12 @@ const ProductList = () => {
                           style={{
                             marginTop: 10,
                             width: windowWidth * 0.45,
-                            position: 'relative',
+                            position: "relative",
                             zIndex: -10,
-                          }}>
+                          }}
+                        >
                           <Button
-                            title={t('ajouter au panier')}
+                            title={t("ajouter au panier")}
                             navigation={() => handleCartLogin(product)}
                           />
                         </View>
@@ -1603,49 +1650,54 @@ const ProductList = () => {
               </>
             ) : (
               <>
-                <View style={{flexDirection: 'row', flexWrap: 'wrap'}}>
+                <View style={{ flexDirection: "row", flexWrap: "wrap" }}>
                   {sortedProducts.map((product, index) => (
-                    <View key={index} style={{width: '50%', padding: 1}}>
+                    <View key={index} style={{ width: "50%", padding: 1 }}>
                       <View
                         style={{
-                          backgroundColor: '#FFF',
+                          backgroundColor: "#FFF",
                           margin: 4.5,
                           borderRadius: 10,
-                        }}>
+                        }}
+                      >
                         <View
                           style={{
-                            flexDirection: 'row',
-                            alignItems: 'center',
+                            flexDirection: "row",
+                            alignItems: "center",
                             gap: 12,
                             paddingTop: 16,
                             paddingLeft: 6,
                             paddingRight: 6,
-                          }}>
-                          <View style={{maxWidth: wp(24.5)}}>
+                          }}
+                        >
+                          <View style={{ maxWidth: wp(24.5) }}>
                             <Text
                               style={{
-                                fontFamily: 'Poppins-SemiBold',
-                                textAlign: 'left',
+                                fontFamily: "Poppins-SemiBold",
+                                textAlign: "left",
                                 fontSize: 8.3,
-                                color: '#60be74',
-                              }}>
-                              {'fr' == Language ? product.name : product.nameEN}
+                                color: "#60be74",
+                              }}
+                            >
+                              {"fr" == Language ? product.name : product.nameEN}
                             </Text>
                           </View>
                           <View
                             style={{
-                              flexDirection: 'column',
-                              alignItems: 'center',
+                              flexDirection: "column",
+                              alignItems: "center",
                               gap: 2,
                               maxWidth: wp(15.5),
-                            }}>
+                            }}
+                          >
                             <Text
                               style={{
                                 fontSize: 9,
-                                fontFamily: 'Poppins-SemiBold',
-                                color: '#000',
+                                fontFamily: "Poppins-SemiBold",
+                                color: "#000",
                                 marginTop: 8,
-                              }}>
+                              }}
+                            >
                               <RenderPricesGrid product={product} />
                             </Text>
                           </View>
@@ -1653,12 +1705,13 @@ const ProductList = () => {
 
                         <View
                           style={{
-                            flexDirection: 'row',
+                            flexDirection: "row",
                             gap: 5,
-                            alignItems: 'center',
+                            alignItems: "center",
                             paddingBottom: 8,
                             paddingLeft: 6,
-                          }}>
+                          }}
+                        >
                           <View>
                             <ImageGallery
                               close={closeGalleryGrid}
@@ -1672,18 +1725,18 @@ const ProductList = () => {
                               renderHeaderComponent={renderHeaderGrid}
                             />
                             <Carousel
-                              ref={carousel =>
+                              ref={(carousel) =>
                                 (carouselRefs.current[index] = carousel)
                               }
                               data={
                                 currentImages[product.id] ||
                                 product.productImages
                               }
-                              renderItem={item => renderItemGrid(item, index)}
+                              renderItem={(item) => renderItemGrid(item, index)}
                               sliderWidth={windowWidth * 0.2}
                               itemWidth={windowWidth * 0.2}
                               style={styles.imageSwiper}
-                              onSnapToItem={carouselIndex =>
+                              onSnapToItem={(carouselIndex) =>
                                 handleSnapToItem(index, carouselIndex)
                               }
                             />
@@ -1692,39 +1745,40 @@ const ProductList = () => {
                               dotsLength={product.productImages.length}
                               activeDotIndex={activeIndex[index]}
                               containerStyle={{
-                                position: 'absolute',
+                                position: "absolute",
                                 bottom: 20,
                                 width: windowWidth * 0.1,
-                                alignSelf: 'center',
+                                alignSelf: "center",
                               }}
-                              dotColor={'rgba(255, 255, 255, 0.92)'}
+                              dotColor={"rgba(255, 255, 255, 0.92)"}
                               dotStyle={{
                                 width: 8,
                                 height: 8,
                                 borderRadius: 8,
-                                backgroundColor: '#000',
+                                backgroundColor: "#000",
                               }}
                               inactiveDotStyle={{
                                 width: 8,
                                 height: 8,
                                 borderRadius: 8,
-                                backgroundColor: '#000',
+                                backgroundColor: "#000",
                               }}
                             />
                           </View>
                           <View
                             style={{
-                              flexDirection: 'column',
-                              justifyContent: 'center',
-                              alignItems: 'flex-start',
+                              flexDirection: "column",
+                              justifyContent: "center",
+                              alignItems: "flex-start",
                               paddingRight: 6,
-                            }}>
-                            {product.attributs.map(attribute => {
+                            }}
+                          >
+                            {product.attributs.map((attribute) => {
                               const prevChoice = selectedProductValues[
                                 product.id
                               ]
                                 ? selectedProductValues[product.id][
-                                    'attributes'
+                                    "attributes"
                                   ]
                                 : null;
                               const selectedValue = prevChoice
@@ -1732,9 +1786,9 @@ const ProductList = () => {
                                 : null;
 
                               const buildAttributes =
-                                attribute.attributValues.map(obj => {
+                                attribute.attributValues.map((obj) => {
                                   let valeur =
-                                    'fr' == Language
+                                    "fr" == Language
                                       ? obj.valeur
                                       : obj.valeurEN;
 
@@ -1749,43 +1803,44 @@ const ProductList = () => {
                                 <View
                                   style={[
                                     styles.safeContainerStyle,
-                                    {width: windowWidth * 0.24},
+                                    { width: windowWidth * 0.24 },
                                   ]}
-                                  key={attribute.id}>
+                                  key={attribute.id}
+                                >
                                   <Dropdown
-                                    style={[styles.dropdown, {height: 40}]}
+                                    style={[styles.dropdown, { height: 40 }]}
                                     placeholderStyle={[
                                       styles.placeholderStyle,
-                                      {fontSize: wp(3)},
+                                      { fontSize: wp(3) },
                                     ]}
                                     selectedTextStyle={[
                                       styles.selectedTextStyle,
-                                      {fontSize: wp(2.5)},
+                                      { fontSize: wp(2.5) },
                                     ]}
                                     autoScroll
                                     iconStyle={styles.iconStyle}
                                     containerStyle={styles.containerStyle}
                                     itemTextStyle={{
                                       fontSize: wp(2.5),
-                                      color: '#000',
+                                      color: "#000",
                                     }}
                                     labelField="label"
                                     valueField="value"
                                     value={selectedValue}
                                     placeholder={
-                                      'fr' == Language
+                                      "fr" == Language
                                         ? attribute.attribut.name
                                         : attribute.attribut.nameEN
                                     }
-                                    searchPlaceholder={t('Search...')}
+                                    searchPlaceholder={t("Search...")}
                                     showsVerticalScrollIndicator={false}
                                     data={buildAttributes}
-                                    onChange={item => {
+                                    onChange={(item) => {
                                       handleAttributeChange(
                                         product,
                                         attribute.attribut.id,
                                         item.value,
-                                        item.valueFR,
+                                        item.valueFR
                                       );
                                     }}
                                   />
@@ -1806,12 +1861,13 @@ const ProductList = () => {
                           style={{
                             paddingBottom: 10,
                             width: windowWidth * 0.4,
-                            alignSelf: 'center',
-                            position: 'relative',
+                            alignSelf: "center",
+                            position: "relative",
                             zIndex: -10,
-                          }}>
+                          }}
+                        >
                           <Button
-                            title={t('ajouter au panier')}
+                            title={t("ajouter au panier")}
                             navigation={() => handleCartLogin(product)}
                           />
                         </View>
@@ -1828,27 +1884,30 @@ const ProductList = () => {
           <Modal visible={modalVisible} animationType="slide">
             <View
               style={{
-                backgroundColor: '#FFF',
+                backgroundColor: "#FFF",
                 width: windowWidth * 1,
-                alignSelf: 'center',
+                alignSelf: "center",
                 flex: 1,
-              }}>
+              }}
+            >
               <TouchableOpacity onPress={() => setModalVisible(false)}>
                 <Text
                   style={{
-                    color: 'blue',
+                    color: "blue",
                     padding: windowWidth * 0.06,
                     fontSize: windowWidth * 0.07,
-                  }}>
+                  }}
+                >
                   X
                 </Text>
               </TouchableOpacity>
               <View
                 style={{
                   flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
-                }}>
+                  justifyContent: "center",
+                  alignItems: "center",
+                }}
+              >
                 <RenderProductDescription product={selectedProduct} />
               </View>
             </View>
@@ -1861,7 +1920,7 @@ const ProductList = () => {
 
 const styles = StyleSheet.create({
   DetailsContainer: {
-    backgroundColor: '#F4F6F8',
+    backgroundColor: "#F4F6F8",
     width: windowWidth * 0.95,
     height: windowHeight * 0.6,
     marginTop: windowHeight * 0.03,
@@ -1869,14 +1928,14 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   descrContainer: {
-    flex:1,
-    textAlign: 'justify',
+    flex: 1,
+    textAlign: "justify",
     padding: windowWidth * 0.02,
-    position: 'relative',
+    position: "relative",
     zIndex: -10,
   },
   safeContainerStyle: {
-    justifyContent: 'center',
+    justifyContent: "center",
     // backgroundColor: 'tomato',
     width: windowWidth * 0.43,
     // borderRadius:0
@@ -1884,30 +1943,30 @@ const styles = StyleSheet.create({
   subTabbarContainerFilter: {
     height: windowHeight * 0.055,
     width: windowWidth * 0.95,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 15,
-    alignSelf: 'center',
+    alignSelf: "center",
     elevation: 5,
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   returnButtonContainerFilter: {
     height: windowHeight * 0.055,
     width: windowWidth * 0.95,
-    flexDirection: 'row',
-    alignItems: 'flex-start',
+    flexDirection: "row",
+    alignItems: "flex-start",
     margin: 10,
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     elevation: 5,
-    justifyContent: 'flex-start',
+    justifyContent: "flex-start",
   },
   filterTextContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     height: windowHeight * 0.035,
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignItems: "center",
+    justifyContent: "space-around",
     width: windowWidth * 0.15,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     elevation: 3,
     borderRadius: 5,
     margin: windowWidth * 0.01,
@@ -1915,34 +1974,34 @@ const styles = StyleSheet.create({
   filterTextStyle: {
     fontFamily: commonStyle.regular,
     fontSize: 10,
-    color: '#000',
+    color: "#000",
     width: windowWidth * 0.2,
     height: windowHeight * 0.035,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-    fontWeight: 'bold',
+    textAlign: "center",
+    textAlignVertical: "center",
+    fontWeight: "bold",
   },
   containerMarginBottom: {
     marginBottom: windowHeight * 0.1,
   },
   upperRow: {
     // backgroundColor: 'green',
-    flexDirection: 'row',
+    flexDirection: "row",
     height: windowHeight * 0.1,
     width: windowWidth * 0.95,
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignItems: "center",
+    justifyContent: "space-around",
     marginTop: windowHeight * 0.03,
   },
   detailTextContainer: {
     // backgroundColor: 'tomato',
     height: windowHeight * 0.08,
     width: windowWidth * 0.8,
-    alignItems: 'flex-start',
-    justifyContent: 'space-around',
+    alignItems: "flex-start",
+    justifyContent: "space-around",
   },
   detailNameText: {
-    color: '#000',
+    color: "#000",
     fontFamily: commonStyle.regular,
     fontSize: 14,
     // backgroundColor: 'tomato',
@@ -1950,44 +2009,44 @@ const styles = StyleSheet.create({
     width: windowWidth * 0.6,
   },
   discountPriceText: {
-    color: '#000',
+    color: "#000",
     fontFamily: commonStyle.regular,
     fontSize: 13,
     // backgroundColor: 'tomato',
     margin: 2,
   },
   priceText: {
-    color: '#000',
+    color: "#000",
     fontFamily: commonStyle.regular,
     fontSize: 13,
-    textDecorationLine: 'line-through',
+    textDecorationLine: "line-through",
   },
 
   counterTExt: {
     fontSize: 30,
-    color: '#000',
+    color: "#000",
   },
   counterButton: {
     width: 50,
     height: 50,
     borderRadius: 100,
-    backgroundColor: '#DFE8F2',
+    backgroundColor: "#DFE8F2",
     elevation: 2,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
   },
   counterButtonText: {
-    color: '#A1B0C1',
+    color: "#A1B0C1",
     fontSize: 20,
   },
   downRow: {
     // backgroundColor: 'tomato',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-around",
     width: windowWidth * 0.9,
     height: windowHeight * 0.35,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   dropDowncontainer: {
     // backgroundColor: 'green',
@@ -2000,45 +2059,45 @@ const styles = StyleSheet.create({
     borderRadius: 10,
   },
   dotStyle: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     zIndex: 1500,
     bottom: windowHeight * 0.04,
-    alignSelf: 'center',
+    alignSelf: "center",
     gap: 2,
     // backgroundColor: 'tomato',
     width: windowWidth * 0.1,
-    color: '#000',
+    color: "#000",
   },
   dotStyleGrid: {
-    flexDirection: 'row',
-    position: 'absolute',
+    flexDirection: "row",
+    position: "absolute",
     zIndex: 1500,
     bottom: windowHeight * wp(0.005),
-    alignSelf: 'center',
-    justifyContent: 'space-around',
+    alignSelf: "center",
+    justifyContent: "space-around",
     // backgroundColor: 'tomato',
     width: windowWidth * 0.1,
-    color: '#000',
+    color: "#000",
   },
   pagingText: {
-    color: '#888',
+    color: "#888",
     fontSize: 16,
     opacity: 0.1,
   },
   pagingActiveText: {
-    color: '#14213D',
+    color: "#14213D",
     fontSize: 16,
   },
   dropDownscontainer: {
     // backgroundColor: 'green',
     width: windowWidth * 0.4,
     height: windowHeight * 0.35,
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignItems: "center",
+    justifyContent: "space-around",
   },
   inputContainer: {
-    backgroundColor: '#d5d6d7',
+    backgroundColor: "#d5d6d7",
     width: windowWidth * 0.4,
     height: 50,
     borderRadius: 10,
@@ -2047,70 +2106,70 @@ const styles = StyleSheet.create({
   stockMessage: {
     marginTop: 5,
     fontSize: 12,
-    fontWeight: 'bold',
-    textAlign: 'center',
+    fontWeight: "bold",
+    textAlign: "center",
   },
   inputStyle: {
     padding: 10,
-    color: '#14213D',
+    color: "#14213D",
     fontFamily: commonStyle.regular,
     marginLeft: 10,
     fontSize: 16,
   },
   buttonContainers: {
-    backgroundColor: '#1A6CAF',
+    backgroundColor: "#1A6CAF",
     height: windowHeight * 0.04,
     width: windowWidth * 0.45,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 50,
   },
   buttonCartContainers: {
-    backgroundColor: '#3292E0',
+    backgroundColor: "#3292E0",
     height: windowHeight * 0.04,
     width: windowWidth * 0.4,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 50,
   },
   buttonText: {
     fontSize: 10,
-    color: '#fff',
+    color: "#fff",
     fontFamily: commonStyle.regular,
   },
   dropdown: {
     height: 50,
     borderRadius: 8,
     paddingHorizontal: 12,
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
     marginBottom: 5,
   },
   placeholderStyle: {
     fontSize: 16,
     fontFamily: commonStyle.regular,
-    color: '#14213D',
+    color: "#14213D",
   },
   modalCloseButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 20,
     right: 20,
     zIndex: 1,
   },
   modalCloseButtonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 18,
   },
   selectedTextStyle: {
     fontSize: 16,
     fontFamily: commonStyle.regular,
-    color: '#14213D',
+    color: "#14213D",
   },
   iconStyle: {
     width: 20,
     height: 20,
   },
   containerStyle: {
-    backgroundColor: '#F5F5F5',
+    backgroundColor: "#F5F5F5",
     marginTop: -1,
     borderRadius: 8,
     maxHeight: 100,
@@ -2119,89 +2178,89 @@ const styles = StyleSheet.create({
   ModalContainer: {
     width: windowWidth * 1.0,
     height: windowHeight * 0.4,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 10,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "space-around",
     bottom: 0,
-    position: 'absolute',
+    position: "absolute",
   },
   cameraGallerybuttons: {
-    backgroundColor: '#1A6CAF',
+    backgroundColor: "#1A6CAF",
     height: 50,
     width: windowWidth * 0.8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
   },
   cancelButton: {
-    backgroundColor: '#ff726f',
+    backgroundColor: "#ff726f",
     height: 50,
     width: windowWidth * 0.8,
-    alignItems: 'center',
-    justifyContent: 'center',
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
   },
   uploadContainer: {
     // backgroundColor: 'tomato',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignItems: "center",
+    justifyContent: "space-around",
     width: windowWidth * 0.8,
     height: 40,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   uploadText: {
     fontSize: 18,
-    color: '#000',
-    textAlign: 'center',
+    color: "#000",
+    textAlign: "center",
     fontFamily: commonStyle.Bold,
   },
   paginationContainer: {
     marginTop: -20,
   },
   uploadSubText: {
-    color: '#cccccc',
-    textAlign: 'center',
+    color: "#cccccc",
+    textAlign: "center",
     fontFamily: commonStyle.regular,
   },
   buttonsContainer: {
     // backgroundColor: 'tomato',
     width: windowWidth * 0.9,
     height: windowHeight * 0.3,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "space-around",
   },
   bottomTextContainer: {
     // backgroundColor: 'gold',
     width: windowWidth * 0.9,
     height: windowHeight * 0.1,
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   bottomText: {
     fontFamily: commonStyle.regular,
-    color: '#BCB8B1',
+    color: "#BCB8B1",
     fontSize: 14,
     margin: 10,
   },
   root: {
     height: 64,
-    backgroundColor: '#00000077',
-    alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: "#00000077",
+    alignItems: "center",
+    justifyContent: "center",
   },
   text: {
     fontSize: 17,
-    color: '#FFF',
+    color: "#FFF",
   },
   commentInput: {
     // backgroundColor: 'tomato',
-    alignSelf: 'center',
+    alignSelf: "center",
     width: windowWidth * 0.85,
     height: windowHeight * 0.1,
-    textAlignVertical: 'top',
-    color: '#000',
+    textAlignVertical: "top",
+    color: "#000",
     fontFamily: commonStyle.regular,
   },
 });

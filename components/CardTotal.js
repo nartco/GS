@@ -189,7 +189,7 @@ const CardTotal = ({
                   }}>
                   <TextInput
                     ref={inputRef}
-                    placeholder={t('Saisir le code')}
+                    // placeholder={t('Saisir le code')}
                     placeholderTextColor="#666"
                     value={RemiseCode}
                     onChangeText={text => setRemiseCode(text)}

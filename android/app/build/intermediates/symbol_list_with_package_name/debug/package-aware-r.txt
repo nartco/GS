@@ -158,6 +158,9 @@ attr activityChooserViewStyle
 attr actualImageResource
 attr actualImageScaleType
 attr actualImageUri
+attr adSize
+attr adSizes
+attr adUnitId
 attr addElevationShadow
 attr alertDialogButtonGroupStyle
 attr alertDialogCenterButtons
@@ -450,6 +453,20 @@ attr colorTertiary
 attr colorTertiaryContainer
 attr colorTertiaryFixed
 attr colorTertiaryFixedDim
+attr com_facebook_auxiliary_view_position
+attr com_facebook_confirm_logout
+attr com_facebook_foreground_color
+attr com_facebook_horizontal_alignment
+attr com_facebook_is_cropped
+attr com_facebook_login_button_radius
+attr com_facebook_login_button_transparency
+attr com_facebook_login_text
+attr com_facebook_logout_text
+attr com_facebook_object_id
+attr com_facebook_object_type
+attr com_facebook_preset_size
+attr com_facebook_style
+attr com_facebook_tooltip_mode
 attr commitIcon
 attr companyName
 attr compatShadowEnabled
@@ -1514,7 +1531,11 @@ attr yearTodayStyle
 attr zOrderOnTop
 bool abc_action_bar_embed_tabs
 bool abc_config_actionMenuItemAllCaps
+bool enable_system_alarm_service_default
+bool enable_system_foreground_service_default
+bool enable_system_job_service_default
 bool mtrl_btn_textappearance_all_caps
+bool workmanager_test_configuration
 color abc_background_cache_hint_selector_material_dark
 color abc_background_cache_hint_selector_material_light
 color abc_btn_colored_borderless_text_material
@@ -1584,6 +1605,23 @@ color catalyst_logbox_background
 color catalyst_redbox_background
 color chartreuse
 color chocolate
+color com_facebook_blue
+color com_facebook_button_background_color
+color com_facebook_button_background_color_disabled
+color com_facebook_button_background_color_pressed
+color com_facebook_button_send_background_color
+color com_facebook_button_send_background_color_pressed
+color com_facebook_button_text_color
+color com_facebook_device_auth_text
+color com_facebook_likeboxcountview_border_color
+color com_facebook_likeboxcountview_text_color
+color com_facebook_likeview_text_color
+color com_facebook_messenger_blue
+color com_facebook_primary_button_disabled_text_color
+color com_facebook_primary_button_pressed_text_color
+color com_facebook_primary_button_text_color
+color com_facebook_send_button_text_color
+color com_smart_login_code
 color common_google_signin_btn_text_dark
 color common_google_signin_btn_text_dark_default
 color common_google_signin_btn_text_dark_disabled
@@ -2628,6 +2666,22 @@ dimen cardview_compat_inset_shadow
 dimen cardview_default_elevation
 dimen cardview_default_radius
 dimen clock_face_margin_start
+dimen com_facebook_auth_dialog_corner_radius
+dimen com_facebook_auth_dialog_corner_radius_oversized
+dimen com_facebook_button_corner_radius
+dimen com_facebook_button_login_corner_radius
+dimen com_facebook_likeboxcountview_border_radius
+dimen com_facebook_likeboxcountview_border_width
+dimen com_facebook_likeboxcountview_caret_height
+dimen com_facebook_likeboxcountview_caret_width
+dimen com_facebook_likeboxcountview_text_padding
+dimen com_facebook_likeboxcountview_text_size
+dimen com_facebook_likeview_edge_padding
+dimen com_facebook_likeview_internal_padding
+dimen com_facebook_likeview_text_size
+dimen com_facebook_profilepictureview_preset_size_large
+dimen com_facebook_profilepictureview_preset_size_normal
+dimen com_facebook_profilepictureview_preset_size_small
 dimen compat_button_inset_horizontal_material
 dimen compat_button_inset_vertical_material
 dimen compat_button_padding_horizontal_material
@@ -3518,6 +3572,9 @@ drawable abc_textfield_search_activated_mtrl_alpha
 drawable abc_textfield_search_default_mtrl_alpha
 drawable abc_textfield_search_material
 drawable abc_vector_test
+drawable admob_close_button_black_circle_white_cross
+drawable admob_close_button_white_circle_black_cross
+drawable admob_close_button_white_cross
 drawable autofill_inline_suggestion_chip_background
 drawable avd_hide_password
 drawable avd_show_password
@@ -3529,6 +3586,29 @@ drawable btn_radio_off_mtrl
 drawable btn_radio_off_to_on_mtrl_animation
 drawable btn_radio_on_mtrl
 drawable btn_radio_on_to_off_mtrl_animation
+drawable com_facebook_auth_dialog_background
+drawable com_facebook_auth_dialog_cancel_background
+drawable com_facebook_auth_dialog_header_background
+drawable com_facebook_button_background
+drawable com_facebook_button_icon
+drawable com_facebook_button_like_background
+drawable com_facebook_button_like_icon_selected
+drawable com_facebook_button_send_background
+drawable com_facebook_button_send_icon_blue
+drawable com_facebook_button_send_icon_white
+drawable com_facebook_close
+drawable com_facebook_favicon_blue
+drawable com_facebook_profile_picture_blank_portrait
+drawable com_facebook_profile_picture_blank_square
+drawable com_facebook_send_button_icon
+drawable com_facebook_tooltip_black_background
+drawable com_facebook_tooltip_black_bottomnub
+drawable com_facebook_tooltip_black_topnub
+drawable com_facebook_tooltip_black_xout
+drawable com_facebook_tooltip_blue_background
+drawable com_facebook_tooltip_blue_bottomnub
+drawable com_facebook_tooltip_blue_topnub
+drawable com_facebook_tooltip_blue_xout
 drawable common_full_open_on_phone
 drawable common_google_signin_btn_icon_dark
 drawable common_google_signin_btn_icon_dark_focused
@@ -3604,6 +3684,15 @@ drawable material_ic_keyboard_arrow_previous_black_24dp
 drawable material_ic_keyboard_arrow_right_black_24dp
 drawable material_ic_menu_arrow_down_black_24dp
 drawable material_ic_menu_arrow_up_black_24dp
+drawable messenger_bubble_large_blue
+drawable messenger_bubble_large_white
+drawable messenger_bubble_small_blue
+drawable messenger_bubble_small_white
+drawable messenger_button_blue_bg_round
+drawable messenger_button_blue_bg_selector
+drawable messenger_button_send_round_shadow
+drawable messenger_button_white_bg_round
+drawable messenger_button_white_bg_selector
 drawable mtrl_bottomsheet_drag_handle
 drawable mtrl_checkbox_button
 drawable mtrl_checkbox_button_checked_unchecked
@@ -3655,6 +3744,8 @@ drawable notification_template_icon_bg
 drawable notification_template_icon_low_bg
 drawable notification_tile_bg
 drawable notify_panel_notification_icon_bg
+drawable offline_dialog_background
+drawable offline_dialog_default_icon_42dp
 drawable overlay
 drawable pay_button_generic_background_dark
 drawable pay_button_generic_background_light
@@ -3950,6 +4041,7 @@ id autofill_inline_suggestion_end_icon
 id autofill_inline_suggestion_start_icon
 id autofill_inline_suggestion_subtitle
 id autofill_inline_suggestion_title
+id automatic
 id bank_list
 id barrier
 id baseline
@@ -3966,6 +4058,7 @@ id bounce
 id bounceBoth
 id bounceEnd
 id bounceStart
+id box_count
 id brand_check
 id brand_icon
 id brand_logo
@@ -3977,6 +4070,7 @@ id browser_actions_menu_items
 id browser_actions_menu_view
 id bsb_edit_text
 id bsb_text_input_layout
+id button
 id buttonPanel
 id buyButton
 id buy_now
@@ -4019,9 +4113,20 @@ id clip_vertical
 id clockwise
 id closest
 id collapseActionView
+id com_facebook_body_frame
+id com_facebook_button_xout
+id com_facebook_device_auth_instructions
+id com_facebook_fragment_container
+id com_facebook_login_fragment_progress_bar
+id com_facebook_smart_instructions_0
+id com_facebook_smart_instructions_or
+id com_facebook_tooltip_bubble_view_bottom_pointer
+id com_facebook_tooltip_bubble_view_text_body
+id com_facebook_tooltip_bubble_view_top_pointer
 id compose_view_saveable_id_tag
 id compress
 id confirm_button
+id confirmation_code
 id confirmed_icon
 id confirming_icon
 id constraint
@@ -4078,6 +4183,7 @@ id disableIntraAutoTransition
 id disablePostScroll
 id disableScroll
 id disjoint
+id display_always
 id donate_with
 id donate_with_google
 id dragAnticlockwise
@@ -4198,6 +4304,7 @@ id immediateStop
 id included
 id indeterminate
 id info
+id inline
 id inspection_slot_table_set
 id invalidate_transform
 id invisible
@@ -4211,6 +4318,7 @@ id jumpToStart
 id label
 id labeled
 id labelled_by
+id large
 id layout
 id left
 id leftToRight
@@ -4255,6 +4363,7 @@ id material_value_index
 id matrix
 id media_actions
 id message
+id messenger_send_button
 id middle
 id mini
 id minutes
@@ -4305,6 +4414,7 @@ id navigation_header_container
 id never
 id neverCompleteToEnd
 id neverCompleteToStart
+id never_display
 id noScroll
 id noState
 id none
@@ -4314,8 +4424,12 @@ id notification_background
 id notification_main_column
 id notification_main_column_container
 id off
+id offline_dialog_advertiser_name
+id offline_dialog_image
+id offline_dialog_text
 id on
 id onInterceptTouchReturnSwipe
+id open_graph
 id open_search_bar_text_view
 id open_search_view_background
 id open_search_view_clear_button
@@ -4337,6 +4451,7 @@ id overlay_image
 id overlay_top
 id overshoot
 id packed
+id page
 id parallax
 id parent
 id parentPanel
@@ -4434,6 +4549,7 @@ id sin
 id skipCollapsed
 id skipped
 id slide
+id small
 id snackbar_action
 id snackbar_text
 id snap
@@ -4541,6 +4657,7 @@ id transition_transform
 id triangle
 id unchecked
 id uniform
+id unknown
 id unlabeled
 id up
 id useLogo
@@ -4696,9 +4813,15 @@ layout abc_search_dropdown_item_icons_2line
 layout abc_search_view
 layout abc_select_dialog_material
 layout abc_tooltip
+layout admob_empty_layout
 layout autofill_inline_suggestion
 layout browser_actions_context_menu_page
 layout browser_actions_context_menu_row
+layout com_facebook_activity_layout
+layout com_facebook_device_auth_dialog_fragment
+layout com_facebook_login_fragment
+layout com_facebook_smart_device_dialog_fragment
+layout com_facebook_tooltip_bubble
 layout custom_dialog
 layout default_error_screen
 layout design_bottom_navigation_item
@@ -4740,6 +4863,12 @@ layout material_time_input
 layout material_timepicker
 layout material_timepicker_dialog
 layout material_timepicker_textinput_display
+layout messenger_button_send_blue_large
+layout messenger_button_send_blue_round
+layout messenger_button_send_blue_small
+layout messenger_button_send_white_large
+layout messenger_button_send_white_round
+layout messenger_button_send_white_small
 layout mtrl_alert_dialog
 layout mtrl_alert_dialog_actions
 layout mtrl_alert_dialog_title
@@ -4788,6 +4917,7 @@ layout notification_template_media
 layout notification_template_media_custom
 layout notification_template_part_chronometer
 layout notification_template_part_time
+layout offline_ads_dialog
 layout paybutton_generic
 layout redbox_item_frame
 layout redbox_item_title
@@ -4951,6 +5081,29 @@ string clear_text_end_icon_content_description
 string close_drawer
 string close_sheet
 string collapsed
+string com_facebook_device_auth_instructions
+string com_facebook_image_download_unknown_error
+string com_facebook_internet_permission_error_message
+string com_facebook_internet_permission_error_title
+string com_facebook_like_button_liked
+string com_facebook_like_button_not_liked
+string com_facebook_loading
+string com_facebook_loginview_cancel_action
+string com_facebook_loginview_log_in_button
+string com_facebook_loginview_log_in_button_continue
+string com_facebook_loginview_log_in_button_long
+string com_facebook_loginview_log_out_action
+string com_facebook_loginview_log_out_button
+string com_facebook_loginview_logged_in_as
+string com_facebook_loginview_logged_in_using_facebook
+string com_facebook_send_button_text
+string com_facebook_share_button_text
+string com_facebook_smart_device_instructions
+string com_facebook_smart_device_instructions_or
+string com_facebook_smart_login_confirmation_cancel
+string com_facebook_smart_login_confirmation_continue_as
+string com_facebook_smart_login_confirmation_title
+string com_facebook_tooltip_default
 string combobox_description
 string common_google_play_services_enable_button
 string common_google_play_services_enable_text
@@ -4984,6 +5137,8 @@ string expanded
 string exposed_dropdown_menu_content_description
 string fab_transformation_scrim_behavior
 string fab_transformation_sheet_behavior
+string facebook_app_id
+string facebook_client_token
 string fallback_menu_item_copy_link
 string fallback_menu_item_open_in_browser
 string fallback_menu_item_share_link
@@ -5046,6 +5201,7 @@ string material_timepicker_text_input_mode_description
 string menu_description
 string menubar_description
 string menuitem_description
+string messenger_send_button_text
 string minutes_description
 string minutes_tag
 string month_description
@@ -5111,9 +5267,23 @@ string mtrl_switch_track_decoration_path
 string mtrl_switch_track_path
 string mtrl_timepicker_cancel
 string mtrl_timepicker_confirm
+string native_body
+string native_headline
+string native_media_view
 string navigation_menu
 string not_selected
+string notifications_permission_confirm
+string notifications_permission_decline
+string notifications_permission_title
 string off
+string offline_dialog_image_description
+string offline_dialog_text
+string offline_notification_title
+string offline_notification_title_with_advertiser
+string offline_opt_in_confirm
+string offline_opt_in_decline
+string offline_opt_in_message
+string offline_opt_in_title
 string on
 string overlay
 string password_toggle_content_description
@@ -5127,6 +5297,13 @@ string radiogroup_description
 string range_end
 string range_start
 string rn_tab_description
+string s1
+string s2
+string s3
+string s4
+string s5
+string s6
+string s7
 string scrollbar_description
 string search_menu_title
 string searchbar_scrolling_view_behavior
@@ -5623,6 +5800,7 @@ string time_tag
 string timer_description
 string toolbar_description
 string wallet_buy_button_place_holder
+string watermark_label_prefix
 string year_description
 style AlertDialog_AppCompat
 style AlertDialog_AppCompat_Light
@@ -5950,6 +6128,20 @@ style MaterialAlertDialog_MaterialComponents_Title_Panel
 style MaterialAlertDialog_MaterialComponents_Title_Panel_CenterStacked
 style MaterialAlertDialog_MaterialComponents_Title_Text
 style MaterialAlertDialog_MaterialComponents_Title_Text_CenterStacked
+style MessengerButton
+style MessengerButton_Blue
+style MessengerButton_Blue_Large
+style MessengerButton_Blue_Small
+style MessengerButton_White
+style MessengerButton_White_Large
+style MessengerButton_White_Small
+style MessengerButtonText
+style MessengerButtonText_Blue
+style MessengerButtonText_Blue_Large
+style MessengerButtonText_Blue_Small
+style MessengerButtonText_White
+style MessengerButtonText_White_Large
+style MessengerButtonText_White_Small
 style PayButtonGenericDarkTheme
 style PayButtonGenericLightTheme
 style Platform_AppCompat
@@ -6260,6 +6452,7 @@ style Theme_FullScreenDialog
 style Theme_FullScreenDialogAnimatedFade
 style Theme_FullScreenDialogAnimatedSlide
 style Theme_Hidden
+style Theme_IAPTheme
 style Theme_Material3_Dark
 style Theme_Material3_Dark_BottomSheetDialog
 style Theme_Material3_Dark_Dialog
@@ -6840,7 +7033,16 @@ style Widget_MaterialComponents_Tooltip
 style Widget_Support_CoordinatorLayout
 style android_native
 style android_native_small
+style com_facebook_activity_theme
+style com_facebook_auth_dialog
+style com_facebook_auth_dialog_instructions_textview
+style com_facebook_button
+style com_facebook_button_like
+style com_facebook_button_send
+style com_facebook_button_share
+style com_facebook_loginview_default_style
 style redboxButton
+style tooltip_bubble_text
 styleable ActionBar background backgroundSplit backgroundStacked contentInsetEnd contentInsetEndWithActions contentInsetLeft contentInsetRight contentInsetStart contentInsetStartWithNavigation customNavigationLayout displayOptions divider elevation height hideOnContentScroll homeAsUpIndicator homeLayout icon indeterminateProgressStyle itemPadding logo navigationMode popupTheme progressBarPadding progressBarStyle subtitle subtitleTextStyle title titleTextStyle
 styleable ActionBarLayout android_layout_gravity
 styleable ActionMenuItemView android_minWidth
@@ -6848,6 +7050,7 @@ styleable ActionMenuView
 styleable ActionMode background backgroundSplit closeItemLayout height subtitleTextStyle titleTextStyle
 styleable ActivityChooserView expandActivityOverflowButtonDrawable initialActivityCount
 styleable ActivityNavigator android_name action data dataPattern targetPackage
+styleable AdsAttrs adSize adSizes adUnitId
 styleable AlertDialog android_layout buttonIconDimen buttonPanelSideLayout listItemLayout listLayout multiChoiceItemLayout showTitle singleChoiceItemLayout
 styleable AnimatedStateListDrawableCompat android_dither android_visible android_variablePadding android_constantSize android_enterFadeDuration android_exitFadeDuration
 styleable AnimatedStateListDrawableItem android_id android_drawable
@@ -7024,8 +7227,12 @@ styleable ViewStubCompat android_id android_layout android_inflatedId
 styleable ViewTransition android_id SharedValue SharedValueId clearsTag duration ifTagNotSet ifTagSet motionInterpolator motionTarget onStateTransition pathMotionArc setsTag transitionDisable upDuration viewTransitionMode
 styleable WalletFragmentOptions appTheme environment fragmentMode fragmentStyle
 styleable WalletFragmentStyle buyButtonAppearance buyButtonHeight buyButtonText buyButtonWidth maskedWalletDetailsBackground maskedWalletDetailsButtonBackground maskedWalletDetailsButtonTextAppearance maskedWalletDetailsHeaderTextAppearance maskedWalletDetailsLogoImageType maskedWalletDetailsLogoTextColor maskedWalletDetailsTextAppearance
+styleable com_facebook_like_view com_facebook_auxiliary_view_position com_facebook_foreground_color com_facebook_horizontal_alignment com_facebook_object_id com_facebook_object_type com_facebook_style
+styleable com_facebook_login_view com_facebook_confirm_logout com_facebook_login_button_radius com_facebook_login_button_transparency com_facebook_login_text com_facebook_logout_text com_facebook_tooltip_mode
+styleable com_facebook_profile_picture_view com_facebook_is_cropped com_facebook_preset_size
 styleable include constraintSet
 xml ga_ad_services_config
+xml gma_ad_services_config
 xml image_share_filepaths
 xml imagepicker_provider_paths
 xml provider_paths

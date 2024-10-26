@@ -37,8 +37,12 @@ import com.ReactNativeBlobUtil.ReactNativeBlobUtilPackage;
 import com.henninghall.date_picker.DatePickerPackage;
 // react-native-exception-handler
 import com.masteratul.exceptionhandler.ReactNativeExceptionHandlerPackage;
+// react-native-fbsdk-next
+import com.facebook.reactnative.androidsdk.FBSDKPackage;
 // react-native-file-access
 import com.alpha0010.fs.FileAccessPackage;
+// react-native-google-mobile-ads
+import io.invertase.googlemobileads.ReactNativeGoogleMobileAdsPackage;
 // react-native-image-picker
 import com.imagepicker.ImagePickerPackage;
 // react-native-linear-gradient
@@ -109,7 +113,9 @@ public class PackageList {
       new ReactNativeBlobUtilPackage(),
       new DatePickerPackage(),
       new ReactNativeExceptionHandlerPackage(),
+      new FBSDKPackage(),
       new FileAccessPackage(),
+      new ReactNativeGoogleMobileAdsPackage(),
       new ImagePickerPackage(),
       new LinearGradientPackage(),
       new RNPDFPackage(),
