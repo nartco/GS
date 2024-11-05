@@ -12,14 +12,14 @@ import {
   ScrollView,
   StyleSheet,
   Dimensions,
-} from 'react-native';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import React, {useEffect, useRef, useState} from 'react';
-import Stepper from '../Stepper';
-import PhoneInput from 'react-native-international-phone-number';
-import {useIsFocused, useRoute} from '@react-navigation/native';
-import IntlPhoneInput from 'react-native-intl-phone-input';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
+} from "react-native";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import React, { useEffect, useRef, useState } from "react";
+import Stepper from "../Stepper";
+import PhoneInput from "react-native-international-phone-number";
+import { useIsFocused, useRoute } from "@react-navigation/native";
+import IntlPhoneInput from "react-native-intl-phone-input";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
 
 import {
   getCommand,
@@ -39,34 +39,34 @@ import {
   saveLivraisonmagasinSchedule,
   saveSelectedCountry,
   saveSelectedService,
-  getDepotValues
-} from '../../modules/GestionStorage';
-import axiosInstance from '../../axiosInstance';
-import {useTranslation} from 'react-i18next';
-import ServiceHeader from '../../components/ServiceHeader';
-import {calculFraisLivraison} from '../../modules/CalculPrix';
-import {Dropdown} from 'react-native-element-dropdown';
-import Toast from 'react-native-toast-message';
-import auth from '@react-native-firebase/auth';
-import {removeCountryCode} from '../../components/removeCountryCode';
-import {cleanString} from '../../components/cleanString';
-import {getCountryCodeFromPhone} from '../../components/getCountryCode';
+  getDepotValues,
+} from "../../modules/GestionStorage";
+import axiosInstance from "../../axiosInstance";
+import { useTranslation } from "react-i18next";
+import ServiceHeader from "../../components/ServiceHeader";
+import { calculFraisLivraison } from "../../modules/CalculPrix";
+import { Dropdown } from "react-native-element-dropdown";
+import Toast from "react-native-toast-message";
+import auth from "@react-native-firebase/auth";
+import { removeCountryCode } from "../../components/removeCountryCode";
+import { cleanString } from "../../components/cleanString";
+import { getCountryCodeFromPhone } from "../../components/getCountryCode";
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
 
-const Livraison1 = props => {
+const Livraison1 = (props) => {
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [current, setCurrent] = useState();
   const [current2, setCurrent2] = useState();
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState("");
   const phoneInput = useRef(null);
-  const [value, setValue] = useState('');
-  const [formattedValue, setFormattedValue] = useState('');
+  const [value, setValue] = useState("");
+  const [formattedValue, setFormattedValue] = useState("");
   var isFocused = useIsFocused();
 
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isFocus, setIsFocus] = useState(false);
   const [isFocus1, setIsFocus1] = useState(false);
   const [isFocusModeLivraison, setIsFocusModeLivraison] = useState(false);
@@ -75,12 +75,12 @@ const Livraison1 = props => {
   const [ActivityMagasin, setActivityMagasin] = useState(true);
   const [MagasinsLivraison, setMagasinsLivraison] = useState([]);
   const [adresses, setAdresses] = useState([]);
-  const [NomContact, setNomContact] = useState('');
-  const [TelContact, setTelContact] = useState('');
-  const [UserMagasinChoix, setUserMagasinChoix] = useState('');
-  const [UserDomicileChoix, setUserDomicileChoix] = useState('');
+  const [NomContact, setNomContact] = useState("");
+  const [TelContact, setTelContact] = useState("");
+  const [UserMagasinChoix, setUserMagasinChoix] = useState("");
+  const [UserDomicileChoix, setUserDomicileChoix] = useState("");
   const [selectedCountry, setSelectedCountry] = useState();
-  const [telCopy, setTelCopy] = useState('');
+  const [telCopy, setTelCopy] = useState("");
 
   const [Products, setProducts] = useState([]);
   const [PrixTotalLivraison, setPrixTotalLivraison] = useState(0);
@@ -88,22 +88,22 @@ const Livraison1 = props => {
   const [modalVisible, setModalVisible] = useState(false);
   const [showRelais, setShowRelais] = useState(false);
   const [showLivraisonDomicile, setShowLivraisonDomicile] = useState(false);
-  const [modeLivraisonChoice, setModeLivraisonChoice] = useState('');
+  const [modeLivraisonChoice, setModeLivraisonChoice] = useState("");
   const [MagasinsLivraisonRawValues, setMagasinsLivraisonRawValues] = useState(
-    [],
+    []
   );
   const [magasinLivraisonUserChoix, setMagasinLivraisonUserChoix] =
     useState(null);
   const [UserLivraisonDomicileChoix, setUserLivraisonDomicileChoix] =
-    useState('');
+    useState("");
   const [Service, setService] = useState(null);
   const [paysLivraisonObject, setPaysLivraisonObject] = useState(null);
-  const [Language, setLanguage] = useState('fr');
+  const [Language, setLanguage] = useState("fr");
   const [livraisonDelaiMin, setLivraisonDelaiMin] = useState(null);
   const [livraisonDelaiMax, setLivraisonDelaiMax] = useState(null);
   const [montantMinimum, setMontantMinium] = useState(0);
   const [zonesLivraison, setZonesLivraison] = useState([]);
-  const [errorMessage, setErrorMessage] = useState('');
+  const [errorMessage, setErrorMessage] = useState("");
 
   const [CommandeHasManualValidation, setCommandeHasManualValidation] =
     useState(false);
@@ -115,33 +115,33 @@ const Livraison1 = props => {
     : false;
 
   const items = [
-    {label: t('Retrait en point relais'), value: 'relais'},
-    {label: t('Livraison à domicile'), value: 'domicile'},
+    { label: t("Retrait en point relais"), value: "relais" },
+    { label: t("Livraison à domicile"), value: "domicile" },
   ];
 
   const route = useRoute();
 
-  const handlePhoneChange = text => {
+  const handlePhoneChange = (text) => {
     if (count > 0) {
       setTelContact(text);
     }
     setCount(count + 1);
   };
 
-  const createAddressLabel = address => {
+  const createAddressLabel = (address) => {
     const parts = [
       address.adresse,
       address.codePostal,
       address.ville,
       address.pays,
-    ].filter(part => part && part.trim() !== '');
+    ].filter((part) => part && part.trim() !== "");
 
-    return parts.join(', ');
+    return parts.join(", ");
   };
 
   useEffect(() => {
     setCount(0);
-    setErrorMessage('');
+    setErrorMessage("");
     setMontantMinium(0);
     async function fetchData() {
       let validationManuelle = false;
@@ -165,7 +165,7 @@ const Livraison1 = props => {
       if (BasketCommand.length > 0) {
         let livraisonMin = null;
         let livraisonMax = null;
-        BasketCommand?.forEach(commande => {
+        BasketCommand?.forEach((commande) => {
           let product = commande.product;
 
           let specificites = product
@@ -196,7 +196,7 @@ const Livraison1 = props => {
         setLivraisonDelaiMax(livraisonMax);
 
         const response = await axiosInstance.get(
-          '/pays/' + BasketCommand[0].paysLivraison,
+          "/pays/" + BasketCommand[0].paysLivraison
         );
 
         Data = response.data;
@@ -206,7 +206,7 @@ const Livraison1 = props => {
       let basketData = await getPanier();
 
       if (basketData.length > 0) {
-        basketData?.forEach(item => {
+        basketData?.forEach((item) => {
           if (item.product && item.product.validationManuelle) {
             validationManuelle = true;
           }
@@ -219,15 +219,15 @@ const Livraison1 = props => {
         setShowLivraisonDomicile(true);
         setShowRelais(false);
 
-        setModeLivraisonChoice('domicile');
-        setStorageLivraisonChoiceMode('domicile');
+        setModeLivraisonChoice("domicile");
+        setStorageLivraisonChoiceMode("domicile");
         setIsFocusModeLivraison(false);
       }
 
       if (basketData.length > 0) {
         let livraisonMin = null;
         let livraisonMax = null;
-        basketData?.forEach(commande => {
+        basketData?.forEach((commande) => {
           let product = commande.product;
           let specificites = product ? product.productSpecificites[0] : null;
 
@@ -253,7 +253,7 @@ const Livraison1 = props => {
         if (cartService != service.code) {
           let services = await getServices();
 
-          var newData = services.filter(ls => {
+          var newData = services.filter((ls) => {
             if (ls.code == cartService) {
               return ls;
             }
@@ -279,7 +279,7 @@ const Livraison1 = props => {
         if (cartService.code != service.code) {
           let services = await getServices();
 
-          var newData = services.filter(ls => {
+          var newData = services.filter((ls) => {
             if (ls.code == cartService.code) {
               return ls;
             }
@@ -321,22 +321,26 @@ const Livraison1 = props => {
         requestBody.fournisseurs = route.params.excludedSupplierIds;
       }
 
-      if (depotValues && depotValues.depotMagasinFournisseurId && service && (service.code == 'fret-par-avion' || service.code == 'fret-par-bateau'))
-      {
+      if (
+        depotValues &&
+        depotValues.depotMagasinFournisseurId &&
+        service &&
+        (service.code == "fret-par-avion" || service.code == "fret-par-bateau")
+      ) {
         requestBody.magasinsFournisseur = depotValues.depotMagasinFournisseurId;
       }
 
       await axiosInstance
         .post(
           `fournisseurs/magasins/${paysLivraisonObject.id}/livraison`,
-          requestBody,
+          requestBody
         )
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             fournisseurs = response.data;
           }
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.data.montantMinimum) {
             setMontantMinium(error.data.montantMinimum);
           }
@@ -352,7 +356,7 @@ const Livraison1 = props => {
           magasin.types?.forEach(function (type) {
             if (
               !found &&
-              'Livraison' == type &&
+              "Livraison" == type &&
               paysLivraisonObject.destination.toLowerCase() ==
                 magasin.pays.toLowerCase()
             ) {
@@ -368,7 +372,7 @@ const Livraison1 = props => {
         }
       });
 
-      let formatted = data.map(ls => {
+      let formatted = data.map((ls) => {
         return {
           id: ls.id,
           label: createAddressLabel(ls),
@@ -388,10 +392,7 @@ const Livraison1 = props => {
       try {
         const user = auth().currentUser;
         let response = await axiosInstance.get(
-          'adresses/user/destination/' +
-            user.uid +
-            '/' +
-            paysLivraisonObject.id,
+          "adresses/user/destination/" + user.uid + "/" + paysLivraisonObject.id
         );
         // console.log(
         //   response.data,
@@ -402,7 +403,7 @@ const Livraison1 = props => {
         //     paysLivraisonObject.id,
         // );
 
-        formattedUserAdresses = response.data.map(ls => {
+        formattedUserAdresses = response.data.map((ls) => {
           return {
             id: ls.id,
             label: createAddressLabel(ls),
@@ -416,7 +417,7 @@ const Livraison1 = props => {
 
         setAdresses(formattedUserAdresses);
       } catch (error) {
-        console.error('get user address', error);
+        console.error("get user address", error);
       }
 
       // Get livraison mode
@@ -425,7 +426,7 @@ const Livraison1 = props => {
 
       if (choice) {
         setModeLivraisonChoice(choice);
-        if (choice == 'relais') {
+        if (choice == "relais") {
           setShowRelais(true);
           setShowLivraisonDomicile(false);
         }
@@ -440,12 +441,12 @@ const Livraison1 = props => {
         if (telephoneContact) {
           console.log(
             livraisonValues.livraisonTelephone,
-            'livraisonValues.livraisonTelephone',
+            "livraisonValues.livraisonTelephone"
           );
           setTelContact(telephoneContact);
         }
 
-        if ('relais' == choice) {
+        if ("relais" == choice) {
           setShowRelais(true);
           setShowLivraisonDomicile(false);
 
@@ -454,7 +455,7 @@ const Livraison1 = props => {
           if (magasinId) {
             setMagasinLivraisonUserChoix(magasinId);
 
-            var newData = formatted.filter(ls => {
+            var newData = formatted.filter((ls) => {
               if (ls.id == magasinId) {
                 return ls;
               }
@@ -469,7 +470,7 @@ const Livraison1 = props => {
           let adresseId = livraisonValues.livraisonAdresseId;
 
           if (adresseId) {
-            var newData = formattedUserAdresses.filter(ls => {
+            var newData = formattedUserAdresses.filter((ls) => {
               if (ls.id == adresseId) {
                 return ls;
               }
@@ -491,7 +492,7 @@ const Livraison1 = props => {
         let adresse = await getNewAddedAddress();
 
         if (adresse) {
-          setErrorMessage('');
+          setErrorMessage("");
           setUserDomicileChoix(adresse);
           setStorageLIvraisonChoiceAdresse(adresse);
           setUserLivraisonDomicileChoix(adresse.id);
@@ -500,7 +501,7 @@ const Livraison1 = props => {
           setTelCopy(adresse.telephone);
           if (checkZoneLivraison(adresse)) {
           } else {
-            setErrorMessage(t('exclued'));
+            setErrorMessage(t("exclued"));
             // Réinitialiser isNewAddressAdded
             props.route.params.newAddressAdded = false;
             // Vous pouvez aussi vouloir effacer l'adresse du stockage
@@ -517,7 +518,7 @@ const Livraison1 = props => {
 
   useEffect(() => {
     if (UserDomicileChoix && !checkZoneLivraison(UserDomicileChoix)) {
-      setErrorMessage(t('exclued'));
+      setErrorMessage(t("exclued"));
     }
   }, [UserDomicileChoix]);
 
@@ -532,15 +533,15 @@ const Livraison1 = props => {
           }
           const response = await axiosInstance.post(
             `/zone_livraisons/fournisseur/all/${paysLivraisonObject.id}`,
-            requestBody,
+            requestBody
           );
 
           setZonesLivraison(response.data);
         } catch (error) {
           console.error(
-            'Erreur lors de la récupération des zones de livraison',
-            {paysLivraisonObject},
-            error,
+            "Erreur lors de la récupération des zones de livraison",
+            { paysLivraisonObject },
+            error
           );
         }
       };
@@ -549,7 +550,7 @@ const Livraison1 = props => {
     }
   }, [paysLivraisonObject]);
 
-  const checkZoneLivraison = adresse => {
+  const checkZoneLivraison = (adresse) => {
     let codePostal = adresse.codePostal;
     let ville = adresse.ville;
     const departement = codePostal?.substring(0, 2);
@@ -581,8 +582,8 @@ const Livraison1 = props => {
   }
 
   const NavigateToUserAddress = () => {
-    props.navigation.navigate('AddAdresseScreen', {
-      pageFrom: 'livraison',
+    props.navigation.navigate("AddAdresseScreen", {
+      pageFrom: "livraison",
       paysDepartLivraison: paysLivraisonObject.destination,
       paysDepartLivraisonEN: paysLivraisonObject.destinationEn,
     });
@@ -590,54 +591,54 @@ const Livraison1 = props => {
 
   // Sauvegarder les choix magasin
   async function NavigateToMagasin() {
-    if (NomContact === '') {
-      if (Platform.OS == 'ios') {
+    if (NomContact === "") {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Nom de Contact'),
+          type: "error",
+          text1: t("Nom de Contact"),
           text2: t(
-            'Le nom de la personne qui récupère la commande est obligatoire',
+            "Le nom de la personne qui récupère la commande est obligatoire"
           ),
         });
       } else {
         ToastAndroid.show(
-          t('Le nom de la personne qui récupère la commande est obligatoire'),
-          ToastAndroid.SHORT,
+          t("Le nom de la personne qui récupère la commande est obligatoire"),
+          ToastAndroid.SHORT
         );
       }
       return;
     }
 
-    if (TelContact === '') {
-      if (Platform.OS == 'ios') {
+    if (TelContact === "") {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Le téléphone'),
+          type: "error",
+          text1: t("Le téléphone"),
           text2: t(
-            'Le téléphone de la personne qui récupère la commande est obligatoire',
+            "Le téléphone de la personne qui récupère la commande est obligatoire"
           ),
         });
       } else {
         ToastAndroid.show(
           t(
-            'Le téléphone de la personne qui récupère la commande est obligatoire',
+            "Le téléphone de la personne qui récupère la commande est obligatoire"
           ),
-          ToastAndroid.SHORT,
+          ToastAndroid.SHORT
         );
       }
 
       return;
     }
 
-    if (UserMagasinChoix === '' || !UserMagasinChoix) {
-      if (Platform.OS == 'ios') {
+    if (UserMagasinChoix === "" || !UserMagasinChoix) {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Le magasin'),
-          text2: t('Le magasin est obligatoire'),
+          type: "error",
+          text1: t("Le magasin"),
+          text2: t("Le magasin est obligatoire"),
         });
       } else {
-        ToastAndroid.show(t('Le magasin est obligatoire'), ToastAndroid.SHORT);
+        ToastAndroid.show(t("Le magasin est obligatoire"), ToastAndroid.SHORT);
       }
       return;
     }
@@ -649,25 +650,24 @@ const Livraison1 = props => {
       UserMagasinChoix.label,
       UserMagasinChoix.id,
       NomContact,
-      concatenedPhone,
+      concatenedPhone
     );
     await saveLivraisonmagasinSchedule(
-      'fr' == Language
+      "fr" == Language
         ? actionTriggered.horaireOuverture
-        : actionTriggered.horaireOuvertureEN,
+        : actionTriggered.horaireOuvertureEN
     );
 
-    props.navigation.navigate('CheckoutScreen');
+    props.navigation.navigate("CheckoutScreen");
   }
 
   // Sauvegarder les choix domicile
   async function NavigateToDomicile() {
     if (isNewAddressAdded) {
-
       let adresse = await getNewAddedAddress();
 
       if (adresse) {
-        var newData = adresses.filter(ls => {
+        var newData = adresses.filter((ls) => {
           if (ls.id == adresse.id) {
             return ls;
           }
@@ -683,56 +683,56 @@ const Livraison1 = props => {
             newData[0].label,
             newData[0].id,
             newData[0].nom,
-            newData[0].telephone,
+            newData[0].telephone
           );
-          props.navigation.navigate('CheckoutScreen');
+          props.navigation.navigate("CheckoutScreen");
         } else {
-          setErrorMessage(t('exclued'));
+          setErrorMessage(t("exclued"));
         }
       }
     } else {
-      if (NomContact === '') {
-        if (Platform.OS == 'ios') {
+      if (NomContact === "") {
+        if (Platform.OS == "ios") {
           Toast.show({
-            type: 'error',
-            text1: t('Nom de Contact'),
+            type: "error",
+            text1: t("Nom de Contact"),
             text2: t(
-              'Le nom de la personne qui récupère la commande est obligatoire',
+              "Le nom de la personne qui récupère la commande est obligatoire"
             ),
           });
         } else {
           ToastAndroid.show(
-            t('Le nom de la personne qui récupère la commande est obligatoire'),
-            ToastAndroid.SHORT,
+            t("Le nom de la personne qui récupère la commande est obligatoire"),
+            ToastAndroid.SHORT
           );
         }
         return;
       }
 
-      if (TelContact === '') {
-        if (Platform.OS == 'ios') {
+      if (TelContact === "") {
+        if (Platform.OS == "ios") {
           Toast.show({
-            type: 'error',
-            text1: t('Le téléphone'),
+            type: "error",
+            text1: t("Le téléphone"),
             text2: t(
-              'Le téléphone de la personne qui récupère la commande est obligatoire',
+              "Le téléphone de la personne qui récupère la commande est obligatoire"
             ),
           });
         } else {
           ToastAndroid.show(
             t(
-              'Le téléphone de la personne qui récupère la commande est obligatoire',
+              "Le téléphone de la personne qui récupère la commande est obligatoire"
             ),
-            ToastAndroid.SHORT,
+            ToastAndroid.SHORT
           );
         }
         return;
       }
 
-      if (UserDomicileChoix === '') {
-        if (Platform.OS == 'ios') {
+      if (UserDomicileChoix === "") {
+        if (Platform.OS == "ios") {
           Toast.show({
-            type: 'error',
+            type: "error",
             text1: t("L'adresse"),
             text2: t("L'adresse est obligatoire"),
           });
@@ -744,8 +744,8 @@ const Livraison1 = props => {
 
       let UserDomicileChoixLabel = UserDomicileChoix
         ? UserDomicileChoix.label
-        : '';
-      let UserDomicileChoixId = UserDomicileChoix ? UserDomicileChoix.id : '';
+        : "";
+      let UserDomicileChoixId = UserDomicileChoix ? UserDomicileChoix.id : "";
 
       let concatenedPhone =
         selectedCountry.callingCode + removeCountryCode(TelContact);
@@ -754,14 +754,14 @@ const Livraison1 = props => {
         UserDomicileChoixLabel,
         UserDomicileChoixId,
         NomContact,
-        concatenedPhone,
+        concatenedPhone
       );
-      props.navigation.navigate('CheckoutScreen');
+      props.navigation.navigate("CheckoutScreen");
     }
   }
 
   // si le magasin change
-  const OnChangeMagasinValue = magasinChoice => {
+  const OnChangeMagasinValue = (magasinChoice) => {
     let newArr = null;
     let magasinFound = false;
     MagasinsLivraisonRawValues?.forEach(function (fournisseur) {
@@ -779,7 +779,7 @@ const Livraison1 = props => {
 
   // Confirmation du magasin
   async function ConfirmationChoixMagasin(magasin) {
-    var newData = MagasinsLivraison.filter(ls => {
+    var newData = MagasinsLivraison.filter((ls) => {
       if (ls.id == magasin.id) {
         return ls;
       }
@@ -811,13 +811,13 @@ const Livraison1 = props => {
 
   if (!Service) {
     return (
-      <View style={{justifyContent: 'center', height: '80%'}}>
+      <View style={{ justifyContent: "center", height: "80%" }}>
         <ActivityIndicator size="large" color="#3292E0" style={{}} />
       </View>
     );
   }
   return (
-    <View style={{flex: 1, position: 'relative'}}>
+    <View style={{ flex: 1, position: "relative" }}>
       <ServiceHeader
         navigation={props.navigation}
         service={Service}
@@ -826,7 +826,7 @@ const Livraison1 = props => {
       />
 
       {Activity === true || ActivityMagasin === true ? (
-        <View style={{justifyContent: 'center', height: '80%'}}>
+        <View style={{ justifyContent: "center", height: "80%" }}>
           <ActivityIndicator size="large" color="#3292E0" style={{}} />
         </View>
       ) : (
@@ -834,11 +834,12 @@ const Livraison1 = props => {
           keyboardVerticalOffset={-70}
           showsVerticalScrollIndicator={false}
           behavior="padding"
-          style={{flex: 1}}>
-          <View style={{flex: 1}}>
+          style={{ flex: 1 }}
+        >
+          <View style={{ flex: 1 }}>
             <View>
-              {Service.code == 'fret-par-avion' ||
-              Service.code == 'fret-par-bateau' ? (
+              {Service.code == "fret-par-avion" ||
+              Service.code == "fret-par-bateau" ? (
                 <Stepper position={2} Service={Service.code} />
               ) : (
                 <Stepper position={1} Service={Service.code} />
@@ -848,18 +849,20 @@ const Livraison1 = props => {
             <View
               style={[
                 CommandeHasManualValidation
-                  ? {justifyContent: 'center', alignItems: 'center'}
-                  : '',
-                {marginTop: 28, paddingHorizontal: 16},
-              ]}>
+                  ? { justifyContent: "center", alignItems: "center" }
+                  : "",
+                { marginTop: 28, paddingHorizontal: 16 },
+              ]}
+            >
               {CommandeHasManualValidation ? (
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#000',
-                  }}>
-                  {t('Adresse de mise à disposition')}
+                    color: "#000",
+                  }}
+                >
+                  {t("Adresse de mise à disposition")}
                 </Text>
               ) : (
                 <View>
@@ -867,7 +870,7 @@ const Livraison1 = props => {
                     style={[styles.dropdown]}
                     placeholderStyle={styles.placeholderStyle}
                     selectedTextStyle={styles.selectedTextStyle}
-                    itemTextStyle={{color: '#000'}}
+                    itemTextStyle={{ color: "#000" }}
                     autoScroll
                     iconStyle={styles.iconStyle}
                     containerStyle={styles.containerrrrStyle}
@@ -876,14 +879,14 @@ const Livraison1 = props => {
                     labelField="label"
                     valueField="value"
                     placeholder={
-                      !isFocusModeLivraison ? t('Mode de livraison') : '...'
+                      !isFocusModeLivraison ? t("Mode de livraison") : "..."
                     }
                     value={modeLivraisonChoice}
                     showsVerticalScrollIndicator={false}
                     onFocus={() => setIsFocusModeLivraison(true)}
                     onBlur={() => setIsFocusModeLivraison(false)}
-                    onChange={item => {
-                      if ('relais' == item.value) {
+                    onChange={(item) => {
+                      if ("relais" == item.value) {
                         setShowRelais(true);
                         setShowLivraisonDomicile(false);
                       } else {
@@ -902,45 +905,47 @@ const Livraison1 = props => {
               {CommandeHasManualValidation ? (
                 <></>
               ) : (
-                <View style={{marginTop: 10, paddingLeft: 30}}>
-                  {'demandes-d-achat' == Service.code ? (
+                <View style={{ marginTop: 10, paddingLeft: 30 }}>
+                  {"demandes-d-achat" == Service.code ? (
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Regular',
+                        fontFamily: "Poppins-Regular",
                         fontSize: 10,
-                        color: '#000',
-                      }}>
+                        color: "#000",
+                      }}
+                    >
                       {livraisonDelaiMin &&
                         livraisonDelaiMax &&
-                        t('Livraison entre') +
-                          ' ' +
+                        t("Livraison entre") +
+                          " " +
                           livraisonDelaiMin +
-                          ' ' +
-                          t('et') +
-                          ' ' +
+                          " " +
+                          t("et") +
+                          " " +
                           livraisonDelaiMax +
-                          ' ' +
-                          t('jour(s)')}
+                          " " +
+                          t("jour(s)")}
                     </Text>
                   ) : (
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Regular',
+                        fontFamily: "Poppins-Regular",
                         fontSize: 10,
-                        color: '#000',
-                      }}>
-                      {(livraisonDelaiMin || livraisonDelaiMax) && '*'}
+                        color: "#000",
+                      }}
+                    >
+                      {(livraisonDelaiMin || livraisonDelaiMax) && "*"}
                       {livraisonDelaiMin &&
                         livraisonDelaiMax &&
-                        t('Livraison entre') +
-                          ' ' +
+                        t("Livraison entre") +
+                          " " +
                           livraisonDelaiMin +
-                          ' ' +
-                          t('et') +
-                          ' ' +
+                          " " +
+                          t("et") +
+                          " " +
                           livraisonDelaiMax +
-                          ' ' +
-                          t('jour(s)')}
+                          " " +
+                          t("jour(s)")}
                     </Text>
                   )}
                 </View>
@@ -949,21 +954,23 @@ const Livraison1 = props => {
 
             {showLivraisonDomicile && (
               <>
-                <View style={{marginTop: 10, paddingHorizontal: 16}}>
+                <View style={{ marginTop: 10, paddingHorizontal: 16 }}>
                   <View
                     style={{
-                      backgroundColor: '#fff',
+                      backgroundColor: "#fff",
                       paddingVertical: 22,
                       paddingHorizontal: 14,
                       borderRadius: 10,
-                    }}>
+                    }}
+                  >
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Medium',
+                        fontFamily: "Poppins-Medium",
                         fontSize: 14,
-                        color: '#000',
-                      }}>
-                      {t('Liste des adresses existantes')}
+                        color: "#000",
+                      }}
+                    >
+                      {t("Liste des adresses existantes")}
                     </Text>
 
                     <View style={styles.dropContainerStyle}>
@@ -971,10 +978,10 @@ const Livraison1 = props => {
                         style={[styles.dropdown]}
                         placeholderStyle={[
                           styles.placeholderStyle,
-                          {color: '#AFAFAF'},
+                          { color: "#AFAFAF" },
                         ]}
                         selectedTextStyle={styles.selectedTextStyle}
-                        itemTextStyle={{color: '#000'}}
+                        itemTextStyle={{ color: "#000" }}
                         autoScroll
                         iconStyle={styles.iconStyle}
                         containerStyle={styles.containerrrrStyle}
@@ -983,35 +990,36 @@ const Livraison1 = props => {
                         labelField="label"
                         valueField="value"
                         placeholder={
-                          !isFocus1 ? t('Choisir une adresse existante') : '...'
+                          !isFocus1 ? t("Choisir une adresse existante") : "..."
                         }
                         value={UserLivraisonDomicileChoix}
                         showsVerticalScrollIndicator={false}
                         onFocus={() => setIsFocus1(true)}
                         onBlur={() => setIsFocus1(false)}
-                        onChange={item => {
-                          setErrorMessage('');
+                        onChange={(item) => {
+                          setErrorMessage("");
                           if (checkZoneLivraison(item)) {
                             setUserDomicileChoix(item);
                             setUserLivraisonDomicileChoix(item.id);
                             setIsFocus1(false);
                             setNomTelephone(item);
                             setNomNumeroTelephone(item);
-                            setErrorMessage('');
+                            setErrorMessage("");
                           } else {
-                            setErrorMessage(t('exclued'));
+                            setErrorMessage(t("exclued"));
                           }
                         }}
                       />
                     </View>
                     {errorMessage?.length > 1 && (
-                      <View style={{alignItems: 'center'}}>
+                      <View style={{ alignItems: "center" }}>
                         <Text
                           style={{
-                            color: 'red',
+                            color: "red",
                             marginTop: 5,
-                            textAlign: 'center',
-                          }}>
+                            textAlign: "center",
+                          }}
+                        >
                           {errorMessage}
                         </Text>
                       </View>
@@ -1020,9 +1028,10 @@ const Livraison1 = props => {
                       style={styles.ButtonContainer}
                       onPress={() => {
                         NavigateToUserAddress();
-                      }}>
+                      }}
+                    >
                       <Text style={styles.ButtonText}>
-                        {t('Ajouter une nouvelle adresse')}
+                        {t("Ajouter une nouvelle adresse")}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -1032,21 +1041,23 @@ const Livraison1 = props => {
 
             {showRelais && (
               <>
-                <View style={{marginTop: 10, paddingHorizontal: 16}}>
+                <View style={{ marginTop: 10, paddingHorizontal: 16 }}>
                   <View
                     style={{
-                      backgroundColor: '#fff',
+                      backgroundColor: "#fff",
                       paddingVertical: 22,
                       paddingHorizontal: 14,
                       borderRadius: 10,
-                    }}>
+                    }}
+                  >
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Medium',
+                        fontFamily: "Poppins-Medium",
                         fontSize: 14,
-                        color: '#000',
-                      }}>
-                      {t('Liste des points relais')}
+                        color: "#000",
+                      }}
+                    >
+                      {t("Liste des points relais")}
                     </Text>
 
                     <View style={styles.dropContainerStyle}>
@@ -1054,10 +1065,10 @@ const Livraison1 = props => {
                         style={[styles.dropdown]}
                         placeholderStyle={[
                           styles.placeholderStyle,
-                          {color: '#AFAFAF'},
+                          { color: "#AFAFAF" },
                         ]}
                         selectedTextStyle={styles.selectedTextStyle}
-                        itemTextStyle={{color: '#000'}}
+                        itemTextStyle={{ color: "#000" }}
                         autoScroll
                         iconStyle={styles.iconStyle}
                         containerStyle={styles.containerrrrStyle}
@@ -1068,13 +1079,13 @@ const Livraison1 = props => {
                         valueField="value"
                         placeholder={
                           MagasinsLivraison.length > 0
-                            ? t('Choisir le point relais')
-                            : t('Pas de points relais disponible')
+                            ? t("Choisir le point relais")
+                            : t("Pas de points relais disponible")
                         }
                         showsVerticalScrollIndicator={false}
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
-                        onChange={item => {
+                        onChange={(item) => {
                           OnChangeMagasinValue(item);
                           setIsFocus(false);
                         }}
@@ -1087,55 +1098,59 @@ const Livraison1 = props => {
 
             <View
               style={{
-                alignItems: 'center',
+                alignItems: "center",
                 marginTop: 10,
-                justifyContent: 'center',
+                justifyContent: "center",
                 flex: 1,
-              }}>
+              }}
+            >
               {montantMinimum > 0 && (
                 <Text
                   style={{
                     fontSize: 10,
-                    fontWeight: 'bold',
-                    color: 'red',
-                  }}>{`${t('minimum')}: ${montantMinimum} euros`}</Text>
+                    fontWeight: "bold",
+                    color: "red",
+                  }}
+                >{`${t("minimum")}: ${montantMinimum} euros`}</Text>
               )}
             </View>
             {(showRelais || showLivraisonDomicile) && (
               <>
-                <View style={{marginTop: 10, paddingHorizontal: 16}}>
+                <View style={{ marginTop: 10, paddingHorizontal: 16 }}>
                   <View
                     style={{
-                      backgroundColor: '#fff',
+                      backgroundColor: "#fff",
                       paddingVertical: 22,
                       paddingHorizontal: 14,
                       borderRadius: 10,
-                    }}>
+                    }}
+                  >
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Medium',
+                        fontFamily: "Poppins-Medium",
                         fontSize: 14,
-                        color: '#000',
+                        color: "#000",
                         marginBottom: 5,
-                      }}>
-                      {t('Coordonnées du destinataire de la commande')}
+                      }}
+                    >
+                      {t("Coordonnées du destinataire de la commande")}
                     </Text>
 
                     <View style={styles.inputCountryCustomContainer}>
                       <TextInput
                         layout="first"
                         placeholder={t(
-                          'Nom de la personne qui récupère la commande',
+                          "Nom de la personne qui récupère la commande"
                         )}
                         placeholderTextColor="#AFAFAF"
                         style={{
-                          color: '#000',
-                          fontFamily: 'Poppins-Regular',
+                          color: "#000",
+                          fontFamily: "Poppins-Regular",
                           fontSize: 14,
-                          width: '100%',
+                          width: "100%",
                         }}
                         value={NomContact}
-                        onChangeText={text => {
+                        onChangeText={(text) => {
                           setNomContact(text);
                         }}
                       />
@@ -1143,11 +1158,12 @@ const Livraison1 = props => {
 
                     <View
                       style={{
-                        justifyContent: 'center',
-                        alignItems: 'center',
+                        justifyContent: "center",
+                        alignItems: "center",
                         marginTop: 10,
                         marginBottom: 50,
-                      }}>
+                      }}
+                    >
                       <PhoneInput
                         language={i18n.language}
                         containerStyle={styles.countryPickerContainerStyle}
@@ -1155,10 +1171,10 @@ const Livraison1 = props => {
                         defaultCountry={
                           TelContact
                             ? getCountryCodeFromPhone(TelContact)
-                            : 'FR'
+                            : "FR"
                         }
                         selectedCountry={selectedCountry}
-                        onChangeSelectedCountry={country => {
+                        onChangeSelectedCountry={(country) => {
                           setSelectedCountry(country);
                         }}
                         value={removeCountryCode(TelContact)}
@@ -1172,9 +1188,9 @@ const Livraison1 = props => {
 
             {showLivraisonDomicile && (
               <>
-                {'demandes-d-achat' == Service.code ? (
+                {"demandes-d-achat" == Service.code ? (
                   <View style={styles.TotalContainer}>
-                    <Text>{t('Frais de livraison à prévoir')}</Text>
+                    <Text>{t("Frais de livraison à prévoir")}</Text>
                   </View>
                 ) : (
                   <View
@@ -1182,36 +1198,40 @@ const Livraison1 = props => {
                       marginTop: 28,
                       marginBottom: 16,
                       paddingHorizontal: 16,
-                      position: 'relative',
+                      position: "relative",
                       zIndex: -1000,
                       width: windowWidth * 0.95,
-                      alignSelf: 'center',
-                    }}>
+                      alignSelf: "center",
+                    }}
+                  >
                     <View
                       style={{
-                        flexDirection: 'row',
-                        justifyContent: 'space-between',
-                        alignItems: 'center',
-                      }}>
+                        flexDirection: "row",
+                        justifyContent: "space-between",
+                        alignItems: "center",
+                      }}
+                    >
                       <Text
                         style={{
-                          fontFamily: 'Poppins-SemiBold',
-                          color: '#000',
+                          fontFamily: "Poppins-SemiBold",
+                          color: "#000",
                           fontSize: 15,
-                        }}>
-                        {t('Frais livraison')}
+                        }}
+                      >
+                        {t("Frais livraison")}
                       </Text>
                       <Text
                         style={{
-                          fontFamily: 'Poppins-SemiBold',
-                          color: '#000',
+                          fontFamily: "Poppins-SemiBold",
+                          color: "#000",
                           fontSize: 15,
-                        }}>
+                        }}
+                      >
                         {CommandeHasManualValidation
-                          ? t('à définir')
+                          ? t("à définir")
                           : PrixTotalLivraison > 0
-                          ? PrixTotalLivraison + '€'
-                          : t('Offert')}
+                          ? PrixTotalLivraison + "€"
+                          : t("Offert")}
                       </Text>
                     </View>
                   </View>
@@ -1219,39 +1239,42 @@ const Livraison1 = props => {
                 <View
                   style={{
                     flex: 1,
-                    justifyContent: 'center',
-                    alignItems: 'center',
+                    justifyContent: "center",
+                    alignItems: "center",
                     marginTop: 18,
                     marginBottom: windowWidth * 0.3,
-                  }}>
+                  }}
+                >
                   <TouchableOpacity
                     style={[
                       {
                         paddingVertical: 8,
                         width: windowWidth * 0.5,
                         paddingHorizontal: 22,
-                        flexDirection: 'row',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                        backgroundColor: '#4E8FDA',
+                        flexDirection: "row",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        backgroundColor: "#4E8FDA",
                         borderRadius: 25,
                       },
                       {
                         backgroundColor:
-                          errorMessage?.length > 1 ? '#666' : '#4E8FDA',
+                          errorMessage?.length > 1 ? "#666" : "#4E8FDA",
                       },
                     ]}
                     disabled={errorMessage?.length > 1}
                     onPress={() => {
                       NavigateToDomicile();
-                    }}>
+                    }}
+                  >
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Medium',
+                        fontFamily: "Poppins-Medium",
                         fontSize: 12,
-                        color: '#fff',
-                      }}>
-                      {t('valider')}
+                        color: "#fff",
+                      }}
+                    >
+                      {t("valider")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -1262,34 +1285,37 @@ const Livraison1 = props => {
               <View
                 style={{
                   flex: 1,
-                  justifyContent: 'center',
-                  alignItems: 'center',
+                  justifyContent: "center",
+                  alignItems: "center",
                   marginTop: 28,
                   marginBottom: 100, // Ajoutez une marge en bas pour assurer la visibilité
-                }}>
+                }}
+              >
                 <TouchableOpacity
                   style={{
                     paddingVertical: 8,
                     width: windowWidth * 0.65,
                     paddingHorizontal: 22,
-                    flexDirection: 'row',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    backgroundColor: '#4E8FDA',
+                    flexDirection: "row",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    backgroundColor: "#4E8FDA",
                     borderRadius: 25,
                   }}
                   disabled={montantMinimum > 0}
                   onPress={() => {
                     NavigateToMagasin();
-                  }}>
+                  }}
+                >
                   <Text
                     style={{
-                      fontFamily: 'Poppins-Medium',
+                      fontFamily: "Poppins-Medium",
                       fontSize: 12,
-                      color: '#fff',
-                      textAlign: 'center',
-                    }}>
-                    {t('Valider livraison au point relais')}
+                      color: "#fff",
+                      textAlign: "center",
+                    }}
+                  >
+                    {t("Valider livraison au point relais")}
                   </Text>
                 </TouchableOpacity>
               </View>
@@ -1300,68 +1326,75 @@ const Livraison1 = props => {
               visible={modalVisible}
               onRequestClose={() => {
                 setModalVisible(!modalVisible);
-              }}>
+              }}
+            >
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <Text style={styles.Heading}>
                     {t("Horaires d'ouverture")}
                   </Text>
                   <Text style={styles.modalText}>
-                    {'fr' == Language
+                    {"fr" == Language
                       ? actionTriggered.horaireOuverture
                       : actionTriggered.horaireOuvertureEN}
                   </Text>
                   <Text style={styles.modalText}>
                     {actionTriggered.adresse +
-                      ', ' +
+                      ", " +
                       (actionTriggered.codePostal
-                        ? actionTriggered.codePostal + ' '
-                        : '') +
+                        ? actionTriggered.codePostal + " "
+                        : "") +
                       actionTriggered.ville +
-                      ' ' +
+                      " " +
                       actionTriggered.pays}
                   </Text>
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                       gap: 15,
-                    }}>
+                    }}
+                  >
                     <Pressable
                       style={[styles.button, styles.buttonClose]}
-                      onPress={() => unSetChoixRelais()}>
+                      onPress={() => unSetChoixRelais()}
+                    >
                       <Text
                         style={{
-                          color: '#fff',
-                          fontFamily: 'Poppins-Medium',
+                          color: "#fff",
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
-                        }}>
-                        {t('Fermer')}
+                        }}
+                      >
+                        {t("Fermer")}
                       </Text>
                     </Pressable>
                     <Pressable
                       style={[styles.button, styles.buttonOpen]}
-                      onPress={() => ConfirmationChoixMagasin(actionTriggered)}>
+                      onPress={() => ConfirmationChoixMagasin(actionTriggered)}
+                    >
                       <Text
                         style={{
-                          color: '#4E8FDA',
-                          fontFamily: 'Poppins-Medium',
+                          color: "#4E8FDA",
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
-                        }}>
-                        {t('Selectionner le magasin')}
+                        }}
+                      >
+                        {t("Selectionner le magasin")}
                       </Text>
                     </Pressable>
                   </View>
                 </View>
                 <View
                   style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: '#000',
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "#000",
                     opacity: 0.5,
                     zIndex: -100,
-                  }}></View>
+                  }}
+                ></View>
               </View>
             </Modal>
           </View>
@@ -1374,158 +1407,158 @@ const Livraison1 = props => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   containerSafee: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginTop: 20,
   },
   containerStyle: {
-    width: '100%',
-    backgroundColor: '#fff',
+    width: "100%",
+    backgroundColor: "#fff",
     marginTop: windowHeight * 0.05,
   },
   spacerStyle: {},
   safeContainerStyle: {
-    width: '80%',
-    alignSelf: 'center',
-    justifyContent: 'center',
+    width: "80%",
+    alignSelf: "center",
+    justifyContent: "center",
     // backgroundColor: 'tomato',
     marginBottom: windowHeight * 0.1,
   },
   inputCustomDropdownContainer: {
     width: windowWidth * 0.8,
-    alignSelf: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    alignItems: 'center',
+    alignSelf: "center",
+    justifyContent: "center",
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 10,
     marginBottom: 30,
   },
   ButtonContainer: {
-    width: '93%',
+    width: "93%",
     height: 50,
     borderRadius: 8,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: "#000",
     marginTop: windowHeight * 0.015,
-    alignSelf: 'center',
-    alignItems: 'center',
+    alignSelf: "center",
+    alignItems: "center",
     marginBottom: 10,
-    flexDirection: 'row',
+    flexDirection: "row",
   },
   ButtonText: {
-    marginLeft: '6%',
-    width: '100%',
-    color: '#AFAFAF',
+    marginLeft: "6%",
+    width: "100%",
+    color: "#AFAFAF",
     fontSize: windowWidth * 0.035,
-    fontFamily: 'Poppins-Regular',
+    fontFamily: "Poppins-Regular",
   },
   CountrySelect: {
-    width: '80%',
-    alignSelf: 'center',
+    width: "80%",
+    alignSelf: "center",
     height: 48,
-    borderColor: '#DADAED',
+    borderColor: "#DADAED",
     borderWidth: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     marginTop: 5,
     borderRadius: 7,
-    flexDirection: 'row',
+    flexDirection: "row",
     marginBottom: 30,
   },
   InputNam: {
-    marginLeft: '3%',
+    marginLeft: "3%",
     fontSize: 15,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     width: windowWidth * 0.65,
     // backgroundColor: 'gold',
     flex: 1,
-    color: '#000',
+    color: "#000",
   },
   ButtonStyle: {
-    width: '80%',
+    width: "80%",
     height: 45,
     borderRadius: 60,
-    justifyContent: 'center',
-    backgroundColor: '#3292E0',
+    justifyContent: "center",
+    backgroundColor: "#3292E0",
     marginTop: 10,
-    alignSelf: 'center',
+    alignSelf: "center",
     marginBottom: 20,
   },
   ButtonStyleText: {
-    textAlign: 'center',
-    color: 'white',
+    textAlign: "center",
+    color: "white",
     fontSize: 14,
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
   },
   TotalContainer: {
-    flexDirection: 'row',
+    flexDirection: "row",
     width: windowWidth * 0.8,
-    alignSelf: 'center',
-    alignItems: 'center',
-    justifyContent: 'space-around',
+    alignSelf: "center",
+    alignItems: "center",
+    justifyContent: "space-around",
     // backgroundColor: 'tomato',
     marginBottom: windowHeight * 0.02,
   },
   TotalText: {
-    width: '30%',
+    width: "30%",
     fontSize: 18,
-    fontFamily: 'Roboto-Regular',
-    color: '#1C1939',
+    fontFamily: "Roboto-Regular",
+    color: "#1C1939",
   },
   PriceText: {
-    width: '68%',
+    width: "68%",
     fontSize: 18,
-    fontFamily: 'Roboto-Regular',
-    textAlign: 'right',
-    color: '#1C1939',
+    fontFamily: "Roboto-Regular",
+    textAlign: "right",
+    color: "#1C1939",
   },
   domicileStyle: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 18,
-    textAlign: 'center',
-    color: '#1C1939',
+    textAlign: "center",
+    color: "#1C1939",
   },
   Heading: {
     fontSize: 18,
-    fontFamily: 'Roboto-Bold',
-    textAlign: 'center',
-    color: '#1C1939',
+    fontFamily: "Roboto-Bold",
+    textAlign: "center",
+    color: "#1C1939",
   },
   SecondHeading: {
     fontSize: 18,
-    fontFamily: 'Roboto-Regular',
-    textAlign: 'center',
-    color: '#1C1939',
+    fontFamily: "Roboto-Regular",
+    textAlign: "center",
+    color: "#1C1939",
   },
   Heading: {
     fontSize: 18,
-    fontFamily: 'Roboto-Bold',
-    textAlign: 'center',
-    color: '#1C1939',
+    fontFamily: "Roboto-Bold",
+    textAlign: "center",
+    color: "#1C1939",
   },
   inputCountryCustomContainer: {
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     width: windowWidth * 0.8,
     height: 48,
-    alignSelf: 'center',
-    justifyContent: 'flex-start',
+    alignSelf: "center",
+    justifyContent: "flex-start",
     paddingLeft: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginTop: 6,
     marginBottom: 6,
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: "#000",
     borderRadius: 7,
   },
   phoneContainer: {
     // width: '75%',
     width: windowWidth * 0.7,
     height: 45,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     elevation: 0,
     // backgroundColor: 'tomato',
   },
@@ -1533,30 +1566,30 @@ const styles = StyleSheet.create({
     paddingVertical: 0,
     // backgroundColor: 'gold',
     width: windowWidth * 0.6,
-    backgroundColor: '#fff',
-    fontFamily: 'Roboto-Regular',
-    color: '#000',
+    backgroundColor: "#fff",
+    fontFamily: "Roboto-Regular",
+    color: "#000",
   },
   codeTextStyle: {
-    fontFamily: 'Roboto-Regular',
+    fontFamily: "Roboto-Regular",
     fontSize: 15,
     // backgroundColor: 'green',
-    width: 'auto',
+    width: "auto",
   },
   countryPickerButtonStyle: {
     // backgroundColor: 'gold',
     width: 50,
   },
   textInputStyle: {
-    fontFamily: 'Roboto-Regular',
-    color: '#000',
+    fontFamily: "Roboto-Regular",
+    color: "#000",
   },
   dropContainerStyle: {
-    justifyContent: 'center',
+    justifyContent: "center",
     // backgroundColor: 'tomato',
     width: windowWidth * 0.9,
     // borderRadius:0
-    alignSelf: 'center',
+    alignSelf: "center",
     marginTop: windowHeight * 0.02,
     marginBottom: windowHeight * 0.01,
   },
@@ -1565,25 +1598,25 @@ const styles = StyleSheet.create({
     height: 54,
     borderRadius: 8,
     paddingHorizontal: 17,
-    backgroundColor: 'transparent',
+    backgroundColor: "white",
     borderWidth: 1,
-    borderColor: '#000',
+    borderColor: "#000",
     fontSize: 54,
     // elevation: 1,
     width: windowWidth * 0.8,
     // borderWidth: 1,
     // borderColor: '#DADAED',
-    alignSelf: 'center',
+    alignSelf: "center",
   },
   placeholderStyle: {
     fontSize: windowWidth * 0.035,
-    fontFamily: 'Poppins-Regular',
-    color: '#14213D',
+    fontFamily: "Poppins-Regular",
+    color: "#14213D",
   },
   selectedTextStyle: {
     fontSize: 16,
-    fontFamily: 'Poppins-Regular',
-    color: '#14213D',
+    fontFamily: "Poppins-Regular",
+    color: "#14213D",
   },
   iconStyle: {
     width: 20,
@@ -1591,7 +1624,7 @@ const styles = StyleSheet.create({
   },
   containerrrrStyle: {
     marginTop: -2,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderRadius: 8,
     maxHeight: 150,
     elevation: 10,
@@ -1599,18 +1632,18 @@ const styles = StyleSheet.create({
 
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 22,
   },
   modalView: {
     margin: 20,
     width: windowWidth * 0.9,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -1627,28 +1660,28 @@ const styles = StyleSheet.create({
   buttonOpen: {
     paddingVertical: 8,
     paddingHorizontal: 22,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
     gap: 10,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
     borderWidth: 1,
-    borderColor: '#4E8FDA',
-    color: '#4E8FDA',
+    borderColor: "#4E8FDA",
+    color: "#4E8FDA",
     borderRadius: 25,
   },
   buttonClose: {
-    backgroundColor: '#2196F3',
+    backgroundColor: "#2196F3",
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
-    color: '#000',
+    textAlign: "center",
+    color: "#000",
   },
   countryPickerContainerStyle: {
     borderWidth: 1,

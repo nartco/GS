@@ -1,5 +1,5 @@
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import _ from 'lodash';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import _ from "lodash";
 
 /**
  * Sauvegarde les services dans AsyncStorage
@@ -10,76 +10,76 @@ import _ from 'lodash';
  */
 export async function saveRemises(remises) {
   if (!Array.isArray(remises)) {
-    throw new Error('Remises doit être un tableau');
+    throw new Error("Remises doit être un tableau");
   }
 
   try {
-    await AsyncStorage.setItem('remises', JSON.stringify(remises));
+    await AsyncStorage.setItem("remises", JSON.stringify(remises));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveConversationMessagesObject(messageObject) {
   try {
     await AsyncStorage.setItem(
-      'conversationMessagesObject',
-      JSON.stringify(messageObject),
+      "conversationMessagesObject",
+      JSON.stringify(messageObject)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getConversationMessagesObject = async () => {
   try {
     let conversationMessagesObject = await AsyncStorage.getItem(
-      'conversationMessagesObject',
+      "conversationMessagesObject"
     );
     conversationMessagesObject = JSON.parse(conversationMessagesObject);
 
     return conversationMessagesObject ? conversationMessagesObject : [];
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function savePlatformLanguage(language, isManualChange = false) {
   try {
-    await AsyncStorage.setItem('platformLanguage', language);
+    await AsyncStorage.setItem("platformLanguage", language);
 
     if (isManualChange) {
-      await AsyncStorage.setItem('platformLanguageManually', language);
+      await AsyncStorage.setItem("platformLanguageManually", language);
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function getPlatformLanguage() {
   try {
-    let platformLanguage = await AsyncStorage.getItem('platformLanguage');
+    let platformLanguage = await AsyncStorage.getItem("platformLanguage");
 
-    platformLanguage = platformLanguage ? platformLanguage : 'fr';
+    platformLanguage = platformLanguage ? platformLanguage : "fr";
 
     return platformLanguage;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
 
-    return 'fr'; // Par défaut retourner le français
+    return "fr"; // Par défaut retourner le français
   }
 }
 
 export async function getPlatformLanguageManuallyChange() {
   try {
     let platformLanguage = await AsyncStorage.getItem(
-      'platformLanguageManually',
+      "platformLanguageManually"
     );
 
     return platformLanguage;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
 
     return null;
   }
@@ -88,31 +88,31 @@ export async function getPlatformLanguageManuallyChange() {
 export async function saveSelectedCountryProduct(paysLivraison) {
   try {
     await AsyncStorage.setItem(
-      'paysLivraisonProduct',
-      JSON.stringify(paysLivraison),
+      "paysLivraisonProduct",
+      JSON.stringify(paysLivraison)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getSelectedCountryProduct = async () => {
   try {
-    let paysLivraison = await AsyncStorage.getItem('paysLivraisonProduct');
+    let paysLivraison = await AsyncStorage.getItem("paysLivraisonProduct");
     paysLivraison = JSON.parse(paysLivraison);
 
     return paysLivraison;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveSelectedServiceProduct(service) {
   try {
-    await AsyncStorage.setItem('service_product', JSON.stringify(service));
+    await AsyncStorage.setItem("service_product", JSON.stringify(service));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
@@ -121,12 +121,12 @@ export async function saveSelectedServiceProduct(service) {
  */
 export const getSelectedServiceProduct = async () => {
   try {
-    let service = await AsyncStorage.getItem('service_product');
+    let service = await AsyncStorage.getItem("service_product");
     service = JSON.parse(service);
 
     return service;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
@@ -137,115 +137,114 @@ export const getSelectedServiceProduct = async () => {
  */
 export const getAuth = async () => {
   try {
-    let authStatusChecker = await AsyncStorage.getItem('authStatusChecker');
+    let authStatusChecker = await AsyncStorage.getItem("authStatusChecker");
 
     return authStatusChecker;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export const getAuthUserEmail = async () => {
   try {
-    let authUserEmail = await AsyncStorage.getItem('authUserEmail');
+    let authUserEmail = await AsyncStorage.getItem("authUserEmail");
 
     return authUserEmail;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveMagasins(magasins) {
   try {
-    await AsyncStorage.setItem('magasins', JSON.stringify(magasins));
+    await AsyncStorage.setItem("magasins", JSON.stringify(magasins));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getMagasins = async () => {
   try {
-    let magasins = await AsyncStorage.getItem('magasins');
+    let magasins = await AsyncStorage.getItem("magasins");
     magasins = JSON.parse(magasins);
 
     return magasins ? magasins : [];
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return [];
   }
 };
 
 export async function savePaysLivraison(paysLivraison) {
   try {
-    await AsyncStorage.setItem('paysLivraison', JSON.stringify(paysLivraison));
+    await AsyncStorage.setItem("paysLivraison", JSON.stringify(paysLivraison));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getAuthentificationData = async () => {
   try {
-    let authUserEmail = await AsyncStorage.getItem('authUserEmail');
+    let authUserEmail = await AsyncStorage.getItem("authUserEmail");
 
     return authUserEmail;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveAuthentificationData(email, uid = null) {
   try {
-    await AsyncStorage.setItem('authStatusChecker', 'login');
-if(email){
-  await AsyncStorage.setItem('authUserEmail', email);
-  
-} else if (uid) {
-  await AsyncStorage.setItem('authUserUid', uid);
-}
+    await AsyncStorage.setItem("authStatusChecker", "login");
+    if (email) {
+      await AsyncStorage.setItem("authUserEmail", email);
+    } else if (uid) {
+      await AsyncStorage.setItem("authUserUid", uid);
+    }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function removeAuthentificationData() {
   try {
-    await AsyncStorage.removeItem('authStatusChecker');
-    await AsyncStorage.removeItem('authUserEmail');
+    await AsyncStorage.removeItem("authStatusChecker");
+    await AsyncStorage.removeItem("authUserEmail");
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getPaysLivraison = async () => {
   try {
-    let paysLivraison = await AsyncStorage.getItem('paysLivraison');
+    let paysLivraison = await AsyncStorage.getItem("paysLivraison");
 
     return paysLivraison;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveParametrages(parametrages) {
   try {
-    await AsyncStorage.setItem('parametrages', JSON.stringify(parametrages));
+    await AsyncStorage.setItem("parametrages", JSON.stringify(parametrages));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getParametrages = async () => {
   try {
-    let parametrages = await AsyncStorage.getItem('parametrages');
+    let parametrages = await AsyncStorage.getItem("parametrages");
     parametrages = JSON.parse(parametrages);
 
     return parametrages;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
@@ -253,43 +252,43 @@ export const getParametrages = async () => {
 export async function saveConditionsMentions(conditionsMentionsLegales) {
   try {
     await AsyncStorage.setItem(
-      'conditionsMentionsLegales',
-      JSON.stringify(conditionsMentionsLegales),
+      "conditionsMentionsLegales",
+      JSON.stringify(conditionsMentionsLegales)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getConditionsMentionsLegales = async () => {
   try {
     let conditionsMentionsLegales = await AsyncStorage.getItem(
-      'conditionsMentionsLegales',
+      "conditionsMentionsLegales"
     );
     conditionsMentionsLegales = JSON.parse(conditionsMentionsLegales);
 
     return conditionsMentionsLegales;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveSelectedCountry(paysLivraison) {
   try {
-    await AsyncStorage.setItem('paysLivraison', JSON.stringify(paysLivraison));
+    await AsyncStorage.setItem("paysLivraison", JSON.stringify(paysLivraison));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getSelectedCountry = async () => {
   try {
-    let paysLivraison = await AsyncStorage.getItem('paysLivraison');
+    let paysLivraison = await AsyncStorage.getItem("paysLivraison");
     paysLivraison = JSON.parse(paysLivraison);
     return paysLivraison;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
@@ -301,9 +300,9 @@ export const getSelectedCountry = async () => {
  */
 export async function saveSelectedService(service) {
   try {
-    await AsyncStorage.setItem('service', JSON.stringify(service));
+    await AsyncStorage.setItem("service", JSON.stringify(service));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
@@ -312,36 +311,36 @@ export async function saveSelectedService(service) {
  */
 export const getSelectedService = async () => {
   try {
-    let service = await AsyncStorage.getItem('service');
+    let service = await AsyncStorage.getItem("service");
     service = JSON.parse(service);
 
     return service;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveServices(services) {
   if (!Array.isArray(services)) {
-    throw new Error('Services doit être un tableau');
+    throw new Error("Services doit être un tableau");
   }
 
   try {
-    await AsyncStorage.setItem('services', JSON.stringify(services));
+    await AsyncStorage.setItem("services", JSON.stringify(services));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getServices = async () => {
   try {
-    let services = await AsyncStorage.getItem('services');
+    let services = await AsyncStorage.getItem("services");
     services = JSON.parse(services);
 
     return services ? services : [];
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return [];
   }
 };
@@ -349,41 +348,41 @@ export const getServices = async () => {
 export async function saveValidatedPanier(
   RemiseCode,
   RemiseValue,
-  RemiseProduct,
+  RemiseProduct
 ) {
   try {
     if (RemiseCode) {
-      await AsyncStorage.setItem('cart_remiseCode', JSON.stringify(RemiseCode));
+      await AsyncStorage.setItem("cart_remiseCode", JSON.stringify(RemiseCode));
     }
 
     if (RemiseValue) {
-      await AsyncStorage.setItem('cart_remise', JSON.stringify(RemiseValue));
+      await AsyncStorage.setItem("cart_remise", JSON.stringify(RemiseValue));
     }
 
     if (RemiseProduct) {
       await AsyncStorage.setItem(
-        'cart_remiseProduct',
-        JSON.stringify(RemiseProduct),
+        "cart_remiseProduct",
+        JSON.stringify(RemiseProduct)
       );
     }
 
     // if (RemiseCode || RemiseValue || RemiseProduct) {
-      await AsyncStorage.setItem('cart_validation', 'true');
+    await AsyncStorage.setItem("cart_validation", "true");
     // }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getRemiseUsed = async () => {
   try {
-    let cartRemise = await AsyncStorage.getItem('cart_remise');
+    let cartRemise = await AsyncStorage.getItem("cart_remise");
     cartRemise = JSON.parse(cartRemise);
 
-    let cartRemiseCode = await AsyncStorage.getItem('cart_remiseCode');
+    let cartRemiseCode = await AsyncStorage.getItem("cart_remiseCode");
     cartRemiseCode = JSON.parse(cartRemiseCode);
 
-    let cartRemiseProduct = await AsyncStorage.getItem('cart_remiseProduct');
+    let cartRemiseProduct = await AsyncStorage.getItem("cart_remiseProduct");
     cartRemiseProduct = JSON.parse(cartRemiseProduct);
 
     return {
@@ -392,7 +391,7 @@ export const getRemiseUsed = async () => {
       remiseProduct: cartRemiseProduct,
     };
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return {
       remiseValue: null,
       remiseCode: null,
@@ -403,44 +402,44 @@ export const getRemiseUsed = async () => {
 
 export const getNewAddedAddress = async () => {
   try {
-    let newAddedAdresse = await AsyncStorage.getItem('newAddedAdresse');
+    let newAddedAdresse = await AsyncStorage.getItem("newAddedAdresse");
     newAddedAdresse = JSON.parse(newAddedAdresse);
     return newAddedAdresse;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function savePanier(data) {
   try {
-    await AsyncStorage.setItem('cart_products', JSON.stringify(data));
+    await AsyncStorage.setItem("cart_products", JSON.stringify(data));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 export async function saveCommand(data) {
   try {
-    await AsyncStorage.setItem('cart_command', JSON.stringify(data));
+    await AsyncStorage.setItem("cart_command", JSON.stringify(data));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveCommandDemandeAchat(data) {
   try {
     await AsyncStorage.setItem(
-      'cart_command_demande_achat',
-      JSON.stringify(data),
+      "cart_command_demande_achat",
+      JSON.stringify(data)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getCommandDemandeAchat = async () => {
   try {
-    let panier = await AsyncStorage.getItem('cart_command_demande_achat');
+    let panier = await AsyncStorage.getItem("cart_command_demande_achat");
 
     panier = JSON.parse(panier);
 
@@ -448,7 +447,7 @@ export const getCommandDemandeAchat = async () => {
 
     return panier;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
@@ -456,18 +455,18 @@ export const getCommandDemandeAchat = async () => {
 export async function saveCommandProductsDemandeAchat(data) {
   try {
     await AsyncStorage.setItem(
-      'cart_command_products_demande_achat',
-      JSON.stringify(data),
+      "cart_command_products_demande_achat",
+      JSON.stringify(data)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getCommandProductsDemandeAchat = async () => {
   try {
     let panier = await AsyncStorage.getItem(
-      'cart_command_products_demande_achat',
+      "cart_command_products_demande_achat"
     );
 
     panier = JSON.parse(panier);
@@ -476,7 +475,7 @@ export const getCommandProductsDemandeAchat = async () => {
 
     return panier;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return [];
   }
 };
@@ -487,7 +486,7 @@ export const getCommandProductsDemandeAchat = async () => {
  */
 export const getPanier = async () => {
   try {
-    let panier = await AsyncStorage.getItem('cart_products');
+    let panier = await AsyncStorage.getItem("cart_products");
 
     panier = JSON.parse(panier);
 
@@ -495,13 +494,13 @@ export const getPanier = async () => {
 
     return panier;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return [];
   }
 };
 export const getCommand = async () => {
   try {
-    let panier = await AsyncStorage.getItem('cart_command');
+    let panier = await AsyncStorage.getItem("cart_command");
 
     panier = JSON.parse(panier);
 
@@ -509,7 +508,7 @@ export const getCommand = async () => {
 
     return panier;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return [];
   }
 };
@@ -519,8 +518,8 @@ export const removePanier = async () => {
     const keys = await AsyncStorage.getAllKeys();
 
     let keysToRemove = [];
-    keys.map(key => {
-      if (_?.startsWith(key, 'cart')) {
+    keys.map((key) => {
+      if (_?.startsWith(key, "cart")) {
         keysToRemove.push(key);
       }
     });
@@ -529,7 +528,7 @@ export const removePanier = async () => {
       await AsyncStorage.multiRemove(keysToRemove);
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 };
 export const removeCommand = async () => {
@@ -537,8 +536,8 @@ export const removeCommand = async () => {
     const keys = await AsyncStorage.getAllKeys();
 
     let keysToRemove = [];
-    keys.map(key => {
-      if (_?.startsWith(key, 'cart_command')) {
+    keys.map((key) => {
+      if (_?.startsWith(key, "cart_command")) {
         keysToRemove.push(key);
       }
     });
@@ -547,124 +546,126 @@ export const removeCommand = async () => {
       await AsyncStorage.multiRemove(keysToRemove);
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 };
 
 export async function saveCreneaux(creneaux) {
   try {
-    console.log(creneaux.length, 'gestionSToage saveCreneaux');
-    await AsyncStorage.setItem('creneaux', JSON.stringify(creneaux));
-    console.log('good')
+    console.log(creneaux.length, "gestionSToage saveCreneaux");
+    await AsyncStorage.setItem("creneaux", JSON.stringify(creneaux));
+    console.log("good");
   } catch (error) {
-    console.log('errodr', error);
+    console.log("errodr", error);
   }
 }
 
 export const getCreneaux = async () => {
   try {
-    let creneaux = await AsyncStorage.getItem('creneaux');
+    let creneaux = await AsyncStorage.getItem("creneaux");
     creneaux = JSON.parse(creneaux);
 
     return creneaux;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveDepotModeChoice(data) {
   try {
-    await AsyncStorage.setItem('cart_depotModeChoice', data);
+    await AsyncStorage.setItem("cart_depotModeChoice", data);
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getDepotModeChoice = async () => {
   try {
-    let depotModeChoice = await AsyncStorage.getItem('cart_depotModeChoice');
+    let depotModeChoice = await AsyncStorage.getItem("cart_depotModeChoice");
 
     return depotModeChoice;
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return null;
   }
 };
 
 export async function saveDepotCreneau(data) {
   try {
-    await AsyncStorage.setItem('cart_depotCreneau', JSON.stringify(data));
+    await AsyncStorage.setItem("cart_depotCreneau", JSON.stringify(data));
 
-    if (data.fournisseurId)
-    {
+    if (data.fournisseurId) {
       await AsyncStorage.setItem(
-        'cart_depotMagasinFournisseurId',
-        JSON.stringify(data.fournisseurId),
+        "cart_depotMagasinFournisseurId",
+        JSON.stringify(data.fournisseurId)
       );
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveDepotMagasinId(magasinId) {
   try {
-    await AsyncStorage.setItem('cart_depotMagasin', JSON.stringify(magasinId));
+    await AsyncStorage.setItem("cart_depotMagasin", JSON.stringify(magasinId));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveDepotAdresseId(data) {
   try {
-    await AsyncStorage.setItem('cart_depotAdresseId', JSON.stringify(data));
+    await AsyncStorage.setItem("cart_depotAdresseId", JSON.stringify(data));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
-export async function saveDepotMagasinValues(UserMagasinChoix, UserMagasinId, fournisseurId) {
+export async function saveDepotMagasinValues(
+  UserMagasinChoix,
+  UserMagasinId,
+  fournisseurId
+) {
   try {
-    await AsyncStorage.setItem('cart_depotMode', 'magasin');
+    await AsyncStorage.setItem("cart_depotMode", "magasin");
     await AsyncStorage.setItem(
-      'cart_depotMagasinAdresse',
-      JSON.stringify(UserMagasinChoix),
+      "cart_depotMagasinAdresse",
+      JSON.stringify(UserMagasinChoix)
     );
     await AsyncStorage.setItem(
-      'cart_depotMagasinAdresseId',
-      JSON.stringify(UserMagasinId),
+      "cart_depotMagasinAdresseId",
+      JSON.stringify(UserMagasinId)
     );
 
-    if (fournisseurId)
-    {
+    if (fournisseurId) {
       await AsyncStorage.setItem(
-        'cart_depotMagasinFournisseurId',
-        JSON.stringify(fournisseurId),
+        "cart_depotMagasinFournisseurId",
+        JSON.stringify(fournisseurId)
       );
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveDepotMagasinSchedule(data) {
   try {
-    console.log({data}, 'weewewew');
+    console.log({ data }, "weewewew");
     await AsyncStorage.setItem(
-      'cart_depotMagasinSchedule',
-      JSON.stringify(data),
+      "cart_depotMagasinSchedule",
+      JSON.stringify(data)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveDepotValidation() {
   try {
-    await AsyncStorage.setItem('cart_depotValidation', 'true');
+    await AsyncStorage.setItem("cart_depotValidation", "true");
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
@@ -674,98 +675,180 @@ export async function saveDepotAdresseValues(
   UserDomicileChoixLabel,
   UserDomicileId,
   codePostal,
-  ville,
+  ville
 ) {
   try {
-    await AsyncStorage.setItem('cart_depotMode', 'enlevement');
-    console.log('44444')
+    await AsyncStorage.setItem("cart_depotMode", "enlevement");
+    console.log("44444");
 
-    await AsyncStorage.setItem('cart_depotNom', JSON.stringify(NomContact));
-    console.log('33333')
+    await AsyncStorage.setItem("cart_depotNom", JSON.stringify(NomContact));
+    console.log("33333");
 
     await AsyncStorage.setItem(
-      'cart_depotTelephone',
-      JSON.stringify(TelContact),
+      "cart_depotTelephone",
+      JSON.stringify(TelContact)
     );
-    console.log('222222')
+    console.log("222222");
     await AsyncStorage.setItem(
-      'cart_depotEnlevementAdresse',
-      JSON.stringify(UserDomicileChoixLabel),
+      "cart_depotEnlevementAdresse",
+      JSON.stringify(UserDomicileChoixLabel)
     );
-    console.log('1111111')
+    console.log("1111111");
     await AsyncStorage.setItem(
-      'cart_depotEnlevementAdresseId',
-      JSON.stringify(UserDomicileId),
+      "cart_depotEnlevementAdresseId",
+      JSON.stringify(UserDomicileId)
     );
 
-    console.log('2333223323223');
+    console.log("2333223323223");
     if (codePostal) {
       await AsyncStorage.setItem(
-        'cart_depotCodePostal',
-        JSON.stringify(codePostal),
+        "cart_depotCodePostal",
+        JSON.stringify(codePostal)
       );
     }
 
     if (ville) {
-      await AsyncStorage.setItem('cart_depotVille', JSON.stringify(ville));
+      await AsyncStorage.setItem("cart_depotVille", JSON.stringify(ville));
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
+  }
+}
+
+const STORAGE_KEYS = {
+  // Clés pour le dépôt magasin
+  MAGASIN: {
+    MODE: "cart_depotMode",
+    ADRESSE: "cart_depotMagasinAdresse",
+    ADRESSE_ID: "cart_depotMagasinAdresseId",
+    FOURNISSEUR_ID: "cart_depotMagasinFournisseurId",
+    SCHEDULE: "cart_depotMagasinSchedule",
+    DEPOT: "cart_depotCreneau",
+  },
+  // Clés pour le dépôt à domicile
+  DOMICILE: {
+    NOM: "cart_depotNom",
+    TELEPHONE: "cart_depotTelephone",
+    ADRESSE: "cart_depotEnlevementAdresse",
+    ADRESSE_ID: "cart_depotEnlevementAdresseId",
+    CODE_POSTAL: "cart_depotCodePostal",
+    VILLE: "cart_depotVille",
+  },
+  // Clés communes
+  COMMON: {
+    VALIDATION: "cart_depotValidation",
+    CRENEAUX: "creneaux",
+  },
+};
+
+/**
+ * Réinitialise toutes les données de dépôt (magasin et domicile)
+ */
+export async function resetAllDepotStorage() {
+  try {
+    // Rassemble toutes les clés à supprimer
+    const allKeys = [
+      ...Object.values(STORAGE_KEYS.MAGASIN),
+      ...Object.values(STORAGE_KEYS.DOMICILE),
+      ...Object.values(STORAGE_KEYS.COMMON),
+    ];
+
+    // Supprime toutes les clés en parallèle
+    await Promise.all(
+      allKeys.map(async (key) => {
+        try {
+          await AsyncStorage.removeItem(key);
+        } catch (error) {
+          console.warn(`Erreur lors de la suppression de ${key}:`, error);
+        }
+      })
+    );
+
+    console.log(
+      "Toutes les données de dépôt ont été réinitialisées avec succès"
+    );
+    return true;
+  } catch (error) {
+    console.error("Erreur lors de la réinitialisation des données:", error);
+    return false;
+  }
+}
+
+export async function resetDepotMagasinStorage() {
+  // Liste de toutes les clés à supprimer
+  const keysToRemove = [
+    "cart_depotMode",
+    "cart_depotMagasinAdresse",
+    "cart_depotMagasinAdresseId",
+    "cart_depotMagasinFournisseurId",
+    "cart_depotMagasinSchedule",
+    "cart_depotValidation",
+  ];
+
+  try {
+    // Suppression de toutes les clés en parallèle
+    await Promise.all(keysToRemove.map((key) => AsyncStorage.removeItem(key)));
+
+    console.log("Toutes les données de dépôt ont été supprimées avec succès");
+    return true;
+  } catch (error) {
+    console.error("Erreur lors de la suppression des données de dépôt:", error);
+    return false;
   }
 }
 
 export const getDepotValues = async () => {
   try {
-    let depotMode = await AsyncStorage.getItem('cart_depotMode');
+    let depotMode = await AsyncStorage.getItem("cart_depotMode");
 
-    let depotMagasin = await AsyncStorage.getItem('cart_depotMagasin');
+    let depotMagasin = await AsyncStorage.getItem("cart_depotMagasin");
     depotMagasin = JSON.parse(depotMagasin);
 
     let depotMagasinAdresse = await AsyncStorage.getItem(
-      'cart_depotMagasinAdresse',
+      "cart_depotMagasinAdresse"
     );
     depotMagasinAdresse = JSON.parse(depotMagasinAdresse);
 
     let depotMagasinAdresseId = await AsyncStorage.getItem(
-      'cart_depotMagasinAdresseId',
+      "cart_depotMagasinAdresseId"
     );
     depotMagasinAdresseId = JSON.parse(depotMagasinAdresseId);
 
-    let depotAdresseId = await AsyncStorage.getItem('cart_depotAdresseId');
+    let depotAdresseId = await AsyncStorage.getItem("cart_depotAdresseId");
     depotAdresseId = JSON.parse(depotAdresseId);
 
-    let depotNom = await AsyncStorage.getItem('cart_depotNom');
+    let depotNom = await AsyncStorage.getItem("cart_depotNom");
     depotNom = JSON.parse(depotNom);
 
-    let depotTelephone = await AsyncStorage.getItem('cart_depotTelephone');
+    let depotTelephone = await AsyncStorage.getItem("cart_depotTelephone");
     depotTelephone = JSON.parse(depotTelephone);
 
     let depotEnlevementAdresse = await AsyncStorage.getItem(
-      'cart_depotEnlevementAdresse',
+      "cart_depotEnlevementAdresse"
     );
     depotEnlevementAdresse = JSON.parse(depotEnlevementAdresse);
 
     let depotEnlevementAdresseId = await AsyncStorage.getItem(
-      'cart_depotEnlevementAdresseId',
+      "cart_depotEnlevementAdresseId"
     );
     depotEnlevementAdresseId = JSON.parse(depotEnlevementAdresseId);
 
-    let depotCodePostal = await AsyncStorage.getItem('cart_depotCodePostal');
+    let depotCodePostal = await AsyncStorage.getItem("cart_depotCodePostal");
     depotCodePostal = JSON.parse(depotCodePostal);
 
-    let depotVille = await AsyncStorage.getItem('cart_depotVille');
+    let depotVille = await AsyncStorage.getItem("cart_depotVille");
     depotVille = JSON.parse(depotVille);
 
-    let depotCreneau = await AsyncStorage.getItem('cart_depotCreneau');
+    let depotCreneau = await AsyncStorage.getItem("cart_depotCreneau");
     depotCreneau = JSON.parse(depotCreneau);
 
     let depotMagasinSchedule = await AsyncStorage.getItem(
-      'cart_depotMagasinSchedule',
+      "cart_depotMagasinSchedule"
     );
     depotMagasinSchedule = JSON.parse(depotMagasinSchedule);
 
     let depotMagasinFournisseurId = await AsyncStorage.getItem(
-      'cart_depotMagasinFournisseurId',
+      "cart_depotMagasinFournisseurId"
     );
     depotMagasinFournisseurId = JSON.parse(depotMagasinFournisseurId);
 
@@ -783,10 +866,10 @@ export const getDepotValues = async () => {
       depotCreneau: depotCreneau,
       depotEnlevementAdresseId: depotEnlevementAdresseId,
       depotMagasinSchedule: depotMagasinSchedule,
-      depotMagasinFournisseurId: depotMagasinFournisseurId
+      depotMagasinFournisseurId: depotMagasinFournisseurId,
     };
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return {
       depotMode: null,
       depotAdresseId: null,
@@ -799,7 +882,7 @@ export const getDepotValues = async () => {
       depotMagasinAdresse: null,
       depotMagasinAdresseId: null,
       depotEnlevementAdresseId: null,
-      depotMagasinFournisseurId: null
+      depotMagasinFournisseurId: null,
     };
   }
 };
@@ -807,53 +890,53 @@ export const getDepotValues = async () => {
 export async function saveLivraisonAdresseId(adresseId) {
   try {
     await AsyncStorage.setItem(
-      'cart_livraisonAdresseId',
-      JSON.stringify(adresseId),
+      "cart_livraisonAdresseId",
+      JSON.stringify(adresseId)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveLivraisonMode(livraisonMode) {
   try {
-    await AsyncStorage.setItem('cart_livraisonMode', livraisonMode);
+    await AsyncStorage.setItem("cart_livraisonMode", livraisonMode);
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveLivraisonRelaisId(UserMagasinId) {
   try {
     await AsyncStorage.setItem(
-      'cart_livraisonRelaisId',
-      JSON.stringify(UserMagasinId),
+      "cart_livraisonRelaisId",
+      JSON.stringify(UserMagasinId)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveLivraisonPrices(
   prixTotalLivraison,
   totalPrixAvecDouaneRemiseAvoir,
-  sommeFraisDouane,
+  sommeFraisDouane
 ) {
   try {
     await AsyncStorage.setItem(
-      'cart_livraisonPrice',
-      JSON.stringify(prixTotalLivraison),
+      "cart_livraisonPrice",
+      JSON.stringify(prixTotalLivraison)
     );
     await AsyncStorage.setItem(
-      'cart_livraisonTotalPrixAvecDouaneRemiseAvoir',
-      JSON.stringify(totalPrixAvecDouaneRemiseAvoir),
+      "cart_livraisonTotalPrixAvecDouaneRemiseAvoir",
+      JSON.stringify(totalPrixAvecDouaneRemiseAvoir)
     );
     await AsyncStorage.setItem(
-      'cart_sommeFraisDouane',
-      JSON.stringify(sommeFraisDouane),
+      "cart_sommeFraisDouane",
+      JSON.stringify(sommeFraisDouane)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
@@ -861,19 +944,19 @@ export async function saveFraisPrices(fraisExpedition, fraisCommission) {
   try {
     if (fraisExpedition) {
       await AsyncStorage.setItem(
-        'cart_ExpeditionPrice',
-        JSON.stringify(prixTotalLivraison),
+        "cart_ExpeditionPrice",
+        JSON.stringify(prixTotalLivraison)
       );
     }
 
     if (fraisCommission) {
       await AsyncStorage.setItem(
-        'cart_CommissionPrice',
-        JSON.stringify(fraisCommission),
+        "cart_CommissionPrice",
+        JSON.stringify(fraisCommission)
       );
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
@@ -881,38 +964,38 @@ export async function saveLivraisonMagasinData(
   UserMagasinLabel,
   UserMagasinId,
   NomContact,
-  TelContact,
+  TelContact
 ) {
   try {
     if (UserMagasinLabel) {
-      await AsyncStorage.setItem('cart_livraisonAdresse', UserMagasinLabel);
+      await AsyncStorage.setItem("cart_livraisonAdresse", UserMagasinLabel);
     }
 
     await AsyncStorage.setItem(
-      'cart_livraisonRelaisId',
-      JSON.stringify(UserMagasinId),
+      "cart_livraisonRelaisId",
+      JSON.stringify(UserMagasinId)
     );
-    await AsyncStorage.setItem('cart_livraisonMode', 'relais');
-    await AsyncStorage.setItem('cart_livraisonNom', NomContact);
+    await AsyncStorage.setItem("cart_livraisonMode", "relais");
+    await AsyncStorage.setItem("cart_livraisonNom", NomContact);
     await AsyncStorage.setItem(
-      'cart_livraisonTelephone',
-      JSON.stringify(TelContact),
+      "cart_livraisonTelephone",
+      JSON.stringify(TelContact)
     );
 
-    await AsyncStorage.setItem('cart_deliveryValidation', 'true');
+    await AsyncStorage.setItem("cart_deliveryValidation", "true");
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveLivraisonmagasinSchedule(data) {
   try {
     await AsyncStorage.setItem(
-      'cart_livraisonMagasinSchedule',
-      JSON.stringify(data),
+      "cart_livraisonMagasinSchedule",
+      JSON.stringify(data)
     );
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
@@ -920,72 +1003,72 @@ export async function saveLivraisonDomicileData(
   UserDomicileLabel,
   UserDomicileId,
   NomContact,
-  TelContact,
+  TelContact
 ) {
   try {
-    await AsyncStorage.setItem('cart_livraisonMode', 'domicile');
-    await AsyncStorage.setItem('cart_livraisonNom', NomContact);
+    await AsyncStorage.setItem("cart_livraisonMode", "domicile");
+    await AsyncStorage.setItem("cart_livraisonNom", NomContact);
     await AsyncStorage.setItem(
-      'cart_livraisonTelephone',
-      JSON.stringify(TelContact),
+      "cart_livraisonTelephone",
+      JSON.stringify(TelContact)
     );
     if (UserDomicileLabel) {
-      await AsyncStorage.setItem('cart_livraisonAdresse', UserDomicileLabel);
+      await AsyncStorage.setItem("cart_livraisonAdresse", UserDomicileLabel);
     }
 
     await AsyncStorage.setItem(
-      'cart_livraisonAdresseId',
-      JSON.stringify(UserDomicileId),
+      "cart_livraisonAdresseId",
+      JSON.stringify(UserDomicileId)
     );
 
-    await AsyncStorage.setItem('cart_deliveryValidation', 'true');
+    await AsyncStorage.setItem("cart_deliveryValidation", "true");
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getLivraisonValues = async () => {
   try {
-    let livraisonMode = await AsyncStorage.getItem('cart_livraisonMode');
+    let livraisonMode = await AsyncStorage.getItem("cart_livraisonMode");
 
-    let livraisonNom = await AsyncStorage.getItem('cart_livraisonNom');
+    let livraisonNom = await AsyncStorage.getItem("cart_livraisonNom");
 
     let livraisonTelephone = await AsyncStorage.getItem(
-      'cart_livraisonTelephone',
+      "cart_livraisonTelephone"
     );
     livraisonTelephone = JSON.parse(livraisonTelephone);
 
-    let livraisonAdresse = await AsyncStorage.getItem('cart_livraisonAdresse');
+    let livraisonAdresse = await AsyncStorage.getItem("cart_livraisonAdresse");
 
-    let prixTotalLivraison = await AsyncStorage.getItem('cart_livraisonPrice');
+    let prixTotalLivraison = await AsyncStorage.getItem("cart_livraisonPrice");
     prixTotalLivraison = JSON.parse(prixTotalLivraison);
 
     let livraisonRelaisId = await AsyncStorage.getItem(
-      'cart_livraisonRelaisId',
+      "cart_livraisonRelaisId"
     );
     livraisonRelaisId = JSON.parse(livraisonRelaisId);
 
-    let adresseId = await AsyncStorage.getItem('cart_livraisonAdresseId');
+    let adresseId = await AsyncStorage.getItem("cart_livraisonAdresseId");
     adresseId = JSON.parse(adresseId);
 
     let livraisonTotalPrixAvecDouaneRemiseAvoir = await AsyncStorage.getItem(
-      'cart_livraisonTotalPrixAvecDouaneRemiseAvoir',
+      "cart_livraisonTotalPrixAvecDouaneRemiseAvoir"
     );
     livraisonTotalPrixAvecDouaneRemiseAvoir = JSON.parse(
-      livraisonTotalPrixAvecDouaneRemiseAvoir,
+      livraisonTotalPrixAvecDouaneRemiseAvoir
     );
 
-    let sommeFraisDouane = await AsyncStorage.getItem('cart_sommeFraisDouane');
+    let sommeFraisDouane = await AsyncStorage.getItem("cart_sommeFraisDouane");
     sommeFraisDouane = JSON.parse(sommeFraisDouane);
 
-    let fraisExpedition = await AsyncStorage.getItem('cart_ExpeditionPrice');
+    let fraisExpedition = await AsyncStorage.getItem("cart_ExpeditionPrice");
     fraisExpedition = JSON.parse(fraisExpedition);
 
-    let fraisCommission = await AsyncStorage.getItem('cart_CommissionPrice');
+    let fraisCommission = await AsyncStorage.getItem("cart_CommissionPrice");
     fraisCommission = JSON.parse(fraisCommission);
 
     let livraisonMagasinSchedule = await AsyncStorage.getItem(
-      'cart_livraisonMagasinSchedule',
+      "cart_livraisonMagasinSchedule"
     );
 
     livraisonMagasinSchedule = JSON.parse(livraisonMagasinSchedule);
@@ -1025,52 +1108,52 @@ export async function savePrixFinalPanier(
   totalPrice,
   CartTotalPriceSansRemiseAvoir,
   remiseTotal,
-  tva,
+  tva
 ) {
   try {
-    await AsyncStorage.setItem('cart_finalPrice', JSON.stringify(totalPrice));
+    await AsyncStorage.setItem("cart_finalPrice", JSON.stringify(totalPrice));
     await AsyncStorage.setItem(
-      'cart_finalPriceWithoutAvoirRemise',
-      JSON.stringify(CartTotalPriceSansRemiseAvoir),
+      "cart_finalPriceWithoutAvoirRemise",
+      JSON.stringify(CartTotalPriceSansRemiseAvoir)
     );
-    await AsyncStorage.setItem('cart_tvaTotal', JSON.stringify(tva));
+    await AsyncStorage.setItem("cart_tvaTotal", JSON.stringify(tva));
 
     if (remiseTotal) {
       await AsyncStorage.setItem(
-        'cart_remiseTotal',
-        JSON.stringify(remiseTotal),
+        "cart_remiseTotal",
+        JSON.stringify(remiseTotal)
       );
     }
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export async function saveCartAvoir(AvoirValue) {
   try {
-    AsyncStorage.setItem('cart_avoirValue', JSON.stringify(AvoirValue));
+    AsyncStorage.setItem("cart_avoirValue", JSON.stringify(AvoirValue));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getCartPrices = async () => {
   try {
-    let finalPrice = await AsyncStorage.getItem('cart_finalPrice');
+    let finalPrice = await AsyncStorage.getItem("cart_finalPrice");
     finalPrice = JSON.parse(finalPrice);
 
     let finalPriceWithoutAvoirRemise = await AsyncStorage.getItem(
-      'cart_finalPriceWithoutAvoirRemise',
+      "cart_finalPriceWithoutAvoirRemise"
     );
     finalPriceWithoutAvoirRemise = JSON.parse(finalPriceWithoutAvoirRemise);
 
-    let avoirValue = await AsyncStorage.getItem('cart_avoirValue');
+    let avoirValue = await AsyncStorage.getItem("cart_avoirValue");
     avoirValue = JSON.parse(avoirValue);
 
-    let remiseTotal = await AsyncStorage.getItem('cart_remiseTotal');
+    let remiseTotal = await AsyncStorage.getItem("cart_remiseTotal");
     remiseTotal = JSON.parse(remiseTotal);
 
-    let tvaTotal = await AsyncStorage.getItem('cart_tvaTotal');
+    let tvaTotal = await AsyncStorage.getItem("cart_tvaTotal");
     tvaTotal = JSON.parse(tvaTotal);
 
     return {
@@ -1081,7 +1164,7 @@ export const getCartPrices = async () => {
       tvaTotal: tvaTotal,
     };
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
     return {
       finalPrice: null,
       finalPriceWithoutAvoirRemise: null,
@@ -1095,32 +1178,32 @@ export const getCartPrices = async () => {
 export async function saveAdresseIdFacturation(
   addressId,
   NomFacturation,
-  type,
+  type
 ) {
   try {
     await AsyncStorage.setItem(
-      'cart_adresseFacturationId',
-      JSON.stringify(addressId),
+      "cart_adresseFacturationId",
+      JSON.stringify(addressId)
     );
-    await AsyncStorage.setItem('cart_adresseFacturationType', type);
-    await AsyncStorage.setItem('cart_facturationNom', NomFacturation);
+    await AsyncStorage.setItem("cart_adresseFacturationType", type);
+    await AsyncStorage.setItem("cart_facturationNom", NomFacturation);
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getAdresseIdFacturation = async () => {
   try {
     let adresseIdFacturation = await AsyncStorage.getItem(
-      'cart_adresseFacturationId',
+      "cart_adresseFacturationId"
     );
     adresseIdFacturation = JSON.parse(adresseIdFacturation);
 
     let adresseFacturationType = await AsyncStorage.getItem(
-      'cart_adresseFacturationType',
+      "cart_adresseFacturationType"
     );
 
-    let facturationNom = await AsyncStorage.getItem('cart_facturationNom');
+    let facturationNom = await AsyncStorage.getItem("cart_facturationNom");
 
     return {
       adresseIdFacturation: adresseIdFacturation,
@@ -1138,15 +1221,15 @@ export const getAdresseIdFacturation = async () => {
 
 export async function saveResumeCommande(commande) {
   try {
-    await AsyncStorage.setItem('commande_resume', JSON.stringify(commande));
+    await AsyncStorage.setItem("commande_resume", JSON.stringify(commande));
   } catch (error) {
-    console.log('error', error);
+    console.log("error", error);
   }
 }
 
 export const getResumeCommande = async () => {
   try {
-    let commande = await AsyncStorage.getItem('commande_resume');
+    let commande = await AsyncStorage.getItem("commande_resume");
     commande = JSON.parse(commande);
 
     return commande;

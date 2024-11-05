@@ -1,0 +1,12 @@
+/.circleci
+/.github
+/.idea
+/.expo
+/.expo-shared
+/.vscode
+assets
+scripts
+dist
+lib
+
+node_modules

@@ -368,14 +368,14 @@ const BottomTabNavigate = () => {
         <Stack.Screen name="Verification" component={verifTel} />
         <Stack.Screen name="PasswordReturn" component={PasswordReturn} />
 
+        <Stack.Screen name="CommandeScreen" component={CommandScreen} />
+        <Stack.Screen name="DetailCommandeScreen" component={CommandeDetail} />
         <Stack.Screen name="Homescreen" component={HomeStack} />
         <Stack.Screen name="CartBancair" component={CartBancair} />
         <Stack.Screen name="AddCardScreen" component={AddCardScreen} />
         <Stack.Screen name="EditProfile" component={EditProfile} />
         <Stack.Screen name="RemiseAvoir" component={RemiseAvoirScreen} />
         <Stack.Screen name="LanguageScreen" component={LanguageScreen} />
-        <Stack.Screen name="CommandeScreen" component={CommandScreen} />
-        <Stack.Screen name="DetailCommandeScreen" component={CommandeDetail} />
         <Stack.Screen name="AdresseScreen" component={AdresseScreen} />
         <Stack.Screen name="AddAdresseScreen" component={AddAdressScreen} />
         <Stack.Screen name="EditAdresseScreen" component={EditAdressScreen} />

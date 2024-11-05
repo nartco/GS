@@ -958,6 +958,8 @@ PODS:
   - BVLinearGradient (2.8.3):
     - React-Core
   - DoubleConversion (1.1.6)
+  - FBAEMKit (17.4.0):
+    - FBSDKCoreKit_Basics (= 17.4.0)
   - FBLazyVector (0.73.6)
   - FBReactNativeSpec (0.73.6):
     - RCT-Folly (= 2022.05.16.00)
@@ -966,6 +968,18 @@ PODS:
     - React-Core (= 0.73.6)
     - React-jsi (= 0.73.6)
     - ReactCommon/turbomodule/core (= 0.73.6)
+  - FBSDKCoreKit (17.4.0):
+    - FBAEMKit (= 17.4.0)
+    - FBSDKCoreKit_Basics (= 17.4.0)
+  - FBSDKCoreKit_Basics (17.4.0)
+  - FBSDKGamingServicesKit (17.4.0):
+    - FBSDKCoreKit (= 17.4.0)
+    - FBSDKCoreKit_Basics (= 17.4.0)
+    - FBSDKShareKit (= 17.4.0)
+  - FBSDKLoginKit (17.4.0):
+    - FBSDKCoreKit (= 17.4.0)
+  - FBSDKShareKit (17.4.0):
+    - FBSDKCoreKit (= 17.4.0)
   - Firebase (10.29.0):
     - Firebase/Core (= 10.29.0)
   - Firebase/Auth (10.29.0):
@@ -1053,6 +1067,8 @@ PODS:
   - FirebaseSharedSwift (10.29.0)
   - fmt (6.2.1)
   - glog (0.3.5)
+  - Google-Mobile-Ads-SDK (11.7.0):
+    - GoogleUserMessagingPlatform (>= 1.1)
   - GoogleAppMeasurement (10.29.0):
     - GoogleAppMeasurement/AdIdSupport (= 10.29.0)
     - GoogleUtilities/AppDelegateSwizzler (~> 7.11)
@@ -1077,6 +1093,7 @@ PODS:
     - GoogleUtilities/Environment (~> 7.7)
     - nanopb (< 2.30911.0, >= 2.30908.0)
     - PromisesObjC (< 3.0, >= 1.2)
+  - GoogleUserMessagingPlatform (2.5.0)
   - GoogleUtilities (7.13.3):
     - GoogleUtilities/AppDelegateSwizzler (= 7.13.3)
     - GoogleUtilities/Environment (= 7.13.3)
@@ -2086,6 +2103,21 @@ PODS:
     - React-Core
   - react-native-date-picker (4.4.2):
     - React-Core
+  - react-native-fbsdk-next (13.1.3):
+    - React-Core
+    - react-native-fbsdk-next/Core (= 13.1.3)
+    - react-native-fbsdk-next/Login (= 13.1.3)
+    - react-native-fbsdk-next/Share (= 13.1.3)
+  - react-native-fbsdk-next/Core (13.1.3):
+    - FBSDKCoreKit (~> 17.3)
+    - React-Core
+  - react-native-fbsdk-next/Login (13.1.3):
+    - FBSDKLoginKit (~> 17.3)
+    - React-Core
+  - react-native-fbsdk-next/Share (13.1.3):
+    - FBSDKGamingServicesKit (~> 17.3)
+    - FBSDKShareKit (~> 17.3)
+    - React-Core
   - react-native-image-picker (7.1.2):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -2290,6 +2322,12 @@ PODS:
     - FirebaseCoreExtension
     - React-Core
     - RNFBApp
+  - RNGoogleMobileAds (14.2.5):
+    - glog
+    - Google-Mobile-Ads-SDK (= 11.7.0)
+    - GoogleUserMessagingPlatform (= 2.5.0)
+    - RCT-Folly (= 2022.05.16.00)
+    - React-Core
   - RNScreens (3.30.1):
     - glog
     - RCT-Folly (= 2022.05.16.00)
@@ -2381,6 +2419,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - react-native-blob-util (from `../node_modules/react-native-blob-util`)
   - react-native-date-picker (from `../node_modules/react-native-date-picker`)
+  - react-native-fbsdk-next (from `../node_modules/react-native-fbsdk-next`)
   - react-native-image-picker (from `../node_modules/react-native-image-picker`)
   - react-native-pdf (from `../node_modules/react-native-pdf`)
   - react-native-safe-area-context (from `../node_modules/react-native-safe-area-context`)
@@ -2413,6 +2452,7 @@ DEPENDENCIES:
   - "RNFBAuth (from `../node_modules/@react-native-firebase/auth`)"
   - "RNFBFirestore (from `../node_modules/@react-native-firebase/firestore`)"
   - "RNFBMessaging (from `../node_modules/@react-native-firebase/messaging`)"
+  - RNGoogleMobileAds (from `../node_modules/react-native-google-mobile-ads`)
   - RNScreens (from `../node_modules/react-native-screens`)
   - "RNSentry (from `../node_modules/@sentry/react-native`)"
   - "stripe-react-native (from `../node_modules/@stripe/stripe-react-native`)"
@@ -2422,6 +2462,12 @@ SPEC REPOS:
   trunk:
     - abseil
     - BoringSSL-GRPC
+    - FBAEMKit
+    - FBSDKCoreKit
+    - FBSDKCoreKit_Basics
+    - FBSDKGamingServicesKit
+    - FBSDKLoginKit
+    - FBSDKShareKit
     - Firebase
     - FirebaseAnalytics
     - FirebaseAppCheckInterop
@@ -2435,8 +2481,10 @@ SPEC REPOS:
     - FirebaseMessaging
     - FirebaseSharedSwift
     - fmt
+    - Google-Mobile-Ads-SDK
     - GoogleAppMeasurement
     - GoogleDataTransport
+    - GoogleUserMessagingPlatform
     - GoogleUtilities
     - "gRPC-C++"
     - gRPC-Core
@@ -2522,6 +2570,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native-blob-util"
   react-native-date-picker:
     :path: "../node_modules/react-native-date-picker"
+  react-native-fbsdk-next:
+    :path: "../node_modules/react-native-fbsdk-next"
   react-native-image-picker:
     :path: "../node_modules/react-native-image-picker"
   react-native-pdf:
@@ -2586,6 +2636,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/@react-native-firebase/firestore"
   RNFBMessaging:
     :path: "../node_modules/@react-native-firebase/messaging"
+  RNGoogleMobileAds:
+    :path: "../node_modules/react-native-google-mobile-ads"
   RNScreens:
     :path: "../node_modules/react-native-screens"
   RNSentry:
@@ -2602,8 +2654,14 @@ SPEC CHECKSUMS:
   BugsnagReactNativePerformance: 4f5bd918362297e41a3f32beebe3a98b004af445
   BVLinearGradient: 880f91a7854faff2df62518f0281afb1c60d49a3
   DoubleConversion: fea03f2699887d960129cc54bba7e52542b6f953
+  FBAEMKit: 58cb5f302cdd715a56d4c1d0dfdd2e423ac1421a
   FBLazyVector: f64d1e2ea739b4d8f7e4740cde18089cd97fe864
   FBReactNativeSpec: 9f2b8b243131565335437dba74923a8d3015e780
+  FBSDKCoreKit: 94d7461d0cecf441b1ba7c41acfff41daa8ccd41
+  FBSDKCoreKit_Basics: 151b43db8b834d3f0e02f95d36a44ffd36265e45
+  FBSDKGamingServicesKit: 55a13febe0cd117bf5f8f61f315d75aab9b7876e
+  FBSDKLoginKit: 5c1cd53c91a2282b3a4fe6e6d3dcf2b8b0d33d55
+  FBSDKShareKit: 00546a02dce72f37a4209cd68aaf5fb749185c3b
   Firebase: cec914dab6fd7b1bd8ab56ea07ce4e03dd251c2d
   FirebaseAnalytics: 23717de130b779aa506e757edb9713d24b6ffeda
   FirebaseAppCheckInterop: 6a1757cfd4067d8e00fccd14fcc1b8fd78cfac07
@@ -2618,8 +2676,10 @@ SPEC CHECKSUMS:
   FirebaseSharedSwift: 20530f495084b8d840f78a100d8c5ee613375f6e
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: c5d68082e772fa1c511173d6b30a9de2c05a69a2
+  Google-Mobile-Ads-SDK: 204b517c9765169144cf39763c7f5d23c57a9db0
   GoogleAppMeasurement: f9de05ee17401e3355f68e8fc8b5064d429f5918
   GoogleDataTransport: 6c09b596d841063d76d4288cc2d2f42cc36e1e2a
+  GoogleUserMessagingPlatform: 6b4f48a370e77ce121d034c908cc6ee4fdafaf13
   GoogleUtilities: ea963c370a38a8069cc5f7ba4ca849a60b6d7d15
   "gRPC-C++": e725ef63c4475d7cdb7e2cf16eb0fde84bd9ee51
   gRPC-Core: eee4be35df218649fe66d721a05a7f27a28f069b
@@ -2652,6 +2712,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: d81d930c1b7f4db284e1d721fe7fdc99230ca108
   react-native-blob-util: 18b510205c080a453574a7d2344d64673d0ad9af
   react-native-date-picker: 312c387d2ff873c66c5e4cf78ff6827fa91644e2
+  react-native-fbsdk-next: 0326e3f3892b3f1cb66bfb884f289e2bb818ee89
   react-native-image-picker: 7c3a279e7a518628910f2ea02917bd3b90049465
   react-native-pdf: 79aa75e39a80c1d45ffe58aa500f3cf08f267a2e
   react-native-safe-area-context: b97eb6f9e3b7f437806c2ce5983f479f8eb5de4b
@@ -2685,6 +2746,7 @@ SPEC CHECKSUMS:
   RNFBAuth: 43dea92a17ffa9481029a50df0e8c50943ec495a
   RNFBFirestore: e47cdde04ea3d9e73e58e037e1aa1d0b1141c316
   RNFBMessaging: 652aac21d91b8ddb85a5e25c0f04150ef60b5384
+  RNGoogleMobileAds: 739fb78d9511aeb166dde4fe3fd52f079c846787
   RNScreens: 97a2a32820e632c5978d75250afa397ed9053910
   RNSentry: bb9261522b37ee673579ee1d106b107d63cc6243
   Sentry: f8374b5415bc38dfb5645941b3ae31230fbeae57

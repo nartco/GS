@@ -8,6 +8,8 @@ import {
   FlatList,
   ActivityIndicator,
   Platform,
+  Modal,
+  StyleSheet,
 } from 'react-native';
 import React, {useState, useEffect, useCallback} from 'react';
 import {HeaderEarth} from '../../components/Header';
@@ -15,6 +17,8 @@ import {
   getPlatformLanguage,
   getSelectedCountry,
   getSelectedService,
+  saveSelectedCountry,
+  saveSelectedService,
 } from '../../modules/GestionStorage';
 import axiosInstance from '../../axiosInstance';
 import styles from './styles';
@@ -68,7 +72,7 @@ const ShoppingScreen = props => {
   const [sortBy, setSortBy] = useState('');
   const [sortField, setSortField] = useState('');
   const [sortDirection, setSortDirection] = useState('');
-
+  const [isModalVisible, setIsModalVisible] = useState(false);
   // Par défaut le service Expéditions par avion sera selectionné (donc les sous categories seront chargées)
   const [Service, setService] = useState(null);
 
@@ -109,7 +113,6 @@ const ShoppingScreen = props => {
           props.navigation.navigate('HomeScreen');
           return;
         }
-
         setService(selectedService);
         setLanguage(currentLanguage);
         setPaysLivraison(paysLivraison);
@@ -718,6 +721,24 @@ const ShoppingScreen = props => {
                         value={`${sortField}${sortDirection}`}
                         renderItem={renderSortItem}
                       />
+                      {'fret-par-bateau' == Service.code && (
+                        <TouchableOpacity
+                          onPress={() => setIsModalVisible(true)}
+                          style={{
+                            backgroundColor: '#2BA6E9',
+                            borderRadius: 30,
+                            marginLeft: '10%',
+                          }}>
+                          <Text
+                            style={{
+                              color: 'white',
+                              padding: 5,
+                              paddingHorizontal: 10,
+                            }}>
+                            {t('redirectButton')}
+                          </Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
 
                     <View
@@ -911,6 +932,57 @@ const ShoppingScreen = props => {
                     </View>
                   ) : null}
                 </View>
+                <Modal
+                  visible={isModalVisible}
+                  transparent={true}
+                  animationType="fade">
+                  <View style={styles.modalContainer}>
+                    <View style={styles.modalContent}>
+                      <Text style={styles.modalText}>{t('redirect')}</Text>
+                      <View style={styles.buttonContainer}>
+                        <TouchableOpacity
+                          style={[styles.button, styles.continueButton]}
+                          onPress={() => setIsModalVisible(false)}>
+                          <Text style={styles.buttonText}>{t('Cancel')}</Text>
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                          style={[styles.button, styles.continueButton]}
+                          onPress={async () => {
+                            await saveSelectedCountry({
+                              depart: 'France',
+                              departEn: 'France',
+                              destination: 'France',
+                              destinationEn: 'France',
+                              drapeauDepart: null,
+                              drapeauDestination: 'FR',
+                              id: 11,
+                              label: 'France',
+                              libelleDepart: 'France',
+                              libelleDestination: 'France',
+                              value: 11,
+                            });
+                            await saveSelectedService({
+                              code: 'ventes-privees',
+                              id: 4,
+                              image:
+                                'https://godaregroup.com/api/fichiers/service/cfc7cd9b-995d-49f7-a546-5233e19455c8.png',
+                              message: 'Le comptoir des grandes marques',
+                              messageEN: 'The branch of the big brands',
+                              nom: 'Ventes Privées',
+                              nomEN: 'Private sales',
+                              pays: [[Object], [Object]],
+                              position: 3,
+                              statut: true,
+                            });
+                            setIsModalVisible(false);
+                            props.navigation.push('ShoppingScreen'); // Assurez-vous que 'navigation' est disponible dans ce composant
+                          }}>
+                          <Text style={styles.buttonText}>{t('Continue')}</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  </View>
+                </Modal>
               </ScrollView>
             </>
           )}

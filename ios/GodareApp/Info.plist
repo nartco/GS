@@ -51,14 +51,34 @@
 			<true />
 		</dict>
 		<key>NSCameraUsageDescription</key>
-		<string>We access your camera to allow you to take or upload a photo of the product you want
-			us to transport or purchase for you. The photo will serve as evidence in case of a
-			dispute. Please note that taking or uploading a photo is not mandatory to use our
-			services.</string>
+		<string>Nous accédons à votre appareil photo pour vous permettre de prendre ou télécharger
+			une photo du produit que vous souhaitez nous faire transporter ou acheter. La photo
+			servira de preuve en cas de litige. Veuillez noter que la prise ou le téléchargement
+			d'une photo n'est pas obligatoire pour utiliser nos services.</string>
 		<key>NSLocationWhenInUseUsageDescription</key>
 		<string />
 		<key>NSPhotoLibraryUsageDescription</key>
 		<string>We need access to your photo library to upload pictures.</string>
+		<key>CFBundleURLTypes</key>
+		<array>
+			<dict>
+				<key>CFBundleURLSchemes</key>
+				<array>
+					<string>fb489944126838623</string> <!-- Remplacez APP_ID par votre App ID -->
+				</array>
+			</dict>
+		</array>
+		<key>FacebookAppID</key>
+		<string>489944126838623</string> <!-- Remplacez APP_ID par votre App ID -->
+		<key>FacebookDisplayName</key>
+		<string>Your App Name</string> <!-- Nom de votre application -->
+		<key>LSApplicationQueriesSchemes</key>
+		<array>
+			<string>fbapi</string>
+			<string>fb-messenger-share-api</string>
+			<string>fbauth2</string>
+			<string>fbshareextension</string>
+		</array>
 		<key>UIAppFonts</key>
 		<array>
 			<string>AntDesign.ttf</string>

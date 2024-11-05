@@ -11,12 +11,12 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
-} from 'react-native';
-import React, {useState, useEffect, useRef} from 'react';
-import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
-import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
-import {Picker} from '@react-native-picker/picker';
-import Stepper from '../Stepper';
+} from "react-native";
+import React, { useState, useEffect, useRef } from "react";
+import { widthPercentageToDP as wp } from "react-native-responsive-screen";
+import { KeyboardAwareScrollView } from "react-native-keyboard-aware-scroll-view";
+import { Picker } from "@react-native-picker/picker";
+import Stepper from "../Stepper";
 import {
   getCommand,
   getDepotModeChoice,
@@ -37,25 +37,27 @@ import {
   saveDepotValidation,
   saveSelectedCountry,
   saveSelectedService,
-} from '../../modules/GestionStorage';
-import axiosInstance from '../../axiosInstance';
-import {useTranslation} from 'react-i18next';
-import {useIsFocused, useRoute} from '@react-navigation/native';
-import ServiceHeader from '../../components/ServiceHeader';
-import PhoneInput from 'react-native-international-phone-number';
+  resetDepotMagasinStorage,
+  resetAllDepotStorage,
+} from "../../modules/GestionStorage";
+import axiosInstance from "../../axiosInstance";
+import { useTranslation } from "react-i18next";
+import { useIsFocused, useRoute } from "@react-navigation/native";
+import ServiceHeader from "../../components/ServiceHeader";
+import PhoneInput from "react-native-international-phone-number";
 
-import {Dropdown} from 'react-native-element-dropdown';
-import styles from './styles';
-import Toast from 'react-native-toast-message';
-import auth from '@react-native-firebase/auth';
-import {removeCountryCode} from '../../components/removeCountryCode';
-import {getCountryCodeFromPhone} from '../../components/getCountryCode';
+import { Dropdown } from "react-native-element-dropdown";
+import styles from "./styles";
+import Toast from "react-native-toast-message";
+import auth from "@react-native-firebase/auth";
+import { removeCountryCode } from "../../components/removeCountryCode";
+import { getCountryCodeFromPhone } from "../../components/getCountryCode";
 
-const windowWidth = Dimensions.get('window').width;
-const windowHeight = Dimensions.get('window').height;
-const DepotScreen1 = props => {
+const windowWidth = Dimensions.get("window").width;
+const windowHeight = Dimensions.get("window").height;
+const DepotScreen1 = (props) => {
   var isFocused = useIsFocused();
-  const {t, i18n} = useTranslation();
+  const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
   const [current, setCurrent] = useState();
@@ -67,26 +69,26 @@ const DepotScreen1 = props => {
   const [MagasinsDepot, setMagasinsDepot] = useState([]);
   const [MagasinsDepotRawValues, setMagasinsDepotRawValues] = useState([]);
   const [adresses, setAdresses] = useState([]);
-  const [UserDomicileChoix, setUserDomicileChoix] = useState('');
-  const [UserMagasinChoix, setUserMagasinChoix] = useState('');
-  const [NomContact, setNomContact] = useState('');
-  const [TelContact, setTelContact] = useState('');
-  const [telCopy, setTelCopy] = useState('');
+  const [UserDomicileChoix, setUserDomicileChoix] = useState("");
+  const [UserMagasinChoix, setUserMagasinChoix] = useState("");
+  const [NomContact, setNomContact] = useState("");
+  const [TelContact, setTelContact] = useState("");
+  const [telCopy, setTelCopy] = useState("");
 
   const [actionTriggered, setActionTriggered] = useState({}); // to make modal dynamic
   const [modalVisible, setModalVisible] = useState(false);
   const [showMagasin, setShowMagasin] = useState(false);
   const [showAdresseEnlevement, setShowAdresseEnlevement] = useState(false);
   const [open, setOpen] = useState(false);
-  const [selectValue, setSelectValue] = useState('');
+  const [selectValue, setSelectValue] = useState("");
   const [isDepotChoice, setIsDepotChoice] = useState(false);
-  const [depotChoiceMode, setDepotChoiceMode] = useState('');
+  const [depotChoiceMode, setDepotChoiceMode] = useState("");
   const [userAdresseChoice, setUserAdresseChoice] = useState(null);
   const [userMagasinChoice, setUserMagasinChoice] = useState(null);
   const [Service, setService] = useState(null);
   const [paysLivraisonObject, setPaysLivraisonObject] = useState(null);
   const [Creneaux, setCreneaux] = useState([]);
-  const [Language, setLanguage] = useState('fr');
+  const [Language, setLanguage] = useState("fr");
   const [getAdrees, setGetAdrees] = useState([]);
   const [CartCommand, setCartCommand] = useState([]);
   const [paysCommand, setPayCommand] = useState([]);
@@ -103,8 +105,8 @@ const DepotScreen1 = props => {
     : false;
 
   const items = [
-    {label: t('Dépôt au magasin'), value: 'magasin'},
-    {label: t('Enlèvement à domicile'), value: 'enlevement'},
+    { label: t("Dépôt au magasin"), value: "magasin" },
+    { label: t("Enlèvement à domicile"), value: "enlevement" },
   ];
 
   const route = useRoute();
@@ -134,12 +136,12 @@ const DepotScreen1 = props => {
       let Data = [];
       if (BasketCommand.length > 0) {
         const response = await axiosInstance.get(
-          '/pays/' + BasketCommand[0].paysLivraison,
+          "/pays/" + BasketCommand[0].paysLivraison
         );
 
         Data = response.data;
 
-        BasketCommand?.forEach(item => {
+        BasketCommand?.forEach((item) => {
           if (item.product && item.product.validationManuelle) {
             validationManuelle = true;
           }
@@ -150,7 +152,7 @@ const DepotScreen1 = props => {
       let basketData = await getPanier();
 
       if (basketData.length > 0) {
-        basketData?.forEach(item => {
+        basketData?.forEach((item) => {
           if (item.product && item.product.validationManuelle) {
             validationManuelle = true;
           }
@@ -160,8 +162,8 @@ const DepotScreen1 = props => {
       setCommandeHasManualValidation(validationManuelle);
 
       if (validationManuelle) {
-        setStorageDepotChoiceMode('enlevement');
-        setDepotChoiceMode('enlevement');
+        setStorageDepotChoiceMode("enlevement");
+        setDepotChoiceMode("enlevement");
         setIsDepotChoice(false);
 
         setShowAdresseEnlevement(true);
@@ -174,7 +176,7 @@ const DepotScreen1 = props => {
         if (cartService != service?.code) {
           let services = await getServices();
 
-          var newData = services.filter(ls => {
+          var newData = services.filter((ls) => {
             if (ls?.code == cartService) {
               return ls;
             }
@@ -200,7 +202,7 @@ const DepotScreen1 = props => {
         if (cartService?.code != service?.code) {
           let services = await getServices();
 
-          var newData = services.filter(ls => {
+          var newData = services.filter((ls) => {
             if (ls?.code == cartService?.code) {
               return ls;
             }
@@ -229,7 +231,7 @@ const DepotScreen1 = props => {
           montantCommande: route?.params?.prices?.totalPrix,
           fournisseurs: route?.params?.excludedSupplierIds,
         })
-        .then(response => {
+        .then((response) => {
           if (response.data) {
             setCreneaux(response.data);
           }
@@ -245,21 +247,21 @@ const DepotScreen1 = props => {
       const user = auth().currentUser;
 
       axiosInstance
-        .get('/adresses/user/depart/' + user.uid + '/' + paysLivraisonObject.id)
-        .then(response => {
+        .get("/adresses/user/depart/" + user.uid + "/" + paysLivraisonObject.id)
+        .then((response) => {
           if (response.data) {
             let data = response.data;
 
-            formattedAdresse = data.map(ls => {
+            formattedAdresse = data.map((ls) => {
               return {
                 id: ls.id,
                 label:
                   ls.adresse +
-                  ' ' +
+                  " " +
                   ls.codePostal +
-                  ' ' +
+                  " " +
                   ls.ville +
-                  ' ' +
+                  " " +
                   ls.pays,
                 value: ls.id,
                 codePostal: ls.codePostal,
@@ -273,7 +275,7 @@ const DepotScreen1 = props => {
           }
         })
         .catch(function (error) {
-          console.log('adresse fetch error', error);
+          console.log("adresse fetch error", error);
         });
 
       let fournisseurs = [];
@@ -288,7 +290,7 @@ const DepotScreen1 = props => {
       try {
         const response = await axiosInstance.post(
           `fournisseurs/magasins/${paysLivraisonObject.id}/depot`,
-          requestBody,
+          requestBody
         );
 
         // console.log("Réponse de l'API:", response.data);
@@ -299,7 +301,7 @@ const DepotScreen1 = props => {
         if (error?.data?.montantMinimum) {
           setmontantMinium(error.data.montantMinimum);
         }
-        console.error('Erreur lors de la récupération des magasins:', error);
+        console.error("Erreur lors de la récupération des magasins:", error);
       }
 
       let data = [];
@@ -309,15 +311,15 @@ const DepotScreen1 = props => {
         fournisseur.magasins?.forEach(function (magasin) {
           let found = false;
 
-          const checkDepot = typeArray => {
-            return Array.isArray(typeArray) && typeArray.includes('Dépôt');
+          const checkDepot = (typeArray) => {
+            return Array.isArray(typeArray) && typeArray.includes("Dépôt");
           };
 
-          if (Service?.code === 'fret-par-bateau') {
+          if (Service?.code === "fret-par-bateau") {
             if (checkDepot(magasin.typeFretBateau)) {
               found = true;
             }
-          } else if (Service?.code === 'fret-par-avion') {
+          } else if (Service?.code === "fret-par-avion") {
             if (checkDepot(magasin.typeFretAvion)) {
               found = true;
             }
@@ -344,9 +346,9 @@ const DepotScreen1 = props => {
 
       // console.log('Magasins traités:', data);
 
-      let formatted = data.map(ls => ({
+      let formatted = data.map((ls) => ({
         id: ls.id,
-        label: `${ls.pays}, ${ls.codePostal ? ls.codePostal + ', ' : ''}${
+        label: `${ls.pays}, ${ls.codePostal ? ls.codePostal + ", " : ""}${
           ls.ville
         }, ${ls.adresse}`,
         value: ls.id,
@@ -365,12 +367,12 @@ const DepotScreen1 = props => {
       if (choice) {
         setDepotChoiceMode(choice);
 
-        if ('magasin' == choice) {
+        if ("magasin" == choice) {
           setShowMagasin(true);
           setShowAdresseEnlevement(false);
 
           if (depotAdresseValues.depotMagasin) {
-            var newData = formatted.filter(ls => {
+            var newData = formatted.filter((ls) => {
               if (ls.id == depotAdresseValues.depotMagasin) {
                 return ls;
               }
@@ -383,7 +385,7 @@ const DepotScreen1 = props => {
           setShowAdresseEnlevement(true);
           setShowMagasin(false);
 
-          var newData = formattedAdresse.filter(ls => {
+          var newData = formattedAdresse.filter((ls) => {
             if (ls.id == depotAdresseValues.depotAdresseId) {
               return ls;
             }
@@ -411,7 +413,7 @@ const DepotScreen1 = props => {
 
         if (adresse) {
           adresse.label = `${adresse.pays}, ${
-            adresse.codePostal ? adresse.codePostal + ', ' : ''
+            adresse.codePostal ? adresse.codePostal + ", " : ""
           }${adresse.ville}, ${adresse.adresse}`;
 
           setUserDomicileChoix(adresse);
@@ -428,7 +430,7 @@ const DepotScreen1 = props => {
     fetchData();
   }, [isFocused]);
 
-  const handlePhoneChange = text => {
+  const handlePhoneChange = (text) => {
     if (count > 0) {
       setTelContact(text);
     }
@@ -447,15 +449,16 @@ const DepotScreen1 = props => {
 
   // Sauvegarder les choix
   async function NavigateToDepotMagasin() {
-    if (UserMagasinChoix === '' || !UserMagasinChoix) {
-      if (Platform.OS == 'ios') {
+    await resetAllDepotStorage();
+    if (UserMagasinChoix === "" || !UserMagasinChoix) {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Le magasin '),
-          text2: t('Le magasin est obligatoire'),
+          type: "error",
+          text1: t("Le magasin "),
+          text2: t("Le magasin est obligatoire"),
         });
       } else {
-        ToastAndroid.show(t('Le magasin est obligatoire'), ToastAndroid.SHORT);
+        ToastAndroid.show(t("Le magasin est obligatoire"), ToastAndroid.SHORT);
       }
       return;
     }
@@ -469,36 +472,40 @@ const DepotScreen1 = props => {
       });
     });
 
-    
     // console.log('UserMagasinChoix', UserMagasinChoix);
-    await saveDepotMagasinValues(UserMagasinChoix?.label, UserMagasinChoix.id, fournisseurId);
+    await saveDepotMagasinValues(
+      UserMagasinChoix?.label,
+      UserMagasinChoix.id,
+      fournisseurId
+    );
     await saveDepotMagasinSchedule(
-      'fr' == Language
+      "fr" == Language
         ? actionTriggered.horaireOuverture
-        : actionTriggered.horaireOuvertureEN,
+        : actionTriggered.horaireOuvertureEN
     );
     await saveDepotValidation();
 
-    props.navigation.navigate('Livraison1', {
+    props.navigation.navigate("Livraison1", {
       magasinId: UserMagasinChoix?.id,
     });
   }
 
   // Retrait à domicile
   async function NavigateToRetraitDomicile() {
-    if (NomContact === '') {
-      if (Platform.OS == 'ios') {
+    await resetDepotMagasinStorage();
+    if (NomContact === "") {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Nom de Contact'),
+          type: "error",
+          text1: t("Nom de Contact"),
           text2: t(
-            'Le nom de la personne qui récupère la commande est obligatoire',
+            "Le nom de la personne qui récupère la commande est obligatoire"
           ),
         });
       } else {
         ToastAndroid.show(
-          t('Le nom de la personne qui récupère la commande est obligatoire'),
-          ToastAndroid.SHORT,
+          t("Le nom de la personne qui récupère la commande est obligatoire"),
+          ToastAndroid.SHORT
         );
       }
 
@@ -506,31 +513,31 @@ const DepotScreen1 = props => {
     }
 
     // console.log({TelContact}, 'TelContact', {cleanTel}, {telCopy});
-    if (TelContact === '') {
-      if (Platform.OS == 'ios') {
+    if (TelContact === "") {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
-          text1: t('Le téléphone'),
+          type: "error",
+          text1: t("Le téléphone"),
           text2: t(
-            'Le téléphone de la personne qui récupère la commande est obligatoire',
+            "Le téléphone de la personne qui récupère la commande est obligatoire"
           ),
         });
       } else {
         ToastAndroid.show(
           t(
-            'Le téléphone de la personne qui récupère la commande est obligatoire',
+            "Le téléphone de la personne qui récupère la commande est obligatoire"
           ),
-          ToastAndroid.SHORT,
+          ToastAndroid.SHORT
         );
       }
 
       return;
     }
 
-    if (UserDomicileChoix === '') {
-      if (Platform.OS == 'ios') {
+    if (UserDomicileChoix === "") {
+      if (Platform.OS == "ios") {
         Toast.show({
-          type: 'error',
+          type: "error",
           text1: t("L'adresse"),
           text2: t("L'adresse est obligatoire"),
         });
@@ -548,17 +555,17 @@ const DepotScreen1 = props => {
 
     if (!CommandeHasManualValidation) {
       let found = false;
-      console.log('debut found');
-      Creneaux?.forEach(creneau => {
+      console.log("debut found");
+      Creneaux?.forEach((creneau) => {
         if (creneau?.pays) {
-          let creneauVille = creneau?.ville ? creneau?.ville.toLowerCase() : '';
+          let creneauVille = creneau?.ville ? creneau?.ville.toLowerCase() : "";
 
           // Extraire le département du code postal
           let departementCreneau = creneau?.departementCode;
 
           let departementRecherche = codePostal
             ? codePostal.substring(0, 2)
-            : '';
+            : "";
           // Vérification du code postal, de la ville ou du département
           if (
             creneau?.codePostal === codePostal ||
@@ -572,15 +579,15 @@ const DepotScreen1 = props => {
       });
 
       if (!found) {
-        Platform.OS == 'ios'
+        Platform.OS == "ios"
           ? Toast.show({
-              type: 'error',
-              text1: t('créneaux'),
+              type: "error",
+              text1: t("créneaux"),
               text2: t("Nous n'avons pas de créneaux disponibles"),
             })
           : ToastAndroid.show(
               t("Nous n'avons pas de créneaux disponibles"),
-              ToastAndroid.SHORT,
+              ToastAndroid.SHORT
             );
 
         return;
@@ -600,22 +607,24 @@ const DepotScreen1 = props => {
       UserDomicileChoix?.label,
       UserDomicileChoix?.id,
       codePostal,
-      ville,
+      ville
     );
     // console.log(CommandeHasManualValidation,'CommandeHasManualValidation');
     if (!CommandeHasManualValidation) {
-      props.navigation.navigate('DepotScreen3', {
+      props.navigation.navigate("DepotScreen3", {
         magasinId: UserMagasinChoix?.id,
+        prices: route?.params?.prices,
+        excludedSupplierIds: route?.params?.excludedSupplierIds,
       });
     } else {
-      props.navigation.navigate('Livraison1');
+      props.navigation.navigate("Livraison1");
     }
   }
 
   // Ajouter une nouvelle adresse
   const NavigateToUserAddress = () => {
-    props.navigation.navigate('AddAdresseScreen', {
-      pageFrom: 'depot',
+    props.navigation.navigate("AddAdresseScreen", {
+      pageFrom: "depot",
       paysDepartLivraison: paysLivraisonObject.depart,
       paysDepartLivraisonEN: paysLivraisonObject.departEn,
       prices: route?.params?.prices,
@@ -623,7 +632,7 @@ const DepotScreen1 = props => {
   };
 
   // Si le magasin change
-  const OnChangeMagasinValue = magasinChoice => {
+  const OnChangeMagasinValue = (magasinChoice) => {
     let newArr = null;
     let magasinFound = false;
     MagasinsDepotRawValues?.forEach(function (fournisseur) {
@@ -641,7 +650,7 @@ const DepotScreen1 = props => {
 
   // Confirmation choix magasin
   async function ConfirmationChoixMagasin(magasin) {
-    var newData = MagasinsDepot.filter(ls => {
+    var newData = MagasinsDepot.filter((ls) => {
       if (ls.id == magasin.id) {
         return ls;
       }
@@ -668,14 +677,14 @@ const DepotScreen1 = props => {
 
   if (!Service) {
     return (
-      <View style={{justifyContent: 'center', height: '80%'}}>
+      <View style={{ justifyContent: "center", height: "80%" }}>
         <ActivityIndicator size="large" color="#3292E0" style={{}} />
       </View>
     );
   }
 
   return (
-    <View style={{flex: 1, position: 'relative'}}>
+    <View style={{ flex: 1, position: "relative" }}>
       <ServiceHeader
         navigation={props.navigation}
         service={Service}
@@ -687,7 +696,7 @@ const DepotScreen1 = props => {
       </View>
 
       {Activity === true || ActivityMagasins === true ? (
-        <View style={{justifyContent: 'center', height: '80%'}}>
+        <View style={{ justifyContent: "center", height: "80%" }}>
           <ActivityIndicator size="large" color="#3292E0" style={{}} />
         </View>
       ) : (
@@ -695,23 +704,26 @@ const DepotScreen1 = props => {
           behavior="padding"
           showsVerticalScrollIndicator={false}
           keyboardVerticalOffset={-70}
-          style={{flex: 1}}>
-          <View style={{flex: 1}}>
+          style={{ flex: 1 }}
+        >
+          <View style={{ flex: 1 }}>
             <View
               style={[
                 CommandeHasManualValidation
-                  ? {justifyContent: 'center', alignItems: 'center'}
-                  : '',
-                {marginTop: 28},
-              ]}>
+                  ? { justifyContent: "center", alignItems: "center" }
+                  : "",
+                { marginTop: 28 },
+              ]}
+            >
               {CommandeHasManualValidation ? (
                 <Text
                   style={{
-                    fontFamily: 'Poppins-Medium',
+                    fontFamily: "Poppins-Medium",
                     fontSize: 14,
-                    color: '#000',
-                  }}>
-                  {t('Adresse de prise en charge')}
+                    color: "#000",
+                  }}
+                >
+                  {t("Adresse de prise en charge")}
                 </Text>
               ) : (
                 <View>
@@ -722,20 +734,20 @@ const DepotScreen1 = props => {
                     autoScroll
                     iconStyle={styles.iconStyle}
                     containerStyle={styles.containerDepotStyle}
-                    itemTextStyle={{color: '#000'}}
+                    itemTextStyle={{ color: "#000" }}
                     data={items}
                     maxHeight={450}
                     labelField="label"
                     valueField="value"
                     placeholder={
-                      !isDepotChoice ? t('Mode de prise du colis') : '...'
+                      !isDepotChoice ? t("Mode de prise du colis") : "..."
                     }
                     value={depotChoiceMode}
                     showsVerticalScrollIndicator={false}
                     onFocus={() => setIsDepotChoice(true)}
                     onBlur={() => setIsDepotChoice(false)}
-                    onChange={item => {
-                      if ('magasin' == item.value) {
+                    onChange={(item) => {
+                      if ("magasin" == item.value) {
                         setShowMagasin(true);
                         setShowAdresseEnlevement(false);
                       } else {
@@ -758,25 +770,28 @@ const DepotScreen1 = props => {
                   style={{
                     marginTop: 30,
                     width: windowWidth * 0.9,
-                    alignSelf: 'center',
-                  }}>
+                    alignSelf: "center",
+                  }}
+                >
                   {montantMinimum === 0 && (
                     <View
                       style={{
-                        backgroundColor: '#fff',
+                        backgroundColor: "#fff",
                         paddingVertical: 22,
                         paddingHorizontal: 14,
                         borderRadius: 10,
-                      }}>
+                      }}
+                    >
                       <Text
                         style={{
-                          fontFamily: 'Poppins-Medium',
+                          fontFamily: "Poppins-Medium",
                           fontSize: 14,
-                          color: '#000',
+                          color: "#000",
                           marginBottom: 10,
-                        }}>
+                        }}
+                      >
                         {CommandeHasManualValidation
-                          ? t('Liste des adresses existantes')
+                          ? t("Liste des adresses existantes")
                           : t("Adresse d'enlèvement")}
                       </Text>
                       <View>
@@ -784,7 +799,7 @@ const DepotScreen1 = props => {
                           style={[styles.dropdown]}
                           placeholderStyle={[
                             styles.placeholderStyle,
-                            {color: '#AFAFAF'},
+                            { color: "#AFAFAF" },
                           ]}
                           selectedTextStyle={styles.selectedTextStyle}
                           autoScroll
@@ -792,19 +807,19 @@ const DepotScreen1 = props => {
                           containerStyle={styles.containerrrrStyle}
                           data={adresses}
                           value={userAdresseChoice}
-                          itemTextStyle={{color: '#000'}}
+                          itemTextStyle={{ color: "#000" }}
                           maxHeight={120}
                           labelField="label"
                           valueField="value"
                           placeholder={
                             !isFocus1
-                              ? t('Choisir une adresse existante')
-                              : '...'
+                              ? t("Choisir une adresse existante")
+                              : "..."
                           }
                           showsVerticalScrollIndicator={false}
                           onFocus={() => setIsFocus1(true)}
                           onBlur={() => setIsFocus1(false)}
-                          onChange={item => {
+                          onChange={(item) => {
                             setUserDomicileChoix(item);
                             setUserAdresseChoice(item.value);
                             setIsFocus1(false);
@@ -818,9 +833,10 @@ const DepotScreen1 = props => {
                         disabled={montantMinimum > 0}
                         onPress={() => {
                           NavigateToUserAddress();
-                        }}>
+                        }}
+                      >
                         <Text style={styles.ButtonText}>
-                          {t('Ajouter une nouvelle adresse')}
+                          {t("Ajouter une nouvelle adresse")}
                         </Text>
                       </TouchableOpacity>
                     </View>
@@ -829,53 +845,57 @@ const DepotScreen1 = props => {
                 {montantMinimum > 0 && (
                   <View
                     style={{
-                      alignItems: 'center',
+                      alignItems: "center",
                       marginTop: 10,
                       marginHorizontal: 10,
-                    }}>
+                    }}
+                  >
                     <Text
                       style={{
                         padding: 10,
                         fontSize: 15,
-                        fontWeight: 'bold',
-                        color: 'red',
-                        textAlign: 'center',
-                      }}>{`${t('errorDomicile1')} ${montantMinimum} euros, ${t(
-                      'errorDomicile2',
+                        fontWeight: "bold",
+                        color: "red",
+                        textAlign: "center",
+                      }}
+                    >{`${t("errorDomicile1")} ${montantMinimum} euros, ${t(
+                      "errorDomicile2"
                     )} `}</Text>
                   </View>
                 )}
                 {montantMinimum === 0 && (
-                  <View style={{marginTop: 12, paddingHorizontal: 16}}>
+                  <View style={{ marginTop: 12, paddingHorizontal: 16 }}>
                     <View
                       style={{
-                        backgroundColor: '#fff',
+                        backgroundColor: "#fff",
                         paddingVertical: 22,
                         paddingHorizontal: 14,
                         borderRadius: 10,
-                      }}>
+                      }}
+                    >
                       <Text
                         style={{
-                          fontFamily: 'Poppins-Medium',
+                          fontFamily: "Poppins-Medium",
                           fontSize: 13,
-                          color: '#000',
-                        }}>
-                        {t('Coordonnées de la personne à contacter')}
+                          color: "#000",
+                        }}
+                      >
+                        {t("Coordonnées de la personne à contacter")}
                       </Text>
 
                       <View style={styles.inputCountryCustomContainer}>
                         <TextInput
                           layout="first"
-                          placeholder={t('Nom de la personne à contacter')}
+                          placeholder={t("Nom de la personne à contacter")}
                           placeholderTextColor="#AFAFAF"
                           style={{
-                            color: '#000',
-                            fontFamily: 'Poppins-Regular',
-                            width: '100%',
+                            color: "#000",
+                            fontFamily: "Poppins-Regular",
+                            width: "100%",
                             fontSize: windowWidth * 0.031,
                           }}
                           value={NomContact}
-                          onChangeText={text => {
+                          onChangeText={(text) => {
                             setNomContact(text);
                           }}
                         />
@@ -883,20 +903,21 @@ const DepotScreen1 = props => {
 
                       <View
                         style={{
-                          justifyContent: 'center',
-                          alignItems: 'center',
+                          justifyContent: "center",
+                          alignItems: "center",
                           marginTop: 10,
                           marginBottom: 10,
-                        }}>
+                        }}
+                      >
                         <PhoneInput
                           language={i18n.language}
                           containerStyle={styles.countryPickerContainerStyle}
                           textInputStyle={styles.textInput}
                           defaultCountry={
-                            getCountryCodeFromPhone(TelContact) || 'FR'
+                            getCountryCodeFromPhone(TelContact) || "FR"
                           }
                           selectedCountry={selectedCountry}
-                          onChangeSelectedCountry={country => {
+                          onChangeSelectedCountry={(country) => {
                             setSelectedCountry(country);
                           }}
                           value={removeCountryCode(TelContact)}
@@ -910,23 +931,25 @@ const DepotScreen1 = props => {
                   <View
                     style={{
                       flex: 1,
-                      justifyContent: 'flex-end',
-                      alignItems: 'center',
+                      justifyContent: "flex-end",
+                      alignItems: "center",
                       marginBottom: windowWidth * 0.2,
-                    }}>
+                    }}
+                  >
                     <TouchableOpacity
                       style={[
                         styles.ButtonStyle,
-                        {width: '60%', marginBottom: wp(2), marginTop: 50},
+                        { width: "60%", marginBottom: wp(2), marginTop: 50 },
                       ]}
                       disabled={montantMinimum > 0 || !UserDomicileChoix}
                       onPress={() => {
                         NavigateToRetraitDomicile();
-                      }}>
+                      }}
+                    >
                       <Text style={styles.ButtonStyleText}>
                         {CommandeHasManualValidation
-                          ? t('Valider')
-                          : t('Valider enlèvement à domicile')}
+                          ? t("Valider")
+                          : t("Valider enlèvement à domicile")}
                       </Text>
                     </TouchableOpacity>
                   </View>
@@ -936,34 +959,36 @@ const DepotScreen1 = props => {
 
             {showMagasin && (
               <>
-                <View style={{marginTop: 32, paddingHorizontal: 16}}>
+                <View style={{ marginTop: 32, paddingHorizontal: 16 }}>
                   <View
                     style={{
-                      backgroundColor: '#fff',
+                      backgroundColor: "#fff",
                       paddingVertical: 22,
                       paddingHorizontal: 14,
                       borderRadius: 10,
-                    }}>
+                    }}
+                  >
                     <Text
                       style={{
-                        fontFamily: 'Poppins-Medium',
+                        fontFamily: "Poppins-Medium",
                         fontSize: 14,
-                        color: '#000',
-                      }}>
-                      {t('Liste des magasins de dépot')}
+                        color: "#000",
+                      }}
+                    >
+                      {t("Liste des magasins de dépot")}
                     </Text>
-                    <View style={{marginTop: 10}}>
+                    <View style={{ marginTop: 10 }}>
                       <Dropdown
                         style={[styles.dropdown]}
                         placeholderStyle={[
                           styles.placeholderStyle,
-                          {color: '#AFAFAF'},
+                          { color: "#AFAFAF" },
                         ]}
                         selectedTextStyle={styles.selectedTextStyle}
                         autoScroll
                         iconStyle={styles.iconStyle}
                         containerStyle={styles.containerrrrStyle}
-                        itemTextStyle={{color: '#000'}}
+                        itemTextStyle={{ color: "#000" }}
                         data={MagasinsDepot}
                         value={userMagasinChoice}
                         maxHeight={220}
@@ -971,13 +996,13 @@ const DepotScreen1 = props => {
                         valueField="value"
                         placeholder={
                           MagasinsDepot.length > 0
-                            ? t('Choisir le magasin de dépôt')
-                            : t('Pas de magasins disponibles')
+                            ? t("Choisir le magasin de dépôt")
+                            : t("Pas de magasins disponibles")
                         }
                         showsVerticalScrollIndicator={false}
                         onFocus={() => setIsFocus(true)}
                         onBlur={() => setIsFocus(false)}
-                        onChange={item => {
+                        onChange={(item) => {
                           setIsFocus(false);
                           OnChangeMagasinValue(item);
                         }}
@@ -985,11 +1010,12 @@ const DepotScreen1 = props => {
                     </View>
                     <View
                       style={{
-                        alignItems: 'center',
+                        alignItems: "center",
                         marginTop: 10,
-                        justifyContent: 'center',
+                        justifyContent: "center",
                         flex: 1,
-                      }}></View>
+                      }}
+                    ></View>
                     {/* <View style={{marginTop: 8}}>
                         <Text
                           style={{
@@ -1003,17 +1029,21 @@ const DepotScreen1 = props => {
                   </View>
                 </View>
 
-                <View style={{flex: 1}}>
+                <View style={{ flex: 1 }}>
                   <TouchableOpacity
-                    style={[styles.ButtonStyle, {width: '60%', marginTop: 29}]}
+                    style={[
+                      styles.ButtonStyle,
+                      { width: "60%", marginTop: 29 },
+                    ]}
                     disabled={
-                      montantMinimum > 0 && depotChoiceMode !== 'magasin'
+                      montantMinimum > 0 && depotChoiceMode !== "magasin"
                     }
                     onPress={() => {
                       NavigateToDepotMagasin();
-                    }}>
+                    }}
+                  >
                     <Text style={styles.ButtonStyleText}>
-                      {t('Valider dépot au magasin')}
+                      {t("Valider dépot au magasin")}
                     </Text>
                   </TouchableOpacity>
                 </View>
@@ -1026,69 +1056,76 @@ const DepotScreen1 = props => {
               visible={modalVisible}
               onRequestClose={() => {
                 setModalVisible(!modalVisible);
-              }}>
+              }}
+            >
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
                   <Text style={styles.Heading}>
                     {t("Horaires d'ouverture")}
                   </Text>
                   <Text style={styles.modalText}>
-                    {'fr' == Language
+                    {"fr" == Language
                       ? actionTriggered.horaireOuverture
                       : actionTriggered.horaireOuvertureEN}
                   </Text>
                   <Text style={styles.modalText}>
                     {actionTriggered.adresse +
-                      ', ' +
+                      ", " +
                       (actionTriggered.codePostal
-                        ? actionTriggered.codePostal + ' '
-                        : '') +
+                        ? actionTriggered.codePostal + " "
+                        : "") +
                       actionTriggered.ville +
-                      ' ' +
+                      " " +
                       actionTriggered.pays}
                   </Text>
 
                   <View
                     style={{
-                      flexDirection: 'row',
-                      justifyContent: 'space-between',
+                      flexDirection: "row",
+                      justifyContent: "space-between",
                       gap: 15,
-                    }}>
+                    }}
+                  >
                     <Pressable
                       style={[styles.button, styles.buttonClose]}
-                      onPress={ResetChoixMagasin}>
+                      onPress={ResetChoixMagasin}
+                    >
                       <Text
                         style={{
-                          color: '#fff',
-                          fontFamily: 'Poppins-Medium',
+                          color: "#fff",
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
-                        }}>
-                        {t('Fermer')}
+                        }}
+                      >
+                        {t("Fermer")}
                       </Text>
                     </Pressable>
                     <Pressable
                       style={[styles.button, styles.buttonOpen]}
-                      onPress={() => ConfirmationChoixMagasin(actionTriggered)}>
+                      onPress={() => ConfirmationChoixMagasin(actionTriggered)}
+                    >
                       <Text
                         style={{
-                          color: '#4E8FDA',
-                          fontFamily: 'Poppins-Medium',
+                          color: "#4E8FDA",
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
-                        }}>
-                        {t('Selectionner le magasin')}
+                        }}
+                      >
+                        {t("Selectionner le magasin")}
                       </Text>
                     </Pressable>
                   </View>
                 </View>
                 <View
                   style={{
-                    position: 'absolute',
-                    width: '100%',
-                    height: '100%',
-                    backgroundColor: '#000',
+                    position: "absolute",
+                    width: "100%",
+                    height: "100%",
+                    backgroundColor: "#000",
                     opacity: 0.5,
                     zIndex: -100,
-                  }}></View>
+                  }}
+                ></View>
               </View>
             </Modal>
           </View>
