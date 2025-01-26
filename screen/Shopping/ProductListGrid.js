@@ -281,6 +281,7 @@ const ProductList = () => {
       Price: Prices[product.id],
       attributes: data ? data.attributes : null,
       stockId: SelectedProductStock[product.id] ?? null,
+      timestamp: Date.now()
     };
 
     CatProducts.push(obj);

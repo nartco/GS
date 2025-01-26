@@ -227,7 +227,13 @@ const CartScreen = props => {
         }
         setCartProducts(basketData);
 
+        const currentTime = Date.now();
+        const oneHour = 60 * 60 * 1000;
+        const fiveMinute = 5 * 60 * 1000;
+
         const excludedIds = new Set();
+        let searchProductsPrice = [];
+        let searchVentePrivees = [];
         basketData.forEach(item => {
           if (item.product && item.product.fournisseursExclure) {
             item.product.fournisseursExclure.forEach(fournisseur => {
@@ -236,7 +242,93 @@ const CartScreen = props => {
               }
             });
           }
+
+          if (item.timestamp)
+          {
+            if ( ( currentTime - item.timestamp ) > oneHour)
+            {
+              if (item.service == 'ventes-privees')
+              {
+                searchVentePrivees.push({
+                  id: item.stockId,
+                  service: item.service
+                });
+              }
+              else 
+              {
+                searchProductsPrice.push(item.ProductId);
+              }
+            }
+          }
         });
+
+
+        if (searchProductsPrice.length > 0)
+        {
+          try {
+            const response = await axiosInstance.post('/fret_products/price/verification',
+              {
+                "products": searchProductsPrice,
+                "paysLivraison": selectedPaysLivraison.id
+              }
+            );
+
+            let responseData = {};
+            response.data.forEach(item => {
+              responseData[item.id] = item;
+            });
+
+            basketData.forEach(item => {
+              
+              let product = responseData[item.ProductId] ?? null;
+
+              if (product)
+              {
+                item.Price = 'New' == item.stateValue ? product.prixProduitNeuf : product.prix;
+              }
+            });
+
+            setCartProducts(basketData);
+
+            await savePanier(basketData);
+          } catch (error) {
+            console.error("Erreur lors de la verification du prix",error);
+          }
+        }
+
+
+        if (searchVentePrivees.length > 0)
+        {
+          try {
+            const response = await axiosInstance.post('/stocks/verifications/products',
+              {
+                "stocks": searchVentePrivees,
+                "paysLivraison": selectedPaysLivraison.id
+              }
+            );
+
+            let responseData = {};
+            response.data.forEach(item => {
+              responseData[item.produit] = item;
+            });
+
+            basketData.forEach(item => {
+              
+              let product = responseData[item.ProductId] ?? null;
+
+              if (product)
+              {
+                item.Price = product.prix;
+              }
+            });
+
+            setCartProducts(basketData);
+
+            await savePanier(basketData);
+          } catch (error) {
+            console.error("Erreur lors de la verification du prix",error);
+          }
+        }
 
         // Convertir le Set en tableau et le stocker dans l'état
         setExcludedSupplierIds(Array.from(excludedIds));
@@ -249,7 +341,7 @@ const CartScreen = props => {
         // Recuperer les Product de Comand
 
         let basketCommnd = await getCommand();
-        console.log(JSON.stringify(basketCommnd),'JSON.stringify(basketCommnd)')
+  
         if (basketCommnd.length > 0) {
           basketCommnd.forEach(item => {
             setCartCommand(item.product);
@@ -362,7 +454,6 @@ const CartScreen = props => {
     // Sauvegarder les elements du panier
     await saveValidatedPanier(RemiseCode, RemiseValue, RemiseProduct);
 
-    console.log(Service.code, 'Service.code');
     let prices = calculProductPrices(CartProducts, RemiseValue, RemiseProduct);
     // Si c'est un produit de vente privées ou demande d'achat, il faut aller à la livraison
     if (
@@ -377,7 +468,6 @@ const CartScreen = props => {
       return; // should not be reached
     }
 
-    console.log({excludedSupplierIds}, {prices}, 'excludedSupplierIds');
     props.navigation.navigate('DepotScreen1', {
       excludedSupplierIds: excludedSupplierIds,
       prices: prices,
@@ -394,7 +484,7 @@ const CartScreen = props => {
       RemiseValue,
       RemiseProduct,
     );
-    console.log(prices, 'pricewewewewes', CartCommand);
+
     // Si c'est un produit de vente privées ou demande d'achat, il faut aller à la livraison
     if (
       'ventes-privees' == ServiceCommand.code ||
@@ -537,20 +627,17 @@ const CartScreen = props => {
 
     const product = props.product;
 
-    console.log('prod2323232332323232323232233232323232uct', {product});
-
     if (
       'ventes-privees' == service.code ||
       'demandes-d-achat' == service.code
     ) {
-      console.log('product', product.attributes);
+
       const attributeValues = createAttributeString(product.attributes);
       const matchingCombination = findMatchingCombination(
         product.product.stocks,
         attributeValues,
       );
 
-      console.log({matchingCombination}, {attributeValues});
       return (
         <View>
           <Text style={styles.WeightCalSubText}>{attributeValues}</Text>
@@ -615,7 +702,6 @@ const CartScreen = props => {
   const RenderAttributeCommand = props => {
     const service = props.service;
     const product = props.product;
-    console.log('prod2323232332323232323232233232323232uct', {product});
 
     if (
       'ventes-privees' == service.code ||
@@ -626,8 +712,6 @@ const CartScreen = props => {
         product.product.stocks,
         attributeValues,
       );
-
-      console.log({matchingCombination}, {attributeValues});
 
       return (
         <View>
@@ -1115,7 +1199,7 @@ const CartScreen = props => {
     )
   }
   */
-  console.log(JSON.stringify(CartCommand), 'CartCommand');
+
   if (!Service && !paysCommand && !ServiceCommand) {
     return (
       <View style={{backgroundColor: '#fff', height: '100%'}}>
@@ -1169,7 +1253,6 @@ const CartScreen = props => {
     );
   }
 
-  console.log(JSON.stringify(CartCommand), 'CartCommand');
 
   return (
     <>

@@ -171,7 +171,6 @@ const CheckoutScreen = (props) => {
         // Depot
         let depotValues = await getDepotValues();
         setDepotData(depotValues);
-        console.log(depotValues, "depotValues");
 
         // Prix de livraison
         let livraisonValues = await getLivraisonValues();
@@ -221,10 +220,9 @@ const CheckoutScreen = (props) => {
               }
             }
 
-            // console.log("Avoir:",Avoirs);
           })
           .catch(function (error) {
-            console.log("error", error);
+            console.log("error avoir", error);
           });
 
         // Remise
@@ -383,13 +381,14 @@ const CheckoutScreen = (props) => {
         }
 
         let prixLivraison = 0;
-        if (basketData.length == 0) {
+        /*if (basketData.length == 0) {
           prixLivraison = calculFraisLivraisonCommand(basketCommnd);
         } else {
           prixLivraison = calculFraisLivraison(basketData);
         }
+        */
 
-        setPrixTotalLivraison(prixLivraison);
+        setPrixTotalLivraison(livraisonValues.supplement);
 
         setService(service);
 
@@ -797,7 +796,7 @@ const CheckoutScreen = (props) => {
             matchingAttributeValue.attributImages.map((img) => ({
               url: img?.reference.includes("http")
                 ? img.reference
-                : `https://godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
+                : `https://recette.godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
             }))
           );
         }
@@ -1189,9 +1188,8 @@ const CheckoutScreen = (props) => {
   const RenderTotal = ({ data }) => {
     let prices = calculProductPrices(data, RemiseValue, RemiseProduct);
 
-    // console.log("Prices :", prices);
     let remiseTotal = prices.remiseTotal;
-    // console.log("Remise Total => ",remiseTotal);
+ 
 
     let totalPrixAvecDouaneRemiseAvoir = prices.totalPrixAvecDouaneRemiseAvoir;
 
@@ -1683,9 +1681,8 @@ const CheckoutScreen = (props) => {
   const RenderTotalCommand = ({ data }) => {
     let prices = calculProductPricesCommand(data, RemiseValue, RemiseProduct);
 
-    // console.log("Prices :", prices);
     let remiseTotal = prices.remiseTotal;
-    // console.log("Remise Total => ",remiseTotal);
+
 
     let totalPrixAvecDouaneRemiseAvoir = prices.totalPrixAvecDouaneRemiseAvoir;
 

@@ -304,7 +304,7 @@ const Livraison1 = (props) => {
 
       // Calculer le prix de livraison
       let prixLivraison = calculFraisLivraison(basketData);
-      setPrixTotalLivraison(prixLivraison);
+      //setPrixTotalLivraison(prixLivraison);
 
       // get magasins
       setActivityMagasin(true);
@@ -499,6 +499,7 @@ const Livraison1 = (props) => {
           setNomContact(adresse.nom);
           setTelContact(adresse.telephone);
           setTelCopy(adresse.telephone);
+
           if (checkZoneLivraison(adresse)) {
           } else {
             setErrorMessage(t("exclued"));
@@ -528,8 +529,16 @@ const Livraison1 = (props) => {
         try {
           let requestBody = {};
 
-          if (route?.params?.magasinId) {
-            requestBody.fournisseurs = [route.params.magasinId];
+          let depotValues = await getDepotValues();
+          
+          let fournisseur = depotValues.depotMagasinFournisseurId;
+          if ('enlevement' == depotValues.depotMode)
+          {
+            fournisseur = depotValues.depotCreneau?.fournisseurId;
+          }
+
+          if (fournisseur) {
+            requestBody.fournisseurs = [fournisseur];
           }
           const response = await axiosInstance.post(
             `/zone_livraisons/fournisseur/all/${paysLivraisonObject.id}`,
@@ -555,20 +564,35 @@ const Livraison1 = (props) => {
     let ville = adresse.ville;
     const departement = codePostal?.substring(0, 2);
 
+    let supplement = 0;
+    let found = false;
     for (const zone of zonesLivraison) {
       for (const zoneGeo of zone.zoneGeographique) {
+ 
         if (
           (zoneGeo.departement &&
             zoneGeo.departement.trim() === departement.trim()) ||
           (zoneGeo.ville &&
             zoneGeo.ville.toLowerCase().trim() == ville.toLowerCase().trim())
         ) {
-          return true;
+          try 
+          {
+            supplement = parseFloat(zoneGeo.supplement);
+            supplement = isNaN(supplement) ? 0 : supplement;
+          }
+          catch (error) {
+            console.error('error', error);
+          }
+          
+
+          found = true;
         }
       }
     }
 
-    return false;
+    setPrixTotalLivraison(supplement);
+
+    return found;
   };
 
   // Sauvegarder l'adresse
@@ -683,7 +707,8 @@ const Livraison1 = (props) => {
             newData[0].label,
             newData[0].id,
             newData[0].nom,
-            newData[0].telephone
+            newData[0].telephone,
+            PrixTotalLivraison
           );
           props.navigation.navigate("CheckoutScreen");
         } else {
@@ -754,7 +779,8 @@ const Livraison1 = (props) => {
         UserDomicileChoixLabel,
         UserDomicileChoixId,
         NomContact,
-        concatenedPhone
+        concatenedPhone,
+        PrixTotalLivraison
       );
       props.navigation.navigate("CheckoutScreen");
     }

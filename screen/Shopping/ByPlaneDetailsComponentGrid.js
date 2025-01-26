@@ -64,6 +64,13 @@ const ByPlaneDetailsComponentGrid = (props) => {
     ? Product.productSpecificites[0]
     : null;
 
+  const ProductPrices = {
+    prixUsage: productSpecificites ? productSpecificites.prix : null,
+    prixUsageDiscount: productSpecificites ? productSpecificites.prixAncien : null,
+    prixNouveau: productSpecificites ? productSpecificites.prixProduitNeuf : null,
+    prixNouveauDiscount: productSpecificites ? productSpecificites.prixProduitNeufAncien : null
+  };
+
   const douane = productSpecificites ? productSpecificites.douane : null;
 
   const quantiteMax = productSpecificites
@@ -104,6 +111,8 @@ const ByPlaneDetailsComponentGrid = (props) => {
   const isCarouselModal = useRef(0);
   const [isOpenModal, setIsOpenModal] = useState({});
   const IOSPLAt = Platform.OS;
+  const [Price, setPrice] = useState(ProductPrices.prixUsage);
+  const [PriceDiscount, setPriceDiscount] = useState(ProductPrices.prixUsageDiscount);
 
   // Gestion du scroll
   const Change = (nativeEvent) => {
@@ -202,6 +211,7 @@ const ByPlaneDetailsComponentGrid = (props) => {
 
   // Afficher un message des frais de douane à prevoir
   const showDouaneMessage = async (item) => {
+    return false;
     if (!douane) {
       return false;
     }
@@ -440,7 +450,8 @@ const ByPlaneDetailsComponentGrid = (props) => {
       service: Service,
       image: userImage,
       paysLivraison: PaysLivraison,
-      Price: productSpecificites ? productSpecificites.prix : null,
+      Price: Price,
+      timestamp: Date.now()
     };
 
     CatProducts.push(obj);
@@ -522,6 +533,11 @@ const ByPlaneDetailsComponentGrid = (props) => {
   };
 
   const formatPrice = (price) => {
+    if (!price)
+    {
+      return price;
+    }
+
     const priceStr = price.toString();
 
     const [dollars, cents] = priceStr.split(".");
@@ -585,6 +601,20 @@ const ByPlaneDetailsComponentGrid = (props) => {
     );
   };
 
+  function handleStateChange(value)
+  {
+    if ('New' == value)
+    {
+      setPrice(ProductPrices.prixNouveau);
+      setPriceDiscount(ProductPrices.prixNouveauDiscount);
+    }
+    else 
+    {
+      setPrice(ProductPrices.prixUsage);
+      setPriceDiscount(ProductPrices.prixUsageDiscount);
+    }
+  }
+
   return (
     <>
       <View
@@ -629,14 +659,12 @@ const ByPlaneDetailsComponentGrid = (props) => {
                   color: "#000",
                 }}
               >
-                {productSpecificites
-                  ? formatPrice(productSpecificites.prix)
-                  : 0}
+                {formatPrice(Price)}
                 €/{Product.unite ? Product.unite.valeur : ""}
               </Text>
             </View>
             <View>
-              {productSpecificites && productSpecificites.prixAncien ? (
+              {PriceDiscount ? (
                 <Text
                   style={{
                     fontSize: 9,
@@ -645,7 +673,7 @@ const ByPlaneDetailsComponentGrid = (props) => {
                     textDecorationLine: "line-through",
                   }}
                 >
-                  {productSpecificites.prixAncien}€/
+                  {PriceDiscount}€/
                   {Product.unite ? Product.unite.valeur : ""}
                 </Text>
               ) : (
@@ -743,6 +771,7 @@ const ByPlaneDetailsComponentGrid = (props) => {
                 onSelectItem={(item) => {
                   showDouaneMessage(item.value);
                   setStateValue(item.value);
+                  handleStateChange(item.value);
                 }}
               />
             </View>
