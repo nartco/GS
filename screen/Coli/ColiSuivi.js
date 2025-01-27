@@ -589,6 +589,19 @@ const ColiSuivi = ({ navigation, route }) => {
       resteApayer = montantApayer;
     }
 
+    if (Commande.totalPaye)
+    {
+      let commandeTotalPaye = parseFloat(Commande.totalPaye);
+      commandeTotalPaye = isNaN(commandeTotalPaye) ? 0 : commandeTotalPaye;
+
+      resteApayer = resteApayer - commandeTotalPaye;
+
+      if (resteApayer < 0)
+      {
+        resteApayer = 0;
+      }
+
+    }
     // Mise à jour du reste à payer dans le state
     const resteApayerFloat = parseFloat(resteApayer);
     if (!isNaN(resteApayerFloat)) {
@@ -890,6 +903,45 @@ const ColiSuivi = ({ navigation, route }) => {
                       ("fr" == Language ? " €" : "")}
                   </Text>
                 </View>
+                {Commande.totalPaye && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      paddingBottom: 15,
+                      marginTop: 15,
+                      borderBottomWidth: 1,
+                      borderColor: "#E9E9E9",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 12,
+                        color: "#000",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {t("montant payé")}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        fontSize: 14,
+                        color: "#262A2B",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {("en" == Language ? "€ " : "") +
+                        Commande.totalPaye +
+                        ("fr" == Language ? " €" : "")}
+                    </Text>
+                  </View>
+                )
+
+                }
+                
                 <View
                   style={{
                     flexDirection: "row",

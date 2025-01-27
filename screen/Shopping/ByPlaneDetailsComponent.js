@@ -48,6 +48,7 @@ import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import { ImageGallery } from "@georstat/react-native-image-gallery";
 
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { Timestamp } from "@react-native-firebase/firestore";
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
@@ -63,6 +64,7 @@ const ByPlaneDetailsComponent = (props) => {
   const [activeIndex, setActiveIndex] = useState(0);
   const [activeIndexModal, setActiveIndexModal] = useState(0);
   const Product = props.data;
+  
 
   const Images = Product.productImages;
   const [user, setUser] = useState([]);
@@ -74,6 +76,14 @@ const ByPlaneDetailsComponent = (props) => {
   const productSpecificites = Product.productSpecificites
     ? Product.productSpecificites[0]
     : null;
+
+  const ProductPrices = {
+    prixUsage: productSpecificites ? productSpecificites.prix : null,
+    prixUsageDiscount: productSpecificites ? productSpecificites.prixAncien : null,
+    prixNouveau: productSpecificites ? productSpecificites.prixProduitNeuf : null,
+    prixNouveauDiscount: productSpecificites ? productSpecificites.prixProduitNeufAncien : null
+  };
+
 
   const douane = productSpecificites ? productSpecificites.douane : null;
 
@@ -98,6 +108,8 @@ const ByPlaneDetailsComponent = (props) => {
   const [StateValue, setStateValue] = useState(null);
   const [QuantitySelected, setQuantitySelected] = useState(null);
   const [productValue, setProductValue] = useState("");
+  const [Price, setPrice] = useState(ProductPrices.prixUsage);
+  const [PriceDiscount, setPriceDiscount] = useState(ProductPrices.prixUsageDiscount);
   const [userImage, setUserImage] = useState("");
   const [active, setActive] = useState(0);
   const [isModalVisible, setModalVisible] = useState(false);
@@ -110,6 +122,8 @@ const ByPlaneDetailsComponent = (props) => {
   const IOSPLAt = Platform.OS;
   const openGallery = () => setIsOpen(true);
   const closeGallery = () => setIsOpen(false);
+
+
 
   // Gestion du scroll
   const Change = (nativeEvent) => {
@@ -272,6 +286,7 @@ else
 
   // Afficher un message des frais de douane à prevoir
   const showDouaneMessage = async (item) => {
+    return false;
     if (!douane) {
       return false;
     }
@@ -522,7 +537,8 @@ else
       service: Service,
       image: userImage,
       paysLivraison: PaysLivraison,
-      Price: productSpecificites ? productSpecificites.prix : null,
+      Price: Price,
+      timestamp: Date.now()
     };
 
     CatProducts.push(obj);
@@ -652,6 +668,10 @@ else
   const inputRef = React.createRef();
 
   const formatPrice = (price) => {
+    if (!price)
+    {
+      return price;
+    }
     const priceStr = price.toString();
 
     const [dollars, cents] = priceStr.split(".");
@@ -793,6 +813,20 @@ else
     }).format(number);
   }
 
+  function handleStateChange(value)
+  {
+    if ('New' == value)
+    {
+      setPrice(ProductPrices.prixNouveau);
+      setPriceDiscount(ProductPrices.prixNouveauDiscount);
+    }
+    else 
+    {
+      setPrice(ProductPrices.prixUsage);
+      setPriceDiscount(ProductPrices.prixUsageDiscount);
+    }
+  }
+
   return (
     <>
       <View style={{ backgroundColor: "#fff", margin: 5 }}>
@@ -895,10 +929,7 @@ else
                   color: "#000",
                 }}
               >
-                {("en" == Language ? "€ " : "") +
-                  (productSpecificites
-                    ? formatPrice(productSpecificites.prix)
-                    : 0) +
+                {("en" == Language ? "€ " : "") + formatPrice(Price) +
                   ("fr" == Language ? " €" : "")}
                 /
                 {Product.unite
@@ -907,7 +938,7 @@ else
                     : Product.unite.valeurEN
                   : ""}
               </Text>
-              {productSpecificites && productSpecificites.prixAncien ? (
+              {PriceDiscount ? (
                 <Text
                   style={{
                     fontSize: 13,
@@ -917,7 +948,7 @@ else
                   }}
                 >
                   {("en" == Language ? "€ " : "") +
-                    productSpecificites.prixAncien +
+                    PriceDiscount +
                     ("fr" == Language ? " €" : "")}
                   /
                   {Product.unite
@@ -958,6 +989,7 @@ else
                   // handleQuantiteChange(product, item.value);
                   showDouaneMessage(item.value);
                   setStateValue(item.value);
+                  handleStateChange(item.value);
                 }}
               />
             </View>

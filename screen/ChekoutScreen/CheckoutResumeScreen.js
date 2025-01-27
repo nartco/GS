@@ -1389,11 +1389,34 @@ const CheckoutResumeScreen = (props) => {
 
     resteApayer = montantApayer;
 
-    if (AvoirValue) {
-      resteApayer = (resteApayer - AvoirValue).toFixed(2);
+    resteApayer = parseFloat(resteApayer);
+    resteApayer = isNaN(resteApayer) ? 0 : resteApayer;
+
+    if (data.totalPaye)
+    {
+      let commandeTotalPaye = parseFloat(data.totalPaye);
+      commandeTotalPaye = isNaN(commandeTotalPaye) ? 0 : commandeTotalPaye;
+
+      resteApayer = resteApayer - commandeTotalPaye;
+
+      if (resteApayer < 0)
+      {
+        resteApayer = 0;
+      }
     }
+
+    if (AvoirValue) {
+
+      let AvoirValueFloat = parseFloat(AvoirValue);
+      AvoirValueFloat = isNaN(AvoirValueFloat) ? 0 : AvoirValueFloat;
+
+      resteApayer = resteApayer - AvoirValueFloat;
+    }
+
     resteApayer = resteApayer.toFixed(2);
+
     montantApayer = montantApayer.toFixed(2);
+
     return (
       <View>
         <View style={{ marginTop: 13, paddingHorizontal: 12 }}>
@@ -1659,6 +1682,42 @@ const CheckoutResumeScreen = (props) => {
                     {montantApayer}€
                   </Text>
                 </View>
+
+                <View
+                  style={{
+                    flexDirection: "row",
+                    justifyContent: "space-between",
+                    alignItems: "center",
+                    paddingBottom: 15,
+                    paddingTop: 19,
+                    borderBottomWidth: 1,
+                    borderColor: "#E9E9E9",
+                  }}
+                >
+                  <Text
+                    style={{
+                      fontFamily: "Poppins-Regular",
+                      fontSize: 12,
+                      color: "#000",
+                      letterSpacing: 0.8,
+                    }}
+                  >
+                    {t("montant payé")}
+                  </Text>
+                  <Text
+                    style={{
+                      fontFamily: "Poppins-Medium",
+                      fontSize: 14,
+                      color: "#262A2B",
+                      letterSpacing: 0.8,
+                    }}
+                  >
+                    {("en" == Language ? "€ " : "") +
+                        (data.totalPaye ? data.totalPaye : 0) +
+                        ("fr" == Language ? " €" : "")}
+                  </Text>
+                </View>
+
                 <View
                   style={{
                     flexDirection: "row",
