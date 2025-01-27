@@ -82,8 +82,8 @@ android {
         applicationId "com.godareapp.app"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
-        versionCode 53
-        versionName "1.0.5"
+        versionCode 57
+        versionName "1.0.8"
     }
     signingConfigs {
     	release {
