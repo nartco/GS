@@ -371,6 +371,7 @@ const PaymentCard = props => {
 
   const validatePaymentDemand = async () => {
     let responseError = null;
+    let paymentIntendResponse = null;
 
     try {
       if (SelectedCard) {
@@ -434,6 +435,8 @@ const PaymentCard = props => {
         );
         // Confirm the payment with the card details
 
+        
+
         if (enregistrerCarte) {
           const {paymentIntent, error} = await confirmPayment(
             clientSecret,
@@ -449,6 +452,7 @@ const PaymentCard = props => {
           );
 
           responseError = error;
+          paymentIntendResponse = paymentIntent;
         } else {
           const {paymentIntent, error} = await confirmPayment(clientSecret, {
             paymentMethodType: 'Card',
@@ -458,11 +462,13 @@ const PaymentCard = props => {
           });
 
           responseError = error;
+          paymentIntendResponse = paymentIntent;
         }
 
-        if (responseError) {
+        if (responseError || (paymentIntendResponse && paymentIntendResponse.status != 'succeeded')) {
           setButtonPressed(false)
           console.log(responseError);
+          console.log('paymentIntendResponse', paymentIntendResponse);
           if (Platform.OS === 'ios') {
             Toast.show({
               type: 'error',
