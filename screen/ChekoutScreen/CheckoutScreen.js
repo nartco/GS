@@ -796,7 +796,7 @@ const CheckoutScreen = (props) => {
             matchingAttributeValue.attributImages.map((img) => ({
               url: img?.reference.includes("http")
                 ? img.reference
-                : `https://recette.godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
+                : `https://godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
             }))
           );
         }
