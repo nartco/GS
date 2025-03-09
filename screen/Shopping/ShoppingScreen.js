@@ -965,7 +965,7 @@ const ShoppingScreen = props => {
                               code: 'ventes-privees',
                               id: 4,
                               image:
-                                'https://godaregroup.com/api/fichiers/service/cfc7cd9b-995d-49f7-a546-5233e19455c8.png',
+                                'https://recette.godaregroup.com/api/fichiers/service/cfc7cd9b-995d-49f7-a546-5233e19455c8.png',
                               message: 'Le comptoir des grandes marques',
                               messageEN: 'The branch of the big brands',
                               nom: 'Ventes Privées',

@@ -115,7 +115,7 @@ const Search = () => {
         const currentLanguage = await getPlatformLanguage();
         setLanguage(currentLanguage);
 
-        const apiUrl = `https://godaregroup.com/api/search/products/${encodeURIComponent(
+        const apiUrl = `https://recette.godaregroup.com/api/search/products/${encodeURIComponent(
           searchQuery,
         )}`;
         const response = await axiosInstance.get(apiUrl);

@@ -338,28 +338,21 @@ const ByPlaneDetailsComponentGrid = (props) => {
       return;
     }
 
-    if (douane) {
-      let coefficientDouane =
-        "New" == StateValue
-          ? douane.coefficient
-          : douane.coefficientProduitOccasion;
-
-      if (coefficientDouane && !productValue) {
-        if (IOSPLAt == "ios") {
-          Toast.show({
-            type: "error",
-            text1: t("Valeur"),
-            text2: t("La valeur est obligatoire !"),
-          });
-        } else {
-          ToastAndroid.show(
-            t("La valeur est obligatoire !"),
-            ToastAndroid.SHORT
-          );
-        }
-
-        return;
+    if (!productValue) {
+      if (IOSPLAt == "ios") {
+        Toast.show({
+          type: "error",
+          text1: t("Valeur"),
+          text2: t("La valeur est obligatoire !"),
+        });
+      } else {
+        ToastAndroid.show(
+          t("La valeur est obligatoire !"),
+          ToastAndroid.SHORT
+        );
       }
+
+      return;
     }
 
     try {
