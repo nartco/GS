@@ -579,9 +579,9 @@ const MessageScreen = props => {
                 backgroundColor: '#fff',
                 fontSize: 14,
                 fontFamily: 'Poppins-Regular',
-                color: '#000',
+                color: '#000'
               }}
-              maxLength={120}
+              maxLength={1000}
               value={Message}
               placeholder={'Message'}
               placeholderTextColor={'#AAB0B7'}

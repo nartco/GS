@@ -338,21 +338,30 @@ const ByPlaneDetailsComponentGrid = (props) => {
       return;
     }
 
-    if (!productValue) {
-      if (IOSPLAt == "ios") {
-        Toast.show({
-          type: "error",
-          text1: t("Valeur"),
-          text2: t("La valeur est obligatoire !"),
-        });
-      } else {
-        ToastAndroid.show(
-          t("La valeur est obligatoire !"),
-          ToastAndroid.SHORT
-        );
-      }
+    let douane = Product.validationManuelle ? null : Product.productSpecificites[0].douane;
+    
+    if (douane && !productValue) 
+    {
+      let forfaitDouane = "New" == StateValue ? douane.forfait : douane.forfaitProduitOccasion;
+      let coefficientDouane = "New" == StateValue ? douane.coefficient : douane.coefficientProduitOccasion;
 
-      return;
+      if (forfaitDouane || coefficientDouane)
+      {
+        if (IOSPLAt == "ios") {
+          Toast.show({
+            type: "error",
+            text1: t("Valeur"),
+            text2: t("La valeur est obligatoire !"),
+          });
+        } else {
+          ToastAndroid.show(
+            t("La valeur est obligatoire !"),
+            ToastAndroid.SHORT
+          );
+        }
+  
+        return;
+      }
     }
 
     try {

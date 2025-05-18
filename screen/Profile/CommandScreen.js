@@ -1141,7 +1141,6 @@ const CommandScreen = (props) => {
               </Text>
             </TouchableOpacity> */}
             {item.showPaiementButton &&
-              item.statut.toLowerCase() == "a payer" &&
               item.totalPaye < item.totalPrice && (
                 <TouchableOpacity
                   onPress={() =>
