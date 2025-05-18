@@ -60,12 +60,13 @@ export function calculProductPrices(
           : douane.coefficientProduitOccasion;
 
       let minimumDouane = "New" == item.stateValue ? douane.minimumDouaneNeuf : douane.minimumDouaneUsage;
+      minimumDouane = minimumDouane ? minimumDouane : 0;
       
-      if (minimumDouane && item.productValue >= minimumDouane){
+      if (item.productValue >= minimumDouane){
         if (forfaitDouane) {
           frais = parseFloat(forfaitDouane);
           frais = isNaN(frais) ? 0 : frais;
-          frais = frais * quantite;
+         // frais = frais * quantite;
         } else if (coefficientDouane) {
           frais = parseFloat(coefficientDouane);
           frais = isNaN(frais) ? 0 : frais;
@@ -227,7 +228,7 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
         if (forfaitDouane) {
           frais = parseFloat(forfaitDouane);
           frais = isNaN(frais) ? 0 : frais;
-          frais = frais * quantite;
+          //frais = frais * quantite;
         } else if (coefficientDouane) {
           frais = parseFloat(coefficientDouane);
           frais = isNaN(frais) ? 0 : frais;
@@ -381,7 +382,7 @@ export function calculProductPricesContentDemandeDachat(
         if (forfaitDouane) {
           frais = parseFloat(forfaitDouane);
           frais = isNaN(frais) ? 0 : frais;
-          frais = frais * quantite;
+          //frais = frais * quantite;
         } else if (coefficientDouane) {
           frais = parseFloat(coefficientDouane);
           frais = isNaN(frais) ? 0 : frais;
