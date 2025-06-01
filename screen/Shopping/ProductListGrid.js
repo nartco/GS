@@ -281,6 +281,7 @@ const ProductList = () => {
       Price: Prices[product.id],
       attributes: data ? data.attributes : null,
       stockId: SelectedProductStock[product.id] ?? null,
+      payerLivraison: product.payerLivraison,
       timestamp: Date.now()
     };
 
