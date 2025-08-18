@@ -183,6 +183,7 @@ const HomeScreen = ({navigation}) => {
   }, [isFocused, user]);
 
   async function navigateToCountryDelivery(service) {
+
     if (service.statut) {
       let obj = null;
 

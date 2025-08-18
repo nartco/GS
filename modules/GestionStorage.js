@@ -1003,7 +1003,8 @@ export async function saveLivraisonDomicileData(
   UserDomicileLabel,
   UserDomicileId,
   NomContact,
-  TelContact
+  TelContact,
+  PrixTotalLivraison
 ) {
   try {
     await AsyncStorage.setItem("cart_livraisonMode", "domicile");
@@ -1020,6 +1021,15 @@ export async function saveLivraisonDomicileData(
       "cart_livraisonAdresseId",
       JSON.stringify(UserDomicileId)
     );
+
+    if (PrixTotalLivraison) {
+      await AsyncStorage.setItem(
+        "cart_livraisonPrice",
+        JSON.stringify(PrixTotalLivraison)
+      );
+    }
+
+    
 
     await AsyncStorage.setItem("cart_deliveryValidation", "true");
   } catch (error) {
@@ -1081,11 +1091,12 @@ export const getLivraisonValues = async () => {
       livraisonRelaisId: livraisonRelaisId,
       livraisonAdresseId: adresseId,
       livraisonTotalPrixAvecDouaneRemiseAvoir:
-        livraisonTotalPrixAvecDouaneRemiseAvoir,
+      livraisonTotalPrixAvecDouaneRemiseAvoir,
       sommeFraisDouane: sommeFraisDouane,
       fraisExpedition: fraisExpedition,
       fraisCommission: fraisCommission,
       livraisonMagasinSchedule: livraisonMagasinSchedule,
+      supplement: prixTotalLivraison
     };
   } catch (error) {
     return {
@@ -1100,6 +1111,7 @@ export const getLivraisonValues = async () => {
       sommeFraisDouane: null,
       fraisExpedition: null,
       fraisCommission: null,
+      supplement: null
     };
   }
 };

@@ -46,14 +46,6 @@ const Splash = props => {
           source={Earth}
           style={{width: 152, height: 151, marginBottom: 8}}
         />
-        <Text
-          style={{
-            fontSize: windowWidth * 0.08,
-            fontFamily: 'Roboto-Medium',
-            color: '#fff',
-          }}>
-          GS
-        </Text>
       </View>
       <View style={{position: 'absolute', top: windowWidth * 0.95, left: 0}}>
         <Image source={Shape1} style={{width: 120, height: 180}} />

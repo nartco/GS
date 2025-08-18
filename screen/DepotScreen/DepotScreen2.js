@@ -111,16 +111,6 @@ const DepotScreen2 = ({navigation}) => {
 
             <View style={{position: 'absolute', top: 15, right: 10}}>
               <Image source={SmallEarth} />
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: '#fff',
-                  fontFamily: 'Roboto-Bold',
-                  textAlign: 'center',
-                  marginTop: 4,
-                }}>
-                GS
-              </Text>
             </View>
           </View>
 

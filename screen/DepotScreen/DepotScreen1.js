@@ -99,6 +99,7 @@ const DepotScreen1 = (props) => {
   const [CommandeHasManualValidation, setCommandeHasManualValidation] =
     useState(false);
   const [count, setCount] = useState(0);
+  const [DepotElements, setDepotElements] = useState([]);
   let isNewAddressAdded = props.route.params;
   isNewAddressAdded = isNewAddressAdded
     ? isNewAddressAdded.newAddressAdded
@@ -107,6 +108,10 @@ const DepotScreen1 = (props) => {
   const items = [
     { label: t("Dépôt au magasin"), value: "magasin" },
     { label: t("Enlèvement à domicile"), value: "enlevement" },
+  ];
+
+  const itemsMagasin = [
+    { label: t("Dépôt au magasin"), value: "magasin" },
   ];
 
   const route = useRoute();
@@ -234,11 +239,34 @@ const DepotScreen1 = (props) => {
         .then((response) => {
           if (response.data) {
             setCreneaux(response.data);
+
+            if (response.data.length < 1 && !validationManuelle)
+            {
+              setDepotElements(itemsMagasin);
+            }
+            else 
+            {
+              setDepotElements(items);
+            }
           }
         })
         .catch(function (error, status) {
           if (error.response.status === 400) {
             setmontantMinium(error?.response?.data?.montantMinimum);
+
+            if (!validationManuelle)
+            {
+              setDepotElements(itemsMagasin);
+            }
+            else 
+            {
+              setDepotElements(items);
+            }
+            
+          }
+          else 
+          {
+            setDepotElements(itemsMagasin);
           }
         });
 
@@ -424,6 +452,12 @@ const DepotScreen1 = (props) => {
           setTelCopy(adresse.telephone);
         }
       }
+
+      if (validationManuelle)
+      {
+        setmontantMinium(0);
+      }
+
       setActivity(false);
     }
 
@@ -735,7 +769,7 @@ const DepotScreen1 = (props) => {
                     iconStyle={styles.iconStyle}
                     containerStyle={styles.containerDepotStyle}
                     itemTextStyle={{ color: "#000" }}
-                    data={items}
+                    data={DepotElements}
                     maxHeight={450}
                     labelField="label"
                     valueField="value"

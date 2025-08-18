@@ -186,15 +186,12 @@ const PasswordReturn = props => {
         }}>
         <Image
           style={{
-            width: windowWidth * 0.13,
-            height: windowWidth * 0.13,
+            width: windowWidth * 0.15,
+            height: windowWidth * 0.15,
             objectFit: 'cover',
           }}
           source={Logo}
         />
-        <Text style={{ fontFamily: 'Roboto-Bold', fontSize: 18, color: '#fff' }}>
-          GS
-        </Text>
       </View>
 
       <View

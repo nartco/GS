@@ -56,13 +56,11 @@ export const HeaderEarth = () => {
       <CustomStatuBar backgroundColor="#2BA6E9"/> 
       <View style={{ alignItems: "center", backgroundColor: "#2BA6E9", justifyContent: "center", height: height}}>
           <Image source={HeaderEarthImage} style={{width: WidthEarth, height: heightEarth, objectFit: "cover"}}/>
-          <Text style={{ fontSize: windowWidth * 0.04, color: "#fff", fontFamily: "Roboto-Bold"}}>GS</Text>
       </View>
       </>
       :
       <View style={{ alignItems: "center", backgroundColor: "#2BA6E9", justifyContent: "center" ,height: hp(12)}}>
-          <Image source={HeaderEarthImage} style={{width: wp(10), height: wp(10), objectFit: "cover"}}/>
-          <Text style={{ fontSize: 18, color: "#fff", fontFamily: "Roboto-Bold"}}>GS</Text>
+          <Image source={HeaderEarthImage} style={{width: wp(15), height: wp(15), objectFit: "cover"}}/>
     </View>
     }
     </>

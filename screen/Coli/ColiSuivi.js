@@ -1304,7 +1304,7 @@ const ColiSuivi = ({ navigation, route }) => {
           </View>
           <View style={{ marginBottom: windowWidth * 0.1 }}>
             {Commande.showPaiementButton &&
-              CommandeResteApayer > 0 && (
+              (parseFloat(Commande.totalPaye) || 0) < (parseFloat(Commande.totalPrice) || 0) && (
                 <TouchableOpacity
                   onPress={NavigateToPayment}
                   style={{

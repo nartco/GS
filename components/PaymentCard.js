@@ -25,12 +25,14 @@ import {
   StripeProvider,
   initStripe,
   useConfirmPayment,
+  useStripe
 } from '@stripe/stripe-react-native';
 import {useTranslation} from 'react-i18next';
 import {
   doPaymentWithSavedCard,
   fetchPaymentIntentClientSecret,
   getClientCards,
+  retryPaymentWith3DS,
 } from '../modules/GestionStripe';
 import {
   getCartPrices,
@@ -69,6 +71,8 @@ const PaymentCard = props => {
 
   const {confirmPayment} = useConfirmPayment();
 
+  const { handleNextAction } = useStripe();
+
   const {t} = useTranslation();
 
   const [name, setName] = useState('');
@@ -95,7 +99,7 @@ const PaymentCard = props => {
     async function initialize() {
       await initStripe({
         publishableKey:
-          'pk_live_51MP1s8H53XOlotVAh1G56yNXSMnT0d19Ysu4UgZIVet1xL4hY7U5NfgWyqvTxKiTlpAGyzIFn4wl8DHCw33RyIib00Ofcs3qRZ',
+          'pk_test_51RsVAMR2Kjp3hJBYXfvX7KUXj1j5ZIVLQDW6RVfAf1gZagxOuSdj8PnHeu2XtOgYV12g71tTYgKvNbzGbUEfHdkr00DSNScUd3',
       });
     }
     initialize().catch(console.error);
@@ -251,15 +255,100 @@ const PaymentCard = props => {
 
       // Procéder au paiement
       let paymentError = null;
+      let paymentIntentStatus = null;
+    
 
-      if (SelectedCard) {
+      if (SelectedCard) 
+      {
         if (!SelectedCardCVC) {
           throw new Error(t('Le CVC est obligatoire'));
         }
+
+        let paymentIntentResponse = null;
+
         setLoadingPayment(true);
-        await doPaymentWithSavedCard(user.uid, SelectedCard.id, TotalPrice);
-        setLoadingPayment(false);
-      } else {
+
+        try 
+        {
+          paymentIntentResponse = await doPaymentWithSavedCard(user.uid, SelectedCard.id, TotalPrice);
+
+          let paymentMessage = paymentIntentResponse.message;
+          let paymentStatus = paymentIntentResponse.status;
+
+          console.log('paymentIntentResponse', paymentIntentResponse)
+
+          if (paymentStatus === 'requires_action') 
+          {
+            const res = await retryPaymentWith3DS({
+              paymentIntentId: paymentIntentResponse.paymentIntentId,
+              clientSecret: paymentIntentResponse.clientSecret,
+              handleNextAction, // passé depuis useStripe()
+            });
+
+            console.log('res', res)
+
+            if (res.ok) 
+            {
+              updateCommandeAndShowMessage(commandeId, 'Payée', 'Votre commande a été payée', cartPrices, 'reload');
+            } 
+            else 
+            {
+              if (Platform.OS === 'ios') {
+                Toast.show({
+                  type: 'error',
+                  text1: t('Payment'),
+                  text2: t(paymentMessage),
+                });
+              } else {
+                ToastAndroid.show(t(paymentMessage), ToastAndroid.SHORT);
+              }
+              
+              throw new Error(t('Erreur lors de la confirmation du paiement'));
+            }
+          }
+          else if (
+            paymentStatus == 'requires_payment_method' || 
+            paymentStatus == 'canceled' ||
+            paymentStatus == 'inconnu'
+          )
+          {
+            if (Platform.OS === 'ios') {
+              Toast.show({
+                type: 'error',
+                text1: t('Payment'),
+                text2: t(paymentMessage),
+              });
+            } else {
+              ToastAndroid.show(t(paymentMessage), ToastAndroid.SHORT);
+            }
+            
+            throw new Error(t('Erreur lors de la confirmation du paiement'));
+          }
+          else 
+          {
+            updateCommandeAndShowMessage(commandeId, 'Payée', 'Votre commande a été payée', cartPrices, 'reload');
+          }
+        }
+        catch(error)
+        {
+          console.log('SelectedCard error', error);
+
+          let paymentErrorMessage = 'Erreur lors du paiement !';
+
+          if (Platform.OS === 'ios') {
+            Toast.show({
+              type: 'error',
+              text1: t('Payment'),
+              text2: t(paymentErrorMessage),
+            });
+          } else {
+            ToastAndroid.show(t(paymentErrorMessage), ToastAndroid.SHORT);
+          }
+          throw new Error(t('Erreur lors de la confirmation du paiement'));
+        }
+      } 
+      else 
+      {
         if (!cardDetails.complete) {
           throw new Error(t("La carte n'est pas valide !"));
         }
@@ -274,7 +363,7 @@ const PaymentCard = props => {
         );
         console.log(clientSecret, 'clientSecret');
 
-        const {error} = await confirmPayment(
+        const {paymentIntent, error} = await confirmPayment(
           clientSecret,
           {
             paymentMethodType: 'Card',
@@ -282,45 +371,98 @@ const PaymentCard = props => {
           },
           enregistrerCarte ? {setupFutureUsage: 'OffSession'} : undefined,
         );
-        console.log(error, '3232323232');
+
+        console.log({
+          'paymentIntent paymentIntent': paymentIntent,
+          'error error': error
+        })
+        
+
         paymentError = error;
+        paymentIntentStatus = paymentIntent;
         setLoadingPayment(false);
-      }
 
-      if (paymentError) {
-        console.log('paymentError', paymentError);
-        // Si le paiement échoue, supprimer la commande
-        await axiosInstance.delete(`/commandes/delete/${commandeId}`);
-        if (Platform.OS === 'ios') {
-          Toast.show({
-            type: 'error',
-            text1: t('Payment'),
-            text2: t('Erreur lors du paiement !'),
-          });
-        } else {
-          ToastAndroid.show(t('Erreur lors du paiement !'), ToastAndroid.SHORT);
-        }
-        throw new Error(t('Erreur lors de la confirmation du paiement'));
-      }
-
-      // Si le paiement réussit, mettre à jour le statut de la commande
-      await axiosInstance.put(`/commandes/update/${commandeId}`, {
-        statut: 'Payée',
-        paymentMethod: 'Carte bancaire',
-        paymentAmount: cartPrices.finalPrice.toString(),
-      });
-
-      setBagCount(0);
-      removePanier();
-
-      Alert.alert(t('Succès'), t('Votre commande a été payée'), [
+        if (paymentError) 
         {
-          text: 'OK',
-          onPress: () => {
-            navigation.replace('CommandeScreen', {pageForm: 'reload'});
-          },
-        },
-      ]);
+          console.log('paymentError', paymentError);
+
+          let paymentErrorMessage = 'Erreur lors du paiement !';
+
+          if (paymentError.declineCode == 'generic_decline')
+          {
+            paymentErrorMessage = 'Refus de paiement !';
+          }
+          else if (paymentError.declineCode == 'insufficient_funds')
+          {
+            paymentErrorMessage = 'Refus de paiement pour cause de fonds insuffisants !';
+          }
+          else if (paymentError.declineCode == 'lost_card')
+          {
+            paymentErrorMessage = 'Refus de paiement pour cause de perte de carte !';
+          }
+          else if (paymentError.declineCode == 'stolen_card')
+          {
+            paymentErrorMessage = 'Refus de paiement pour cause de vol de carte !';
+          }
+          else if (paymentError.declineCode == 'card_velocity_exceeded')
+          {
+            paymentErrorMessage = 'Refus de paiement pour dépassement de la limite !';
+          }
+
+          // Si le paiement échoue, supprimer la commande
+          try 
+          {
+            await axiosInstance.delete(`/commandes/delete/${commandeId}`);
+          }
+          catch (error)
+          {
+            console.error('deleteError',error);
+          }
+          
+          if (Platform.OS === 'ios') {
+            Toast.show({
+              type: 'error',
+              text1: t('Payment'),
+              text2: t(paymentErrorMessage),
+            });
+          } else {
+            ToastAndroid.show(t(paymentErrorMessage), ToastAndroid.SHORT);
+          }
+          throw new Error(t('Erreur lors de la confirmation du paiement'));
+        }
+
+        // Si le paiement est bien retourné, on vérifie son statut
+        if (!paymentIntentStatus) {
+          throw new Error(t('Erreur inattendue : aucune réponse de Stripe.'));
+        }
+
+        const statusStripe = paymentIntentStatus.status?.toLowerCase();
+
+        setLoadingPayment(true);
+
+
+        switch (statusStripe) 
+        {
+          case 'succeeded':
+            console.log('Paiement réussi');
+
+            updateCommandeAndShowMessage(commandeId, 'Payée', 'Votre commande a été payée', cartPrices, 'reload');
+          break;
+
+          case 'processing':
+            updateCommandeAndShowMessage(commandeId, 'en attente de paiement', 'Votre commande est enregistrée. Nous sommes en attente de la confirmation de paiement par votre banque.', cartPrices, 'reload');
+            
+          break;
+
+          case 'requires_payment_method':
+          case 'requires_action':
+          case 'canceled':
+          default:
+            console.log('other', paymentIntent);
+            deleteCommandeAndShowErrorMessage(commandeId, 'Erreur lors du paiement !');
+        }
+      }
+
     } catch (error) {
       setLoadingPayment(false);
       setButtonPressed(false);
@@ -328,7 +470,7 @@ const PaymentCard = props => {
         try {
           await axiosInstance.delete(`/commandes/delete/${commandeId}`);
         } catch (deleteError) {
-          console.error(error.response);
+          console.error('deleteError',error.response);
           console.error(
             'Erreur lors de la suppression de la commande:',
             deleteError.response,
@@ -362,6 +504,79 @@ const PaymentCard = props => {
     }
   };
 
+  async function deleteCommandeAndShowErrorMessage(commandeId, message) 
+  {
+    try 
+    {
+      setLoadingPayment(true);
+      await axiosInstance.delete(`/commandes/delete/${commandeId}`);
+    }
+    catch(error)
+    {
+      console.error('commande update (requires_payment_method)',error);
+    }
+
+    setLoadingPayment(false);
+    
+
+    if (Platform.OS === 'ios') {
+      Toast.show({
+        type: 'error',
+        text1: t('Payment'),
+        text2: t(message),
+      });
+    } else {
+      ToastAndroid.show(t(message), ToastAndroid.SHORT);
+    }
+
+    throw new Error(t('Erreur lors de la confirmation du paiement'));
+  }
+
+  async function updateCommandeAndShowMessage(commandeId, statut, message, cartPrices, fromPage) 
+  {
+    try 
+    {
+      await axiosInstance.put(`/commandes/update/${commandeId}`, {
+        statut: statut,
+        paymentMethod: 'Carte bancaire',
+        paymentAmount: cartPrices.finalPrice.toString(),
+      });
+
+      setBagCount(0);
+      removePanier();
+
+      setLoadingPayment(false);
+
+      Alert.alert(t('Succès'), t(message), [
+        {
+          text: 'OK',
+          onPress: () => {
+            navigation.replace('CommandeScreen', {pageForm: fromPage});
+          },
+        },
+      ]);
+    }
+    catch (error)
+    {
+      console.error('commande update (succeeded)',error);
+
+      setBagCount(0);
+      removePanier();
+
+      setLoadingPayment(false);
+
+      if (Platform.OS === 'ios') {
+        Toast.show({
+          type: 'error',
+          text1: t('Payment'),
+          text2: t("Erreur lors de l'enregistrement de la commande. Veuillez indiquer le numéro de commande" +  " : "  + commandeId)
+        });
+      } else {
+        ToastAndroid.show(t("Erreur lors de l'enregistrement de la commande. Veuillez indiquer le numéro de commande" + " : " + commandeId), ToastAndroid.SHORT);
+      }
+    }
+  }
+
   const handleCardChange = details => {
     setCardDetails(details);
     setIsCardComplete(details.complete);
@@ -374,7 +589,10 @@ const PaymentCard = props => {
     let paymentIntendResponse = null;
 
     try {
-      if (SelectedCard) {
+      const cartPrices = await getCartPrices();
+      
+      if (SelectedCard) 
+      {
         if (!SelectedCardCVC) {
           if (Platform.OS === 'ios') {
             Toast.show({
@@ -396,10 +614,92 @@ const PaymentCard = props => {
         // Faire le paiement
         setLoadingPayment(true);
 
-        await doPaymentWithSavedCard(user.uid, SelectedCard.id, TotalPrice);
 
-        setLoadingPayment(false);
-      } else {
+        try 
+        {
+          let paymentIntentResponse = null;
+          
+          paymentIntentResponse = await doPaymentWithSavedCard(user.uid, SelectedCard.id, TotalPrice);
+
+          console.log('paymentIntentResponse1', paymentIntentResponse)
+
+          let paymentMessage = paymentIntentResponse.message;
+          let paymentStatus = paymentIntentResponse.status;
+
+          if (paymentStatus === 'requires_action') 
+          {
+            const res = await retryPaymentWith3DS({
+              paymentIntentId: paymentIntentResponse.paymentIntentId,
+              clientSecret: paymentIntentResponse.clientSecret,
+              handleNextAction, // passé depuis useStripe()
+            });
+
+            console.log('res', res)
+
+            if (res.ok) 
+            {
+              updateCommandeAndShowMessage(commandeId, 'Payée', 'Votre commande a été payée', cartPrices, 'updated');
+
+              return;
+            } 
+            else 
+            {
+              if (Platform.OS === 'ios') {
+                Toast.show({
+                  type: 'error',
+                  text1: t('Payment'),
+                  text2: t(paymentMessage),
+                });
+              } else {
+                ToastAndroid.show(t(paymentMessage), ToastAndroid.SHORT);
+              }
+              
+              throw new Error(t('Erreur lors de la confirmation du paiement'));
+            }
+          }
+          else if (
+            paymentStatus == 'requires_payment_method' || 
+            paymentStatus == 'canceled' ||
+            paymentStatus == 'inconnu'
+          )
+          {
+            if (Platform.OS === 'ios') {
+              Toast.show({
+                type: 'error',
+                text1: t('Payment'),
+                text2: t(paymentMessage),
+              });
+            } else {
+              ToastAndroid.show(t(paymentMessage), ToastAndroid.SHORT);
+            }
+            
+            throw new Error(t('Erreur lors de la confirmation du paiement'));
+          }
+          else 
+          {
+            updateCommandeAndShowMessage(commandeId, 'Payée', 'Votre commande a été payée', cartPrices, 'updated');
+          }
+        }
+        catch(error)
+        {
+          console.log('SelectedCard error', error);
+
+          let paymentErrorMessage = 'Erreur lors du paiement !';
+
+          if (Platform.OS === 'ios') {
+            Toast.show({
+              type: 'error',
+              text1: t('Payment'),
+              text2: t(paymentErrorMessage),
+            });
+          } else {
+            ToastAndroid.show(t(paymentErrorMessage), ToastAndroid.SHORT);
+          }
+          throw new Error(t('Erreur lors de la confirmation du paiement'));
+        }
+      } 
+      else 
+      {
         if (!cardDetails.complete) {
           if (Platform.OS === 'ios') {
             Toast.show({
@@ -416,6 +716,8 @@ const PaymentCard = props => {
 
           return;
         }
+
+        
 
         const billingDetails = {
           uid: user.uid,
@@ -437,7 +739,8 @@ const PaymentCard = props => {
 
         
 
-        if (enregistrerCarte) {
+        if (enregistrerCarte) 
+        {
           const {paymentIntent, error} = await confirmPayment(
             clientSecret,
             {
@@ -453,7 +756,9 @@ const PaymentCard = props => {
 
           responseError = error;
           paymentIntendResponse = paymentIntent;
-        } else {
+        } 
+        else 
+        {
           const {paymentIntent, error} = await confirmPayment(clientSecret, {
             paymentMethodType: 'Card',
             paymentMethodData: {
@@ -465,77 +770,106 @@ const PaymentCard = props => {
           paymentIntendResponse = paymentIntent;
         }
 
-        if (responseError || (paymentIntendResponse && paymentIntendResponse.status != 'succeeded')) {
-          setButtonPressed(false)
-          console.log(responseError);
-          console.log('paymentIntendResponse', paymentIntendResponse);
+        if (responseError) 
+        {
+          console.log('responseError', responseError);
+
+          let paymentErrorMessage = 'Erreur lors du paiement !';
+
+          if (responseError.declineCode == 'generic_decline')
+          {
+            paymentErrorMessage = 'Refus de paiement !';
+          }
+          else if (responseError.declineCode == 'insufficient_funds')
+          {
+            paymentErrorMessage = 'Refus de paiement pour cause de fonds insuffisants !';
+          }
+          else if (responseError.declineCode == 'lost_card')
+          {
+            paymentErrorMessage = 'Refus de paiement pour cause de perte de carte !';
+          }
+          else if (responseError.declineCode == 'stolen_card')
+          {
+            paymentErrorMessage = 'Refus de paiement pour cause de vol de carte !';
+          }
+          else if (responseError.declineCode == 'card_velocity_exceeded')
+          {
+            paymentErrorMessage = 'Refus de paiement pour dépassement de la limite !';
+          }
+
           if (Platform.OS === 'ios') {
             Toast.show({
               type: 'error',
               text1: t('Payment'),
-              text2: t('Erreur lors de la confirmation du paiement'),
+              text2: t(paymentErrorMessage),
             });
           } else {
             ToastAndroid.show(
-              t('Erreur lors de la confirmation du paiement'),
+              t(paymentErrorMessage),
               ToastAndroid.SHORT,
             );
           }
-          setLoadingPayment(false);
-          return;
+
+          throw new Error(t('Erreur lors de la confirmation du paiement'));
         }
 
-        setLoadingPayment(false);
+        // Si le paiement est bien retourné, on vérifie son statut
+        if (!paymentIntendResponse) {
+          throw new Error(t('Erreur inattendue : aucune réponse de Stripe.'));
+        }
+
+        const statusStripe = paymentIntendResponse.status?.toLowerCase();
+
+        switch (statusStripe) 
+        {
+          case 'succeeded':
+            setLoadingPayment(false);
+            setButtonPressed(false);
+            updateCommandeAndShowMessage(commandeId, 'Payée', 'Votre commande a été payée', cartPrices,  'updated');
+          break;
+
+          case 'processing':
+            setButtonPressed(false)
+            console.log(responseError);
+            console.log('paymentIntendResponse', paymentIntendResponse);
+            if (Platform.OS === 'ios') {
+              Toast.show({
+                type: 'error',
+                text1: t('Payment'),
+                text2: t('Votre commande est enregistrée. Nous sommes en attente de la confirmation de paiement par votre banque.'),
+              });
+            } else {
+              ToastAndroid.show(
+                t('Votre commande est enregistrée. Nous sommes en attente de la confirmation de paiement par votre banque.'),
+                ToastAndroid.SHORT,
+              );
+            }
+            setLoadingPayment(false);
+          break;
+
+          case 'requires_payment_method':
+          case 'requires_action':
+          case 'canceled':
+          default:
+            setButtonPressed(false);
+            console.log(responseError);
+            console.log('paymentIntendResponse', paymentIntendResponse);
+            if (Platform.OS === 'ios') {
+              Toast.show({
+                type: 'error',
+                text1: t('Payment'),
+                text2: t('Erreur lors de la confirmation du paiement'),
+              });
+            } else {
+              ToastAndroid.show(
+                t('Erreur lors de la confirmation du paiement'),
+                ToastAndroid.SHORT,
+              );
+            }
+            setLoadingPayment(false);
+        }
       }
 
-      const cartPrices = await getCartPrices();
-
-      try {
-        const response = await axiosInstance.put(
-          '/commandes/update/' + commandeId,
-          {
-            statut: 'Payée',
-            paymentMethod: 'Carte bancaire',
-            paymentAmount: cartPrices.finalPrice.toString(),
-          },
-        );
-
-        setBagCount(0);
-        removePanier();
-
-        return Alert.alert(t('Succès'), t('Votre commande a été payée'), [
-          {
-            text: 'OK',
-            onPress: () => {
-              navigation.navigate('CommandeScreen', {pageForm: 'updated'});
-            },
-          },
-        ]);
-      } catch (error) {
-        if (Platform.OS === 'ios') {
-          Toast.show({
-            type: 'error',
-            text1: t('Payment'),
-            text2: t('Erreur lors de la sauvegarde de la commande !'),
-          });
-        } else {
-          ToastAndroid.show(
-            t('Erreur lors de la sauvegarde de la commande !'),
-            ToastAndroid.SHORT,
-          );
-        }
-
-        if (error.response) {
-          console.log('Error response', error.response?.data);
-          console.log('Error response', error.response.status);
-          console.log('Error response', error.response.headers);
-        } else if (error.request) {
-          console.log('request', error.request);
-        } else {
-          console.log('Error', error.message);
-        }
-        console.log(error.config);
-      }
     } catch (error) {
       setLoadingPayment(false);
       setButtonPressed(false);

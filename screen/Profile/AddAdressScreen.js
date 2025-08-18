@@ -214,8 +214,7 @@ const AddAdressScreen = (props) => {
 
       if (
         AdresseTelephone &&
-        AdresseTelephone.length > 4 &&
-        !phoneValidation.isValid
+        AdresseTelephone.length < 5
       ) {
         throw new Error(t("Veuillez saisir un téléphone valide"));
       }

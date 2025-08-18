@@ -352,16 +352,6 @@ const ConversationList = ({ navigation, route }) => {
                                         height: windowHeight * 0.041,
                                       }}
                                     />
-                                    <Text
-                                      style={{
-                                        color: "#000",
-                                        textAlign: "center",
-                                        fontFamily: "Roboto-Bold",
-                                        fontSize: 14,
-                                      }}
-                                    >
-                                      GS
-                                    </Text>
                                   </View>
                                   <View
                                     style={{
