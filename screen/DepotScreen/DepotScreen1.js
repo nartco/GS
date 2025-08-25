@@ -254,14 +254,7 @@ const DepotScreen1 = (props) => {
           if (error.response.status === 400) {
             setmontantMinium(error?.response?.data?.montantMinimum);
 
-            if (!validationManuelle)
-            {
-              setDepotElements(itemsMagasin);
-            }
-            else 
-            {
-              setDepotElements(items);
-            }
+            setDepotElements(items);
             
           }
           else 
