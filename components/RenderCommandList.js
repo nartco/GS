@@ -36,7 +36,7 @@ const getAttributeImages = commandeProduct => {
       if (matchingAttributeValue && matchingAttributeValue.attributImages) {
         matchingImages = matchingImages.concat(
           matchingAttributeValue.attributImages.map(img => ({
-            url: `https://godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
+            url: `https://recette.godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
           })),
         );
       }

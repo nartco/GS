@@ -46,6 +46,7 @@ import {
   saveSelectedCountry,
   saveSelectedService,
   saveLivraisonPrices,
+  getPointRelaisChoice,
 } from "../../modules/GestionStorage";
 import axiosInstance from "../../axiosInstance";
 import {
@@ -117,6 +118,11 @@ const CheckoutScreen = (props) => {
     useState(false);
   const [user, setUser] = useState(null);
 
+  const [selectedDepotPointTransfert, setSelectedDepotPointTransfert] = useState(null);
+  const [fraisTransfertMontant, setFraisTransfertMontant] = useState(0);
+
+  
+
   const windowWidth = Dimensions.get("window").width;
 
   useEffect(() => {
@@ -171,6 +177,17 @@ const CheckoutScreen = (props) => {
         // Depot
         let depotValues = await getDepotValues();
         setDepotData(depotValues);
+
+        // Point de transfert
+        if ('relais' == depotValues.depotTypeRelaisMagasin)
+        {
+          const raw = await getPointRelaisChoice();
+  
+          setSelectedDepotPointTransfert(raw);
+
+          setFraisTransfertMontant(depotValues.depotFraisTransfertMontant);
+        }
+        
 
         // Prix de livraison
         let livraisonValues = await getLivraisonValues();
@@ -511,6 +528,12 @@ const CheckoutScreen = (props) => {
     });
   };
 
+  const chunkBy = (arr, size) => {
+    const out = [];
+    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+    return out;
+  };
+
   // Valider la commande
   async function validateCommande(statut, remiseTotal) {
     setLoadingPayment(true);
@@ -796,7 +819,7 @@ const CheckoutScreen = (props) => {
             matchingAttributeValue.attributImages.map((img) => ({
               url: img?.reference.includes("http")
                 ? img.reference
-                : `https://godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
+                : `https://recette.godaregroup.com/api/fichiers/attribut/description/${img.reference}`,
             }))
           );
         }
@@ -1201,6 +1224,12 @@ const CheckoutScreen = (props) => {
       : parseFloat(TotalWithLivraison);
 
     setSommeFraisDouane(prices.sommeFraisDouane);
+
+    // Ajouter les frais de transfert
+    let fraisTransfert = parseFloat(fraisTransfertMontant);
+    fraisTransfert = isNaN(fraisTransfert) ? 0 : fraisTransfert;
+
+
     let resteApayer = 0;
     let resteAvoir = 0;
     let apreRemise = 0;
@@ -1225,7 +1254,7 @@ const CheckoutScreen = (props) => {
     // setCartTotalPriceSansRemiseAvoir(prices.totalPrix.toFixed(2));
 
     let montantApayer =
-      parseFloat(apreRemise) + prixTotalLivraison + sommeFraisDouane;
+      parseFloat(apreRemise) + prixTotalLivraison + sommeFraisDouane + fraisTransfert;
     montantApayer = isNaN(parseFloat(montantApayer))
       ? 0
       : parseFloat(montantApayer);
@@ -1411,6 +1440,43 @@ const CheckoutScreen = (props) => {
                       )}
                 </Text>
               </View>
+              {'relais' == DepotData.depotTypeRelaisMagasin && (
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      paddingBottom: 15,
+                      borderBottomWidth: 1,
+                      borderColor: "#E9E9E9",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 12,
+                        color: "#ACB2B2",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {t("Frais de transfert")}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        fontSize: 14,
+                        color: "#262A2B",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {
+                        formatEuroPrice(fraisTransfertMontant.toFixed(2), Language )
+                      }
+                    </Text>
+                  </View>
+                )
+
+              }
               <View
                 style={{
                   flexDirection: "row",
@@ -1739,6 +1805,7 @@ const CheckoutScreen = (props) => {
     if (isNaN(prixTotalLivraison)) {
       setPrixTotalLivraison(0);
     }
+
     return (
       <View>
         <View style={{ marginTop: 13, paddingHorizontal: 12 }}>
@@ -2222,11 +2289,12 @@ const CheckoutScreen = (props) => {
                           </Text>
                           <BoldTranslatedText
                             textKey="Mode"
-                            normalText={t(
-                              DepotData.depotMode == "magasin"
-                                ? " Depot magasin"
-                                : ` ${DepotData.depotMode}`
-                            )}
+                            normalText={
+                              DepotData.mode == "magasin"
+                              ? t(" Depot magasin")
+                              : ('relais' == DepotData.depotTypeRelaisMagasin ? t(" Dépôt en point relais") : t(` ${DepotData.depotMode}`))
+                            }
+
                             style={styles.WeightCalSubText}
                           />
 
@@ -2237,19 +2305,21 @@ const CheckoutScreen = (props) => {
                               style={styles.WeightCalSubText}
                             />
                           )}
+
                           {DepotData.depotMagasinSchedule &&
-                            DepotData.depotMode !== "domicile" && (
-                              <>
-                                <BoldTranslatedText
-                                  textKey="Horaires d'ouverture"
-                                  normalText=" :"
-                                  style={styles.WeightCalSubText}
-                                />
-                                <Text style={styles.WeightCalSubText}>
-                                  {DepotData.depotMagasinSchedule}
-                                </Text>
-                              </>
-                            )}
+                          DepotData.depotMode !== "domicile" && (
+                            <>
+                              <BoldTranslatedText
+                                textKey="Horaires d'ouverture"
+                                normalText=" :"
+                                style={styles.WeightCalSubText}
+                              />
+                              <Text style={styles.WeightCalSubText}>
+                                {DepotData.depotMagasinSchedule}
+                              </Text>
+                            </>
+                          )}
+
                           {DepotData.depotVille && (
                             <Text style={styles.WeightCalSubText}>
                               {t("Ville")} : {DepotData.depotVille}
@@ -2297,6 +2367,38 @@ const CheckoutScreen = (props) => {
                               </Text>
                             </>
                           )}
+
+
+                          {'relais' == DepotData.depotTypeRelaisMagasin &&
+                            DepotData.depotMode !== "domicile" && (
+                              <>
+                                <BoldTranslatedText
+                                  textKey="Horaires d'ouverture"
+                                  normalText=" :"
+                                  style={styles.WeightCalSubText}
+                                />
+                                <View style={[styles.card]}>
+                                  {selectedDepotPointTransfert && Array.isArray(selectedDepotPointTransfert.workingDays) && selectedDepotPointTransfert.workingDays.length > 0 && (
+                                    <View style={styles.hoursWrap}>
+                                      {chunkBy(selectedDepotPointTransfert.workingDays, 3).map((row, rIdx) => (
+                                        <View key={rIdx} style={styles.hoursRow}>
+                                          {row.map((d, cIdx) => (
+                                            <View key={cIdx} style={styles.hoursCol}>
+                                              <Text style={styles.hourDay}>
+                                                {Language === 'fr' ? (d.dayFr || d.dayEn) : (d.dayEn || d.dayFr)}
+                                              </Text>
+                                              <Text style={styles.hourSlots}>
+                                                {Array.isArray(d.hours) && d.hours.length ? d.hours.join(' • ') : '—'}
+                                              </Text>
+                                            </View>
+                                          ))}
+                                        </View>
+                                      ))}
+                                    </View>
+                                  )}
+                                </View>
+                              </>
+                            )}
                         </View>
                       </View>
                     </View>

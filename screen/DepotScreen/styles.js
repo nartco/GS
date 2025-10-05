@@ -231,6 +231,20 @@ const styles = StyleSheet.create({
     maxHeight: 180,
     elevation: 10,
   },
+  containerrrrStyleWidthDefaut: {
+    marginTop: 0,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    maxHeight: 180,
+    elevation: 10,
+  },
+  containerrrrStyleWidthWider: {
+    marginTop: 0,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    maxHeight: 400,
+    elevation: 10,
+  },
   containerDepotStyle: {
     backgroundColor: "#fff",
     borderRadius: 8,
@@ -291,6 +305,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "#000",
   },
+
+   modalRoot: { backgroundColor: '#fff', padding: 16, paddingTop: 10 },
 });
 
 export default styles;

@@ -1,7 +1,7 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const baseURL = 'https://godaregroup.com/api';
+const baseURL = 'https://recette.godaregroup.com/api';
 const axiosInstance = axios.create({
   baseURL,
   timeout: 30000,

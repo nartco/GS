@@ -1144,7 +1144,7 @@ const Livraison1 = (props) => {
                         itemTextStyle={{ color: "#000" }}
                         autoScroll
                         iconStyle={styles.iconStyle}
-                        containerStyle={styles.containerrrrStyle}
+                        containerStyle={MagasinsLivraison.length > 2 ? styles.containerrrrStyleWidthWider : styles.containerrrrStyle}
                         data={MagasinsLivraison}
                         value={magasinLivraisonUserChoix}
                         maxHeight={220}
@@ -1700,6 +1700,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     maxHeight: 150,
+    elevation: 10,
+  },
+  containerrrrStyleWidthWider: {
+    marginTop: -2,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    maxHeight: 300,
     elevation: 10,
   },
 

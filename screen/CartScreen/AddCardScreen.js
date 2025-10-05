@@ -408,8 +408,6 @@ const AddCardScreen = props => {
       data.commande.statut = 'A payer';
     }
 
-
-
     const formData = new FormData();
 
     formData.append('livraison', JSON.stringify(data.livraison));

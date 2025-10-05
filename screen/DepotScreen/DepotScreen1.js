@@ -11,6 +11,7 @@ import {
   Dimensions,
   KeyboardAvoidingView,
   Platform,
+  Linking
 } from "react-native";
 import React, { useState, useEffect, useRef } from "react";
 import { widthPercentageToDP as wp } from "react-native-responsive-screen";
@@ -39,10 +40,12 @@ import {
   saveSelectedService,
   resetDepotMagasinStorage,
   resetAllDepotStorage,
+  getPointRelaisChoice,
+  saveDepotFraisTransfert
 } from "../../modules/GestionStorage";
 import axiosInstance from "../../axiosInstance";
 import { useTranslation } from "react-i18next";
-import { useIsFocused, useRoute } from "@react-navigation/native";
+import { useIsFocused, useRoute, useFocusEffect } from "@react-navigation/native";
 import ServiceHeader from "../../components/ServiceHeader";
 import PhoneInput from "react-native-international-phone-number";
 
@@ -52,11 +55,16 @@ import Toast from "react-native-toast-message";
 import auth from "@react-native-firebase/auth";
 import { removeCountryCode } from "../../components/removeCountryCode";
 import { getCountryCodeFromPhone } from "../../components/getCountryCode";
+import PointRelaisModal from "./PointRelaisModal";
+
 
 const windowWidth = Dimensions.get("window").width;
 const windowHeight = Dimensions.get("window").height;
+
 const DepotScreen1 = (props) => {
+
   var isFocused = useIsFocused();
+
   const { t, i18n } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
   const [isOpen2, setIsOpen2] = useState(false);
@@ -100,6 +108,11 @@ const DepotScreen1 = (props) => {
     useState(false);
   const [count, setCount] = useState(0);
   const [DepotElements, setDepotElements] = useState([]);
+  const [FraisTransfert, setFraisTransfert] = useState([]);
+  const [FraisTransfertMontant, setFraisTransfertMontant] = useState(0);
+  const [PanierData, setPanierData] = useState([]);
+  const [ShowFraisTransfert, setShowFraisTransfert] = useState(false);
+  const [PointsRelaisPaysExclure, setPointsRelaisPaysExclure] = useState([]);
   let isNewAddressAdded = props.route.params;
   isNewAddressAdded = isNewAddressAdded
     ? isNewAddressAdded.newAddressAdded
@@ -114,7 +127,398 @@ const DepotScreen1 = (props) => {
     { label: t("Dépôt au magasin"), value: "magasin" },
   ];
 
+  const [pointRelaisModalVisible, setPointRelaisModalVisible] = useState(false);
+  const [selectedPointRelais, setSelectedPointRelais] = useState(null);
+
+  const [poidsTotalProduit, setPoidsTotalProduit] = React.useState(0);
+
+  const [Loader, setLoader] = useState(false);
+
+  const [listePaysRelais, setListePaysRelais] = useState([]);
+
   const route = useRoute();
+
+  const loadFromSession = async () => {
+    try {
+      const raw = await getPointRelaisChoice();
+
+      setSelectedPointRelais(raw);
+      
+    } catch {
+
+      if (Platform.OS == "ios") {
+        Toast.show({
+          type: "error",
+          text1: t("Point relais"),
+          text2: t("Impossible de récupérer le point relais"),
+        });
+      } else {
+        ToastAndroid.show(t("Impossible de récupérer le point relais"), ToastAndroid.SHORT);
+      }
+    }
+  };
+
+  useFocusEffect(
+    React.useCallback(() => {
+      (async () => {
+
+        setLoader(true);
+
+        getDepotInformations();
+
+         setLoader(false);
+      })();
+    }, [])
+  );
+
+  async function getDepotInformations()
+  {
+    setActivityMagasins(true);
+
+    let paysLivraisonObject = await getSelectedCountry();
+
+    let fournisseurs = [];
+    let requestBody = {
+      montantCommande: route?.params?.prices?.totalPrix,
+    };
+
+    if (route?.params?.excludedSupplierIds) {
+      requestBody.fournisseurs = route.params.excludedSupplierIds;
+    }
+
+    // Get panier
+    let basketData = await getPanier();
+
+    let poidsTotal = 0;
+    basketData?.forEach((item) => {
+      let quantite = parseInt(item.quantite);
+      quantite = isNaN(quantite) ? 1 : quantite;
+
+      // si pas de poids moyen mettre une très grande pour exclure les poids relais
+      let poidsMoyen = parseFloat(item.poidsMoyen);
+      poidsMoyen = isNaN(poidsMoyen) ? 10000 : poidsMoyen;
+
+      poidsTotal = poidsTotal + Math.ceil(quantite * poidsMoyen);
+    });
+
+    let doNotFetchPointsRelais = false;
+      try {
+        const response = await axiosInstance.get(`point_relais_pays_exclure/`);
+
+        if (response.data) {
+          setPointsRelaisPaysExclure(response.data);
+
+           response.data?.forEach((item) => {
+
+            if (item.paysLivraison.id == paysLivraisonObject.id) {
+              doNotFetchPointsRelais = true;
+            }
+          });
+
+        }
+      } catch (error) {
+        console.error("Erreur lors de la récupération des pays à exclure du point relais:", error);
+      }
+
+      if (!doNotFetchPointsRelais)
+      {
+        let fraisTransfertDepot = [];
+        try {
+          const response = await axiosInstance.get(`frais_transfert/`);
+
+          if (response.data) {
+            fraisTransfertDepot = response.data.reduce((frais, f) => {
+              const key = f.codePointRelais;
+              (frais[key] ||= []).push(f);
+              return frais;
+            }, {});
+
+            setFraisTransfert(fraisTransfertDepot);
+          }
+        } catch (error) {
+          
+          console.error("Erreur lors de la récupération des frais de transfert:", error);
+        }
+      }
+
+      try {
+        const response = await axiosInstance.post(
+          `fournisseurs/magasins/${paysLivraisonObject.id}/depot`,
+          requestBody
+        );
+
+        if (response.data) {
+          fournisseurs = response.data;
+        }
+      } catch (error) {
+        if (error?.data?.montantMinimum) {
+          setmontantMinium(error.data.montantMinimum);
+        }
+        console.error("Erreur lors de la récupération des magasins:", error);
+      }
+
+      let data = [];
+      let rawData = [];
+      fournisseurs?.forEach(function (fournisseur) {
+        let addFournisseur = false;
+        fournisseur.magasins?.forEach(function (magasin) {
+          let found = false;
+
+          const checkDepot = (typeArray) => {
+            return Array.isArray(typeArray) && typeArray.includes("Dépôt");
+          };
+
+          if (Service?.code === "fret-par-bateau") {
+            if (checkDepot(magasin.typeFretBateau)) {
+              found = true;
+            }
+          } else if (Service?.code === "fret-par-avion") {
+            if (checkDepot(magasin.typeFretAvion)) {
+              found = true;
+            }
+          } else {
+            if (checkDepot(magasin.types)) {
+              found = true;
+            }
+          }
+
+          if (
+            found &&
+            paysLivraisonObject.depart.toLowerCase() ===
+              magasin.pays.toLowerCase()
+          ) {
+            data.push(magasin);
+            addFournisseur = true;
+          }
+        });
+
+        if (addFournisseur) {
+          rawData.push(fournisseur);
+        }
+      });
+
+
+      let pointsRelais = [];
+      let paysPointRelais = {};
+      if (!doNotFetchPointsRelais)
+      {
+        try {
+          const response = await axiosInstance.get(`points_relais/${paysLivraisonObject.id}`);
+
+          if (response.data) 
+          {
+            response.data?.forEach((item) => {
+              if (poidsTotal <= item.poidsMaxDepotFretAvion)
+              {
+                pointsRelais.push(item);
+              }
+
+              let paysKey = item.pays;
+              let paysValue = item.paysLibelle;
+
+              if (!(paysKey in paysPointRelais))
+              {
+                paysPointRelais[paysKey] = paysValue;
+              }
+            });
+
+           
+
+            let countries = [];
+            for (const[key, value] of Object.entries(paysPointRelais))
+            {
+              countries.push({
+                label: value,
+                value: key
+              });
+            }
+
+            setListePaysRelais(countries);
+
+            if (pointsRelais.length < 1)
+            {
+              setFraisTransfertMontant(0);
+              setShowFraisTransfert(false);
+            }
+
+            console.log("response.data response.data d", response.data)
+          }
+        } catch (error) {
+          
+          console.error("Erreur lors de la récupération des points relais:", error);
+        }
+      }
+
+      let formatted = data.map((ls) => ({
+        id: ls.id,
+        label: `${ls.pays}, ${ls.codePostal ? ls.codePostal + ", " : ""}${
+          ls.ville
+        }, ${ls.adresse}`,
+        value: ls.id,
+        type: 'magasin'
+      }));
+
+      let formattedPointRelais = pointsRelais.map((ls) => ({
+        id: ls.code,
+        label: ls.nom,
+        value: ls.code,
+        url: ls.url,
+        poidsMaxDepot: Service?.code === "fret-par-avion" ? ls.poidsMaxDepotFretAvion : ls.poidsMaxDepotFretBateau,
+        type: 'relais'
+      }));
+
+      if (formattedPointRelais.length > 0)
+      {
+        let newArray = [...formatted, ...formattedPointRelais]
+        formatted = newArray;
+
+        newArray = [...rawData, ...pointsRelais]
+        rawData.push(pointsRelais);
+      }
+
+
+      setMagasinsDepot(formatted);
+      setMagasinsDepotRawValues(rawData);
+
+
+      setActivityMagasins(false);
+
+
+       // Get user address
+      let formattedAdresse = [];
+      const user = auth().currentUser;
+
+      axiosInstance
+        .get("/adresses/user/depart/" + user.uid + "/" + paysLivraisonObject.id)
+        .then((response) => {
+          if (response.data) {
+            let data = response.data;
+
+            formattedAdresse = data.map((ls) => {
+              return {
+                id: ls.id,
+                label:
+                  ls.adresse +
+                  " " +
+                  ls.codePostal +
+                  " " +
+                  ls.ville +
+                  " " +
+                  ls.pays,
+                value: ls.id,
+                codePostal: ls.codePostal,
+                ville: ls.ville,
+                nom: ls.nom,
+                telephone: ls.telephone,
+              };
+            });
+
+            setAdresses(formattedAdresse);
+          }
+        })
+        .catch(function (error) {
+          console.log("adresse fetch error", error);
+        });
+
+
+
+      // Added new address or previous address choice
+      if (isNewAddressAdded) {
+        setmontantMinium(0);
+        let adresse = await getNewAddedAddress();
+
+        if (adresse) {
+          adresse.label = `${adresse.pays}, ${
+            adresse.codePostal ? adresse.codePostal + ", " : ""
+          }${adresse.ville}, ${adresse.adresse}`;
+
+          setUserDomicileChoix(adresse);
+          setUserAdresseChoice(adresse.id);
+          setStorageDepotChoiceAdresse(adresse);
+          setNomContact(adresse.nom);
+          setTelContact(adresse.telephone);
+          setTelCopy(adresse.telephone);
+        }
+      }
+
+      
+
+      // Previous depot choice
+      let choice = await getDepotModeChoice();
+
+      let depotAdresseValues = await getDepotValues();
+
+      if (choice) {
+        setDepotChoiceMode(choice);
+
+        if ("magasin" == choice) {
+          setShowMagasin(true);
+          setShowAdresseEnlevement(false);
+
+          if (depotAdresseValues.depotMagasin) {
+            var newData = formatted.filter((ls) => {
+              if (ls.id == depotAdresseValues.depotMagasin || ls.code == depotAdresseValues.depotMagasin) {
+                return ls;
+              }
+            });
+
+            let choiceRelais = newData[0];
+            if ('relais' == depotAdresseValues.depotTypeRelaisMagasin)
+            {
+              if (choiceRelais)
+              {
+                choiceRelais.label = depotAdresseValues.depotMagasinAdresse;
+              }
+
+              if (pointsRelais.length > 0)
+              {
+                setFraisTransfertMontant(depotAdresseValues.depotFraisTransfertMontant);
+                setShowFraisTransfert(true);
+              }
+            }
+
+            setUserMagasinChoix(choiceRelais);
+            setUserMagasinChoice(depotAdresseValues.depotMagasin);
+          }
+        } else {
+          setShowAdresseEnlevement(true);
+          setShowMagasin(false);
+
+          var newData = formattedAdresse.filter((ls) => {
+            if (ls.id == depotAdresseValues.depotAdresseId) {
+              return ls;
+            }
+          });
+          if (depotAdresseValues.depotAdresseId) {
+            setUserAdresseChoice(depotAdresseValues.depotAdresseId);
+
+            setUserDomicileChoix(newData[0]);
+          }
+
+          if (depotAdresseValues.depotNom) {
+            setNomContact(depotAdresseValues.depotNom);
+          }
+
+          if (depotAdresseValues.depotTelephone) {
+            setTelContact(newData[0].telephone);
+          }
+        }
+      }
+  }
+
+  
+
+  useEffect(() => {
+    loadFromSession();
+  }, []);
+
+  const handleOpen = () => setPointRelaisModalVisible(true);
+
+  const handleClose = async (changed) => {
+    setPointRelaisModalVisible(false);
+    if (changed) await loadFromSession();
+  };
+
 
   useEffect(() => {
     setCount(0);
@@ -123,7 +527,7 @@ const DepotScreen1 = (props) => {
       let validationManuelle = false;
 
       setActivity(true);
-      setActivityMagasins(true);
+      
 
       // Get pays de livraison
       let paysLivraisonObject = await getSelectedCountry();
@@ -162,6 +566,8 @@ const DepotScreen1 = (props) => {
             validationManuelle = true;
           }
         });
+
+        setPanierData(basketData);
       }
 
       setCommandeHasManualValidation(validationManuelle);
@@ -229,7 +635,7 @@ const DepotScreen1 = (props) => {
       }
 
       setService(service);
-      console.log(route?.params);
+
       // Get user email
       axiosInstance
         .post(`creneaux/${paysLivraisonObject.id}`, {
@@ -239,6 +645,8 @@ const DepotScreen1 = (props) => {
         .then((response) => {
           if (response.data) {
             setCreneaux(response.data);
+
+            console.log('creneau response.data response.data', response.data)
 
             if (response.data.length < 1 && !validationManuelle)
             {
@@ -263,193 +671,10 @@ const DepotScreen1 = (props) => {
           }
         });
 
-      // Get user address
-      let formattedAdresse = [];
-      const user = auth().currentUser;
-
-      axiosInstance
-        .get("/adresses/user/depart/" + user.uid + "/" + paysLivraisonObject.id)
-        .then((response) => {
-          if (response.data) {
-            let data = response.data;
-
-            formattedAdresse = data.map((ls) => {
-              return {
-                id: ls.id,
-                label:
-                  ls.adresse +
-                  " " +
-                  ls.codePostal +
-                  " " +
-                  ls.ville +
-                  " " +
-                  ls.pays,
-                value: ls.id,
-                codePostal: ls.codePostal,
-                ville: ls.ville,
-                nom: ls.nom,
-                telephone: ls.telephone,
-              };
-            });
-
-            setAdresses(formattedAdresse);
-          }
-        })
-        .catch(function (error) {
-          console.log("adresse fetch error", error);
-        });
-
-      let fournisseurs = [];
-      let requestBody = {
-        montantCommande: route?.params?.prices?.totalPrix,
-      };
-
-      if (route?.params?.excludedSupplierIds) {
-        requestBody.fournisseurs = route.params.excludedSupplierIds;
-      }
-
-      try {
-        const response = await axiosInstance.post(
-          `fournisseurs/magasins/${paysLivraisonObject.id}/depot`,
-          requestBody
-        );
-
-        // console.log("Réponse de l'API:", response.data);
-        if (response.data) {
-          fournisseurs = response.data;
+        if (validationManuelle)
+        {
+          setmontantMinium(0);
         }
-      } catch (error) {
-        if (error?.data?.montantMinimum) {
-          setmontantMinium(error.data.montantMinimum);
-        }
-        console.error("Erreur lors de la récupération des magasins:", error);
-      }
-
-      let data = [];
-      let rawData = [];
-      fournisseurs?.forEach(function (fournisseur) {
-        let addFournisseur = false;
-        fournisseur.magasins?.forEach(function (magasin) {
-          let found = false;
-
-          const checkDepot = (typeArray) => {
-            return Array.isArray(typeArray) && typeArray.includes("Dépôt");
-          };
-
-          if (Service?.code === "fret-par-bateau") {
-            if (checkDepot(magasin.typeFretBateau)) {
-              found = true;
-            }
-          } else if (Service?.code === "fret-par-avion") {
-            if (checkDepot(magasin.typeFretAvion)) {
-              found = true;
-            }
-          } else {
-            if (checkDepot(magasin.types)) {
-              found = true;
-            }
-          }
-
-          if (
-            found &&
-            paysLivraisonObject.depart.toLowerCase() ===
-              magasin.pays.toLowerCase()
-          ) {
-            data.push(magasin);
-            addFournisseur = true;
-          }
-        });
-
-        if (addFournisseur) {
-          rawData.push(fournisseur);
-        }
-      });
-
-      // console.log('Magasins traités:', data);
-
-      let formatted = data.map((ls) => ({
-        id: ls.id,
-        label: `${ls.pays}, ${ls.codePostal ? ls.codePostal + ", " : ""}${
-          ls.ville
-        }, ${ls.adresse}`,
-        value: ls.id,
-      }));
-
-      setMagasinsDepot(formatted);
-      setMagasinsDepotRawValues(rawData);
-
-      setActivityMagasins(false);
-
-      // Previous depot choice
-      let choice = await getDepotModeChoice();
-
-      let depotAdresseValues = await getDepotValues();
-
-      if (choice) {
-        setDepotChoiceMode(choice);
-
-        if ("magasin" == choice) {
-          setShowMagasin(true);
-          setShowAdresseEnlevement(false);
-
-          if (depotAdresseValues.depotMagasin) {
-            var newData = formatted.filter((ls) => {
-              if (ls.id == depotAdresseValues.depotMagasin) {
-                return ls;
-              }
-            });
-
-            setUserMagasinChoix(newData[0]);
-            setUserMagasinChoice(depotAdresseValues.depotMagasin);
-          }
-        } else {
-          setShowAdresseEnlevement(true);
-          setShowMagasin(false);
-
-          var newData = formattedAdresse.filter((ls) => {
-            if (ls.id == depotAdresseValues.depotAdresseId) {
-              return ls;
-            }
-          });
-          if (depotAdresseValues.depotAdresseId) {
-            setUserAdresseChoice(depotAdresseValues.depotAdresseId);
-
-            setUserDomicileChoix(newData[0]);
-          }
-
-          if (depotAdresseValues.depotNom) {
-            setNomContact(depotAdresseValues.depotNom);
-          }
-
-          if (depotAdresseValues.depotTelephone) {
-            setTelContact(newData[0].telephone);
-          }
-        }
-      }
-
-      // Added new address or previous address choice
-      if (isNewAddressAdded) {
-        setmontantMinium(0);
-        let adresse = await getNewAddedAddress();
-
-        if (adresse) {
-          adresse.label = `${adresse.pays}, ${
-            adresse.codePostal ? adresse.codePostal + ", " : ""
-          }${adresse.ville}, ${adresse.adresse}`;
-
-          setUserDomicileChoix(adresse);
-          setUserAdresseChoice(adresse.id);
-          setStorageDepotChoiceAdresse(adresse);
-          setNomContact(adresse.nom);
-          setTelContact(adresse.telephone);
-          setTelCopy(adresse.telephone);
-        }
-      }
-
-      if (validationManuelle)
-      {
-        setmontantMinium(0);
-      }
 
       setActivity(false);
     }
@@ -499,7 +724,11 @@ const DepotScreen1 = (props) => {
       });
     });
 
-    // console.log('UserMagasinChoix', UserMagasinChoix);
+    if (UserMagasinChoix && 'relais' == UserMagasinChoix.type)
+    {
+      await saveDepotFraisTransfert(FraisTransfertMontant, 'relais');
+    }
+
     await saveDepotMagasinValues(
       UserMagasinChoix?.label,
       UserMagasinChoix.id,
@@ -539,7 +768,6 @@ const DepotScreen1 = (props) => {
       return;
     }
 
-    // console.log({TelContact}, 'TelContact', {cleanTel}, {telCopy});
     if (TelContact === "") {
       if (Platform.OS == "ios") {
         Toast.show({
@@ -582,7 +810,7 @@ const DepotScreen1 = (props) => {
 
     if (!CommandeHasManualValidation) {
       let found = false;
-      console.log("debut found");
+  
       Creneaux?.forEach((creneau) => {
         if (creneau?.pays) {
           let creneauVille = creneau?.ville ? creneau?.ville.toLowerCase() : "";
@@ -636,7 +864,8 @@ const DepotScreen1 = (props) => {
       codePostal,
       ville
     );
-    // console.log(CommandeHasManualValidation,'CommandeHasManualValidation');
+
+    
     if (!CommandeHasManualValidation) {
       props.navigation.navigate("DepotScreen3", {
         magasinId: UserMagasinChoix?.id,
@@ -662,33 +891,100 @@ const DepotScreen1 = (props) => {
   const OnChangeMagasinValue = (magasinChoice) => {
     let newArr = null;
     let magasinFound = false;
-    MagasinsDepotRawValues?.forEach(function (fournisseur) {
-      fournisseur.magasins?.forEach(function (magasin) {
-        if (!magasinFound && magasin.id == magasinChoice.id) {
-          newArr = magasin;
-          magasinFound = true;
+
+    setSelectedPointRelais(null);
+    if ('relais' == magasinChoice.type)
+    {
+      MagasinsDepotRawValues?.forEach(function (magasins) {
+        if (Array.isArray(magasins))
+        {
+            magasins.forEach(function (magasin) {
+              
+              if (!magasinFound && magasin.code == magasinChoice.id) {
+                newArr = magasin;
+                newArr.type = 'relais';
+                magasinFound = true;
+              }
+            });
         }
       });
-    });
+    }
+    else{
+      MagasinsDepotRawValues?.forEach(function (fournisseur) {
+        fournisseur.magasins?.forEach(function (magasin) {
+          if (!magasinFound && magasin.id == magasinChoice.id) {
+            newArr = magasin;
+            magasinFound = true;
+          }
+        });
+      });
+    }
 
+    
     setActionTriggered(newArr);
     setModalVisible(true);
   };
 
   // Confirmation choix magasin
   async function ConfirmationChoixMagasin(magasin) {
+
     var newData = MagasinsDepot.filter((ls) => {
-      if (ls.id == magasin.id) {
+      if (ls.id == magasin.id || ls.id == magasin.code) {
         return ls;
       }
     });
 
-    setUserMagasinChoix(newData[0]);
-    setModalVisible(!modalVisible);
-    setUserMagasinChoice(magasin.id);
+    setFraisTransfertMontant(0);
+    setShowFraisTransfert(false);
+    setSelectedPointRelais(null);
 
-    await saveDepotMagasinId(magasin.id);
+    let choiceRelais = newData[0];
+
+    if (magasin.code)
+    {
+      if (selectedPointRelais)
+      {
+        choiceRelais.label = choiceRelais.label + ' - ' + selectedPointRelais.name + ", " + selectedPointRelais.address1 + " " + selectedPointRelais.zipCode + " " + selectedPointRelais.city + " " + ("FR" == selectedPointRelais.countryCode ? "France" : ("BE" == selectedPointRelais.pays ? "Belgique" : "Allemagne"));
+      }
+      
+      const fraisData = FraisTransfert[magasin.code];
+
+      let prix = [];
+      PanierData?.forEach((item) => {
+        let quantite = parseInt(item.quantite);
+        quantite = isNaN(quantite) ? 1 : quantite;
+
+        let poidsMoyen = parseFloat(item.poidsMoyen);
+
+        if (!isNaN(poidsMoyen))
+        {
+          prix.push(Math.ceil(quantite * poidsMoyen));
+        }
+      });
+
+      let frais = 0;
+      fraisData.forEach((item) => {
+
+          prix.forEach((prixItem) => {
+
+            if (item.quantite == prixItem){
+              frais = frais + item.frais;
+            }
+          });
+      });
+
+      setFraisTransfertMontant(frais);
+      setShowFraisTransfert(true);
+    }
+    
+    setUserMagasinChoix(choiceRelais);
+    setModalVisible(!modalVisible);
+    setUserMagasinChoice(magasin.code ? magasin.code : magasin.id);
+
+    await saveDepotMagasinId(magasin.code ? magasin.code : magasin.id);
   }
+
+  
 
   // Reset du choix
   async function ResetChoixMagasin() {
@@ -722,7 +1018,7 @@ const DepotScreen1 = (props) => {
         <Stepper position={1} />
       </View>
 
-      {Activity === true || ActivityMagasins === true ? (
+      {Activity === true || ActivityMagasins === true || Loader == true ? (
         <View style={{ justifyContent: "center", height: "80%" }}>
           <ActivityIndicator size="large" color="#3292E0" style={{}} />
         </View>
@@ -984,6 +1280,7 @@ const DepotScreen1 = (props) => {
               </>
             )}
 
+
             {showMagasin && (
               <>
                 <View style={{ marginTop: 32, paddingHorizontal: 16 }}>
@@ -1014,7 +1311,7 @@ const DepotScreen1 = (props) => {
                         selectedTextStyle={styles.selectedTextStyle}
                         autoScroll
                         iconStyle={styles.iconStyle}
-                        containerStyle={styles.containerrrrStyle}
+                        containerStyle={MagasinsDepot.length > 1 ? styles.containerrrrStyleWidthWider : styles.containerrrrStyleWidthDefaut}
                         itemTextStyle={{ color: "#000" }}
                         data={MagasinsDepot}
                         value={userMagasinChoice}
@@ -1056,6 +1353,20 @@ const DepotScreen1 = (props) => {
                   </View>
                 </View>
 
+                {ShowFraisTransfert && (
+                    <View style={styles.TotalContainer}>
+                      <Text style={styles.TotalText}>{t('Frais de transfert')}</Text>
+                      <Text style={styles.PriceText}>
+                        {
+                          FraisTransfertMontant.toFixed(2) + '€'
+                        }
+                      </Text>
+                    </View>
+                  )
+                }
+
+                
+
                 <View style={{ flex: 1 }}>
                   <TouchableOpacity
                     style={[
@@ -1087,23 +1398,85 @@ const DepotScreen1 = (props) => {
             >
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
+
+                  <Pressable
+                    onPress={ResetChoixMagasin}
+                    hitSlop={12}
+                    style={{
+                      position: 'absolute',
+                      top: 2,
+                      right: 8,
+                      zIndex: 10,
+                      width: 100,
+                      height: 36,
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      //backgroundColor: 'rgba(0,0,0,0.06)',
+                      paddingHorizontal: 10, 
+                      paddingVertical: 6, 
+                      borderRadius: 8, 
+                      backgroundColor: '#eee'
+                    }}
+                    accessibilityLabel={t("Fermer")}
+                  >
+                    <Text style={{ fontSize: 15, fontWeight: '700', lineHeight: 22 }}> {t("Fermer")}</Text>
+                  </Pressable>
+
+
                   <Text style={styles.Heading}>
-                    {t("Horaires d'ouverture")}
+                    {'relais' == actionTriggered.type ? 'Informations' : t("Horaires d'ouverture")}
                   </Text>
+                  {'relais' == actionTriggered.type && !selectedPointRelais ? (
+                    <Text style={styles.modalText}>
+                      {
+                        "fr" == Language ? 
+                        "Vous allez être redirigé(e) sur la page pour choisir le point relais le plus proche de chez vous." 
+                        : 
+                        "You will be redirected to choose your nearest pickup point."
+                      }
+                    </Text>
+                    ) : (
+                      <Text style={styles.modalText}>
+                        {"fr" == Language
+                          ? actionTriggered.horaireOuverture
+                          : actionTriggered.horaireOuvertureEN
+                        }
+                      </Text>
+                    )
+                  }
+
+                  {selectedPointRelais && (
+                      <Text style={styles.modalText}>
+                        {
+                          selectedPointRelais.name + "\n" +
+
+                          selectedPointRelais.address1 +
+                          ", " +
+                          (selectedPointRelais.zipCode
+                            ? selectedPointRelais.zipCode + " "
+                            : "") +
+                          selectedPointRelais.city +
+                          " " +
+                          ("FR" == selectedPointRelais.countryCode ? "France" : ("BE" == selectedPointRelais.countryCode ? "Belgique" : "Allemagne"))
+                        }
+                      </Text>
+                    )
+
+                  }
+                  
+                  
                   <Text style={styles.modalText}>
-                    {"fr" == Language
-                      ? actionTriggered.horaireOuverture
-                      : actionTriggered.horaireOuvertureEN}
-                  </Text>
-                  <Text style={styles.modalText}>
-                    {actionTriggered.adresse +
+                    {'relais' == actionTriggered.type ? '' : (
+                      actionTriggered.adresse +
                       ", " +
                       (actionTriggered.codePostal
                         ? actionTriggered.codePostal + " "
                         : "") +
                       actionTriggered.ville +
                       " " +
-                      actionTriggered.pays}
+                      actionTriggered.pays
+                      )
+                    }
                   </Text>
 
                   <View
@@ -1113,34 +1486,69 @@ const DepotScreen1 = (props) => {
                       gap: 15,
                     }}
                   >
-                    <Pressable
-                      style={[styles.button, styles.buttonClose]}
-                      onPress={ResetChoixMagasin}
-                    >
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontFamily: "Poppins-Medium",
-                          fontSize: 12,
-                        }}
-                      >
-                        {t("Fermer")}
-                      </Text>
-                    </Pressable>
-                    <Pressable
-                      style={[styles.button, styles.buttonOpen]}
-                      onPress={() => ConfirmationChoixMagasin(actionTriggered)}
-                    >
-                      <Text
-                        style={{
-                          color: "#4E8FDA",
-                          fontFamily: "Poppins-Medium",
-                          fontSize: 12,
-                        }}
-                      >
-                        {t("Selectionner le magasin")}
-                      </Text>
-                    </Pressable>
+                    
+
+                    {!selectedPointRelais && 'relais' == actionTriggered.type && (
+                        <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={handleOpen}
+                          >
+                            <Text
+                              
+
+                              style={{
+                                color: "#fff",
+                                fontFamily: "Poppins-Medium",
+                                fontSize: 12,
+                              }}
+                            >
+                              {t("Voir les points relais")}
+                            </Text>
+                          </Pressable>
+                      )
+                    }
+
+                    {selectedPointRelais && 'relais' == actionTriggered.type &&
+                      (
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => ConfirmationChoixMagasin(actionTriggered)}
+                        >
+                          <Text
+                            style={{
+                              color: "#fff",
+                              fontFamily: "Poppins-Medium",
+                              fontSize: 12,
+                            }}
+                          >
+                            {t("Confirmer la selection du point relais")}
+                          </Text>
+                        </Pressable>
+                      )
+
+                    }
+
+                    {'relais' != actionTriggered.type &&
+                      (
+                        <Pressable
+                          style={[styles.button, styles.buttonClose]}
+                          onPress={() => ConfirmationChoixMagasin(actionTriggered)}
+                        >
+                          <Text
+                            style={{
+                              color: "#fff",
+                              fontFamily: "Poppins-Medium",
+                              fontSize: 12,
+                            }}
+                          >
+                            {t("Selectionner le magasin")}
+                          </Text>
+                        </Pressable>
+                      )
+
+                    }
+
+                    
                   </View>
                 </View>
                 <View
@@ -1158,6 +1566,17 @@ const DepotScreen1 = (props) => {
           </View>
         </KeyboardAwareScrollView>
       )}
+
+      <PointRelaisModal
+        key={actionTriggered ? actionTriggered.pays : 'FR'} 
+        visible={pointRelaisModalVisible}
+        onRequestClose={handleClose}
+        pointBaseUri="points_relais_gls_liste"
+        language={Language}
+        pays={actionTriggered ? actionTriggered.pays : 'FR'}
+        listePays={listePaysRelais}
+      />
+
     </View>
   );
 };

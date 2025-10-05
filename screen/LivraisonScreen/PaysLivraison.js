@@ -335,7 +335,7 @@ const PaysLivraison = ({navigation, route}) => {
             backgroundColor: '#fff',
             borderColor: '#2BA6E9',
           }}
-          maxHeight={190}
+          maxHeight={350}
           placeholder={t('pay livraison')}
           placeholderStyle={{
             color: '#86909C',

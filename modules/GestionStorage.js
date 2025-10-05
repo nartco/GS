@@ -649,6 +649,21 @@ export async function saveDepotMagasinValues(
   }
 }
 
+export async function saveDepotFraisTransfert(FraisTransfertMontant, typeDepot) {
+  try {
+
+    await AsyncStorage.setItem(
+      "cart_depotFraisTransfertMontant",
+      JSON.stringify(FraisTransfertMontant)
+    );
+
+    await AsyncStorage.setItem("cart_depotTypeRelaisMagasin", typeDepot);
+
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
 export async function saveDepotMagasinSchedule(data) {
   try {
     console.log({ data }, "weewewew");
@@ -852,6 +867,15 @@ export const getDepotValues = async () => {
     );
     depotMagasinFournisseurId = JSON.parse(depotMagasinFournisseurId);
 
+
+    let depotFraisTransfertMontant = await AsyncStorage.getItem("cart_depotFraisTransfertMontant");
+    depotFraisTransfertMontant = depotFraisTransfertMontant ? JSON.parse(depotFraisTransfertMontant) : null;
+
+
+    let depotTypeRelaisMagasin = await AsyncStorage.getItem("cart_depotTypeRelaisMagasin");
+
+    
+
     return {
       depotMode: depotMode,
       depotAdresseId: depotAdresseId,
@@ -867,6 +891,8 @@ export const getDepotValues = async () => {
       depotEnlevementAdresseId: depotEnlevementAdresseId,
       depotMagasinSchedule: depotMagasinSchedule,
       depotMagasinFournisseurId: depotMagasinFournisseurId,
+      depotFraisTransfertMontant: depotFraisTransfertMontant,
+      depotTypeRelaisMagasin: depotTypeRelaisMagasin,
     };
   } catch (error) {
     console.log("error", error);
@@ -883,6 +909,8 @@ export const getDepotValues = async () => {
       depotMagasinAdresseId: null,
       depotEnlevementAdresseId: null,
       depotMagasinFournisseurId: null,
+      depotFraisTransfertMontant: null,
+      depotTypeRelaisMagasin: null,
     };
   }
 };
@@ -1245,6 +1273,25 @@ export const getResumeCommande = async () => {
     commande = JSON.parse(commande);
 
     return commande;
+  } catch (error) {
+    return null;
+  }
+};
+
+export async function savePointRelaisChoice(data) {
+  try {
+    await AsyncStorage.setItem("cart_depotPointRelaisChoice", JSON.stringify(data));
+  } catch (error) {
+    console.log("error", error);
+  }
+}
+
+export const getPointRelaisChoice = async () => {
+  try {
+    let pointRelais = await AsyncStorage.getItem("cart_depotPointRelaisChoice");
+    pointRelais = JSON.parse(pointRelais);
+
+    return pointRelais;
   } catch (error) {
     return null;
   }

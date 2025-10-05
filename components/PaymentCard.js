@@ -99,7 +99,7 @@ const PaymentCard = props => {
     async function initialize() {
       await initStripe({
         publishableKey:
-          'pk_live_51MP1s8H53XOlotVAh1G56yNXSMnT0d19Ysu4UgZIVet1xL4hY7U5NfgWyqvTxKiTlpAGyzIFn4wl8DHCw33RyIib00Ofcs3qRZ',
+          'pk_test_51RsVAMR2Kjp3hJBYXfvX7KUXj1j5ZIVLQDW6RVfAf1gZagxOuSdj8PnHeu2XtOgYV12g71tTYgKvNbzGbUEfHdkr00DSNScUd3',
       });
     }
     initialize().catch(console.error);

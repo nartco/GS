@@ -8,6 +8,7 @@ import {
   getCartPrices,
   getCommand,
   getCommandProductsDemandeAchat,
+  getPointRelaisChoice,
 } from './GestionStorage';
 import {products} from '../constant/data';
 
@@ -42,6 +43,21 @@ export const buildCommande = async type => {
         };
       }
     }
+
+    if ('relais' == depotValues.depotTypeRelaisMagasin)
+    {
+      let depotPointRelais = await getPointRelaisChoice();
+
+      depot.depotTypeRelaisMagasin = 'relais';
+
+      depot.depotFraisTransfertMontant = depotValues.depotFraisTransfertMontant;
+
+      depot.depotPointRelais = depotPointRelais;
+
+      depot.depotPointRelais.id = depotValues.depotMagasinAdresseId ?? depotPointRelais.id ?? null;
+    }
+
+    console.log('depotValues', depotValues)
 
     // Livraison
     let livraisonValues = await getLivraisonValues();
@@ -165,6 +181,19 @@ export const buildGetCommande = async type => {
           ville: depotCreneau.ville,
         };
       }
+    }
+
+    if ('relais' == depotValues.depotTypeRelaisMagasin)
+    {
+      let depotPointRelais = await getPointRelaisChoice();
+
+      depot.depotTypeRelaisMagasin = 'relais';
+
+      depot.depotFraisTransfertMontant = depotValues.depotFraisTransfertMontant;
+
+      depot.depotPointRelais = depotPointRelais;
+
+      depot.depotPointRelais.id = depotValues.depotMagasinAdresseId ?? depotPointRelais.id ?? null;
     }
 
     // Livraison

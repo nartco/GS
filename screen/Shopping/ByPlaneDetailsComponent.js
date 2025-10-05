@@ -541,7 +541,8 @@ else
       image: userImage,
       paysLivraison: PaysLivraison,
       Price: Price,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      poidsMoyen:Product.poidsMoyen
     };
 
     CatProducts.push(obj);
