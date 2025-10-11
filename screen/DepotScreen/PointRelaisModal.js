@@ -84,7 +84,6 @@ export default function PointRelaisModal({
       setResults([]);
       setSelectedId(null);
 
-console.log('dddddd', pointBaseUri + '/?country=' + country + '&postalCode=' + postalCode + '&typePointRelais=' + typePointRelais)
       const res = await axiosInstance.get(pointBaseUri + '/?country=' + country + '&postalCode=' + postalCode + '&typePointRelais=' + typePointRelais);
 
       const data = res.data;
@@ -220,7 +219,7 @@ console.log('dddddd', pointBaseUri + '/?country=' + country + '&postalCode=' + p
             <TextInput
               value={postalCode}
               onChangeText={setPostalCode}
-              placeholder={'Saisir votre code postal'}
+              placeholder={'Saisir code postal'}
               keyboardType="number-pad"
               maxLength={country === 'BE' ? 4 : 5}
               style={styles.input}
