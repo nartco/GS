@@ -37,6 +37,7 @@ export default function PointRelaisModal({
   visible,
   onRequestClose,
   pointBaseUri,
+  typePointRelais,
   language = 'fr',
   pays,
   listePays
@@ -83,8 +84,8 @@ export default function PointRelaisModal({
       setResults([]);
       setSelectedId(null);
 
-
-      const res = await axiosInstance.get(pointBaseUri + '/?country=' + country + '&postalCode=' + postalCode);
+console.log('dddddd', pointBaseUri + '/?country=' + country + '&postalCode=' + postalCode + '&typePointRelais=' + typePointRelais)
+      const res = await axiosInstance.get(pointBaseUri + '/?country=' + country + '&postalCode=' + postalCode + '&typePointRelais=' + typePointRelais);
 
       const data = res.data;
       const items = Array.isArray(data) ? data : Array.isArray(data?.items) ? data.items : [];

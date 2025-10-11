@@ -3,7 +3,6 @@ import {
   Text,
   ScrollView,
   ActivityIndicator,
-  Pressable,
   Modal,
   TextInput,
   TouchableOpacity,
@@ -899,10 +898,10 @@ const DepotScreen1 = (props) => {
         if (Array.isArray(magasins))
         {
             magasins.forEach(function (magasin) {
-              
               if (!magasinFound && magasin.code == magasinChoice.id) {
                 newArr = magasin;
                 newArr.type = 'relais';
+                newArr.typeRelais = magasin.type;
                 magasinFound = true;
               }
             });
@@ -1398,8 +1397,7 @@ const DepotScreen1 = (props) => {
             >
               <View style={styles.centeredView}>
                 <View style={styles.modalView}>
-
-                  <Pressable
+                  <TouchableOpacity 
                     onPress={ResetChoixMagasin}
                     hitSlop={12}
                     style={{
@@ -1419,8 +1417,9 @@ const DepotScreen1 = (props) => {
                     }}
                     accessibilityLabel={t("Fermer")}
                   >
+                  
                     <Text style={{ fontSize: 15, fontWeight: '700', lineHeight: 22 }}> {t("Fermer")}</Text>
-                  </Pressable>
+                  </TouchableOpacity>
 
 
                   <Text style={styles.Heading}>
@@ -1489,10 +1488,8 @@ const DepotScreen1 = (props) => {
                     
 
                     {!selectedPointRelais && 'relais' == actionTriggered.type && (
-                        <Pressable
-                            style={[styles.button, styles.buttonClose]}
-                            onPress={handleOpen}
-                          >
+                        <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={handleOpen}>
+                        
                             <Text
                               
 
@@ -1504,16 +1501,13 @@ const DepotScreen1 = (props) => {
                             >
                               {t("Voir les points relais")}
                             </Text>
-                          </Pressable>
+                          </TouchableOpacity>
                       )
                     }
 
                     {selectedPointRelais && 'relais' == actionTriggered.type &&
                       (
-                        <Pressable
-                          style={[styles.button, styles.buttonClose]}
-                          onPress={() => ConfirmationChoixMagasin(actionTriggered)}
-                        >
+                        <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={() => ConfirmationChoixMagasin(actionTriggered)}>
                           <Text
                             style={{
                               color: "#fff",
@@ -1523,17 +1517,15 @@ const DepotScreen1 = (props) => {
                           >
                             {t("Confirmer la selection du point relais")}
                           </Text>
-                        </Pressable>
+                        </TouchableOpacity>
                       )
 
                     }
 
                     {'relais' != actionTriggered.type &&
                       (
-                        <Pressable
-                          style={[styles.button, styles.buttonClose]}
-                          onPress={() => ConfirmationChoixMagasin(actionTriggered)}
-                        >
+                        <TouchableOpacity style={[styles.button, styles.buttonClose]} onPress={() => ConfirmationChoixMagasin(actionTriggered)}>
+                      
                           <Text
                             style={{
                               color: "#fff",
@@ -1543,7 +1535,7 @@ const DepotScreen1 = (props) => {
                           >
                             {t("Selectionner le magasin")}
                           </Text>
-                        </Pressable>
+                        </TouchableOpacity>
                       )
 
                     }
@@ -1572,6 +1564,7 @@ const DepotScreen1 = (props) => {
         visible={pointRelaisModalVisible}
         onRequestClose={handleClose}
         pointBaseUri="points_relais_gls_liste"
+        typePointRelais={(actionTriggered && actionTriggered.typeRelais) ? actionTriggered.typeRelais : 'gls'}
         language={Language}
         pays={actionTriggered ? actionTriggered.pays : 'FR'}
         listePays={listePaysRelais}
