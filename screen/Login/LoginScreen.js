@@ -316,7 +316,6 @@ const LoginScreen = props => {
               resizeMode="center"
             />
           )}
-          <Text style={styles.mainTextStyle}>GS</Text>
         </View>
 
         <View style={styles.inputContainer}>

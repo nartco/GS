@@ -26,6 +26,8 @@ export function calculProductPrices(
     }
   });
 
+  console.log('data', data)
+
   data.forEach(function (item) {
     prix = parseFloat(item.Price);
     prix = isNaN(prix) ? 0 : prix;
@@ -46,7 +48,7 @@ export function calculProductPrices(
     douane = validationManuelle
       ? null
       : item.product.productSpecificites[0].douane;
-
+      
     if (douane) {
       let forfaitDouane =
         "New" == item.stateValue
@@ -57,15 +59,22 @@ export function calculProductPrices(
           ? douane.coefficient
           : douane.coefficientProduitOccasion;
 
-      if (forfaitDouane) {
-        frais = parseFloat(forfaitDouane);
-        frais = isNaN(frais) ? 0 : frais;
-        frais = frais * quantite;
-      } else if (coefficientDouane) {
-        frais = parseFloat(coefficientDouane);
-        frais = isNaN(frais) ? 0 : frais;
-        frais = (frais * item.productValue) / 100;
+      let minimumDouane = "New" == item.stateValue ? douane.minimumDouaneNeuf : douane.minimumDouaneUsage;
+      minimumDouane = minimumDouane ? minimumDouane : 0;
+      
+      if (item.productValue >= minimumDouane){
+        if (forfaitDouane) {
+          frais = parseFloat(forfaitDouane);
+          frais = isNaN(frais) ? 0 : frais;
+         // frais = frais * quantite;
+        } else if (coefficientDouane) {
+          frais = parseFloat(coefficientDouane);
+          frais = isNaN(frais) ? 0 : frais;
+          frais = (frais * item.productValue) / 100;
+        }
       }
+
+      
     }
 
     sommeFraisDouane = sommeFraisDouane + frais;
@@ -219,7 +228,7 @@ export function calculProductPricesCommand(data, remiseValue, RemiseProduct) {
         if (forfaitDouane) {
           frais = parseFloat(forfaitDouane);
           frais = isNaN(frais) ? 0 : frais;
-          frais = frais * quantite;
+          //frais = frais * quantite;
         } else if (coefficientDouane) {
           frais = parseFloat(coefficientDouane);
           frais = isNaN(frais) ? 0 : frais;
@@ -373,7 +382,7 @@ export function calculProductPricesContentDemandeDachat(
         if (forfaitDouane) {
           frais = parseFloat(forfaitDouane);
           frais = isNaN(frais) ? 0 : frais;
-          frais = frais * quantite;
+          //frais = frais * quantite;
         } else if (coefficientDouane) {
           frais = parseFloat(coefficientDouane);
           frais = isNaN(frais) ? 0 : frais;

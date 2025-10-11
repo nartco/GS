@@ -105,6 +105,8 @@ const Livraison1 = (props) => {
   const [zonesLivraison, setZonesLivraison] = useState([]);
   const [errorMessage, setErrorMessage] = useState("");
 
+  const [livraisonModes, setLivraisonModes] = useState([]);
+
   const [CommandeHasManualValidation, setCommandeHasManualValidation] =
     useState(false);
   const [count, setCount] = useState(0);
@@ -118,6 +120,11 @@ const Livraison1 = (props) => {
     { label: t("Retrait en point relais"), value: "relais" },
     { label: t("Livraison à domicile"), value: "domicile" },
   ];
+
+  const itemsLivraisonRelais = [
+    { label: t("Retrait en point relais"), value: "relais" }
+  ];
+
 
   const route = useRoute();
 
@@ -500,7 +507,7 @@ const Livraison1 = (props) => {
           setTelContact(adresse.telephone);
           setTelCopy(adresse.telephone);
 
-          if (checkZoneLivraison(adresse)) {
+          if (checkZoneLivraison(adresse) || validationManuelle) {
           } else {
             setErrorMessage(t("exclued"));
             // Réinitialiser isNewAddressAdded
@@ -519,7 +526,10 @@ const Livraison1 = (props) => {
 
   useEffect(() => {
     if (UserDomicileChoix && !checkZoneLivraison(UserDomicileChoix)) {
-      setErrorMessage(t("exclued"));
+      if (!CommandeHasManualValidation){
+        setErrorMessage(t("exclued"));
+      }
+      
     }
   }, [UserDomicileChoix]);
 
@@ -546,13 +556,18 @@ const Livraison1 = (props) => {
           );
 
           setZonesLivraison(response.data);
+
+          setLivraisonModes(response.data.length < 1 ? itemsLivraisonRelais : items)
         } catch (error) {
           console.error(
             "Erreur lors de la récupération des zones de livraison",
             { paysLivraisonObject },
             error
           );
+
+          setLivraisonModes(itemsLivraisonRelais)
         }
+
       };
 
       fetchZonesLivraison();
@@ -712,7 +727,27 @@ const Livraison1 = (props) => {
           );
           props.navigation.navigate("CheckoutScreen");
         } else {
-          setErrorMessage(t("exclued"));
+          if (!CommandeHasManualValidation){  
+            setErrorMessage(t("exclued"));
+          }
+
+          if (CommandeHasManualValidation)
+          {
+            setUserDomicileChoix(newData[0]);
+            setUserLivraisonDomicileChoix(adresse.id);
+            setStorageLIvraisonChoiceAdresse(adresse);
+            setNomContact(adresse.nom);
+            setTelContact(adresse.telephone);
+            await saveLivraisonDomicileData(
+              newData[0].label,
+              newData[0].id,
+              newData[0].nom,
+              newData[0].telephone,
+              PrixTotalLivraison
+            );
+            props.navigation.navigate("CheckoutScreen");
+          }
+          
         }
       }
     } else {
@@ -900,7 +935,7 @@ const Livraison1 = (props) => {
                     autoScroll
                     iconStyle={styles.iconStyle}
                     containerStyle={styles.containerrrrStyle}
-                    data={items}
+                    data={livraisonModes}
                     maxHeight={220}
                     labelField="label"
                     valueField="value"
@@ -1032,7 +1067,19 @@ const Livraison1 = (props) => {
                             setNomNumeroTelephone(item);
                             setErrorMessage("");
                           } else {
-                            setErrorMessage(t("exclued"));
+                              if (!CommandeHasManualValidation){
+                                  setErrorMessage(t("exclued"));
+                              }
+                            
+                          }
+
+                          if (CommandeHasManualValidation){
+                            setUserDomicileChoix(item);
+                            setUserLivraisonDomicileChoix(item.id);
+                            setIsFocus1(false);
+                            setNomTelephone(item);
+                            setNomNumeroTelephone(item);
+                            setErrorMessage("");
                           }
                         }}
                       />
@@ -1097,7 +1144,7 @@ const Livraison1 = (props) => {
                         itemTextStyle={{ color: "#000" }}
                         autoScroll
                         iconStyle={styles.iconStyle}
-                        containerStyle={styles.containerrrrStyle}
+                        containerStyle={MagasinsLivraison.length > 2 ? styles.containerrrrStyleWidthWider : styles.containerrrrStyle}
                         data={MagasinsLivraison}
                         value={magasinLivraisonUserChoix}
                         maxHeight={220}
@@ -1653,6 +1700,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     maxHeight: 150,
+    elevation: 10,
+  },
+  containerrrrStyleWidthWider: {
+    marginTop: -2,
+    backgroundColor: "#fff",
+    borderRadius: 8,
+    maxHeight: 300,
     elevation: 10,
   },
 

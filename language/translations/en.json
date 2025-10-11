@@ -406,5 +406,20 @@
   "qui nécessitent une quotation manuelle": "that require a manual quote",
   "Valider adresse de prise en charge": "Validate pickup address",
   "Jusqu'au": "Until",
-  "confirmer la cotation": "Confirm the quotation"
+  "confirmer la cotation": "Confirm the quotation",
+  "Voulez-vous payer à la livraison": "Do you want to pay on delivery ?",
+  "Refus de paiement !": "Error during payment !",
+  "Refus de paiement pour cause de fonds insuffisants !": "Payment declined due to insufficient funds !",
+  "Refus de paiement pour cause de perte de carte !": "Payment declined due to a lost card !",
+  "Refus de paiement pour cause de vol de carte !": "Payment declined due to a stolen card !",
+  "Refus de paiement pour dépassement de la limite !": "Payment declined due to exceeding the limit !",
+  "Votre commande est enregistrée. Nous sommes en attente de la confirmation de paiement par votre banque.": "Your order has been placed. We're waiting for your bank to confirm the payment.",
+  "Erreur lors de l'enregistrement de la commande. Veuillez indiquer le numéro de commande": "Error while saving the order. Please provide the order number"
 }
+
+
+
+
+
+
+

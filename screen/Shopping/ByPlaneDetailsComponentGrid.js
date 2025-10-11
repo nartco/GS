@@ -338,13 +338,15 @@ const ByPlaneDetailsComponentGrid = (props) => {
       return;
     }
 
-    if (douane) {
-      let coefficientDouane =
-        "New" == StateValue
-          ? douane.coefficient
-          : douane.coefficientProduitOccasion;
+    let douane = Product.validationManuelle ? null : Product.productSpecificites[0].douane;
+    
+    if (douane && !productValue) 
+    {
+      let forfaitDouane = "New" == StateValue ? douane.forfait : douane.forfaitProduitOccasion;
+      let coefficientDouane = "New" == StateValue ? douane.coefficient : douane.coefficientProduitOccasion;
 
-      if (coefficientDouane && !productValue) {
+      if (forfaitDouane || coefficientDouane)
+      {
         if (IOSPLAt == "ios") {
           Toast.show({
             type: "error",
@@ -357,7 +359,7 @@ const ByPlaneDetailsComponentGrid = (props) => {
             ToastAndroid.SHORT
           );
         }
-
+  
         return;
       }
     }
@@ -451,7 +453,8 @@ const ByPlaneDetailsComponentGrid = (props) => {
       image: userImage,
       paysLivraison: PaysLivraison,
       Price: Price,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      poidsMoyen:Product.poidsMoyen
     };
 
     CatProducts.push(obj);

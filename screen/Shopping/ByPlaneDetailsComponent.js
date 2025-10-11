@@ -383,13 +383,15 @@ else
       return;
     }
 
-    if (douane) {
-      let coefficientDouane =
-        "New" == StateValue
-          ? douane.coefficient
-          : douane.coefficientProduitOccasion;
+    let douane = Product.validationManuelle ? null : Product.productSpecificites[0].douane;
 
-      if (coefficientDouane && !productValue) {
+    if (douane && !productValue) 
+    {
+      let forfaitDouane = "New" == StateValue ? douane.forfait : douane.forfaitProduitOccasion;
+      let coefficientDouane = "New" == StateValue ? douane.coefficient : douane.coefficientProduitOccasion;
+
+      if (forfaitDouane || coefficientDouane)
+      {
         if (IOSPLAt == "ios") {
           Toast.show({
             type: "error",
@@ -402,10 +404,11 @@ else
             ToastAndroid.SHORT
           );
         }
-
+  
         return;
       }
     }
+
 
     try {
       let BasketCommand = await getCommand();
@@ -538,7 +541,8 @@ else
       image: userImage,
       paysLivraison: PaysLivraison,
       Price: Price,
-      timestamp: Date.now()
+      timestamp: Date.now(),
+      poidsMoyen:Product.poidsMoyen
     };
 
     CatProducts.push(obj);

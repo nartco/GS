@@ -129,7 +129,7 @@ export const headerHearthNav = [
     {
     id: 1,
     img: HeaderEarthImage,
-    title: "GS"
+    title: ""
 }
 ]
 

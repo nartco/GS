@@ -742,14 +742,7 @@ const Signup = props => {
               }}
             />
             <View style={styles.checkboxContainer}>
-              <Checkbox
-                value={usePhoneAuth}
-                onValueChange={setUsePhoneAuth}
-                style={styles.checkbox}
-              />
-              <Text style={styles.label}>
-                {t("Utiliser l'authentification par téléphone")}
-              </Text>
+
             </View>
             <Controller
               control={control}
@@ -793,7 +786,7 @@ const Signup = props => {
               }}
             />
 
-            {Email.length > 0 && (
+            {
               <Controller
                 control={control}
                 name="Password"
@@ -839,7 +832,7 @@ const Signup = props => {
                   );
                 }}
               />
-            )}
+            }
             <Controller
               name="Date"
               control={control}

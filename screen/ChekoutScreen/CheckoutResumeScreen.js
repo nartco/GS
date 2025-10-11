@@ -494,6 +494,8 @@ const CheckoutResumeScreen = (props) => {
 
         setDepotData(depot);
 
+        console.log('depot', depot)
+
         let commandeProducts = [];
         let productImages = [];
         commande.commandeProducts.forEach((commandeProduct) => {
@@ -1980,11 +1982,15 @@ const CheckoutResumeScreen = (props) => {
                           </Text>
                           <Text style={styles.WeightCalSubText}>
                             {t("Mode")} :{" "}
-                            {t(
-                              DepotData.mode == "magasin"
-                                ? "Depot magasin"
-                                : DepotData.mode
-                            )}
+                          
+                            {
+                            DepotData.mode == "magasin"
+                              ? t("Depot magasin")
+                              : ('relais' == DepotData.depotTypeRelaisMagasin ? t("Dépôt en point relais") : t(DepotData.mode))
+                            }
+
+
+
                           </Text>
 
                           <Text style={styles.WeightCalSubText}>

@@ -119,8 +119,12 @@ const ColiSuivi = ({ navigation, route }) => {
 
       setCommandeHasManualValidation(validationManuelle);
 
-      console.log(response.data, "commande");
+      console.log("commande", response.data,);
       setCommande(response.data);
+
+      response.data.depot.pointRelaisTransfertHoraire?.forEach((item) => {
+              console.log("item item", item);
+            });
 
       let commandeProducts = response.data
         ? response.data.commandeProducts[0]
@@ -186,8 +190,7 @@ const ColiSuivi = ({ navigation, route }) => {
       </View>
     );
   }
-
-  console.log({ Commande });
+  
   async function NavigateToPayment() {
     await saveResumeCommande(Commande);
 
@@ -508,6 +511,12 @@ const ColiSuivi = ({ navigation, route }) => {
     return isNaN(number) ? 0 : number;
   };
 
+  const chunkBy = (arr, size) => {
+    const out = [];
+    for (let i = 0; i < arr.length; i += size) out.push(arr.slice(i, i + size));
+    return out;
+  };
+
   const RenderTotal = ({ data }) => {
     console.log(JSON.stringify(data));
     const prices =
@@ -574,7 +583,10 @@ const ColiSuivi = ({ navigation, route }) => {
       apreRemise = subTotal - remiseAmount;
 
       // Calcul du total avec tous les frais
-      montantApayer = apreRemise + fraisDouane + prixLivraison;
+      let fraisTransfert = parseFloat(Commande.fraisDepotTransfertMontant);
+      fraisTransfert = isNaN(fraisTransfert) ? 0 : fraisTransfert;
+
+      montantApayer = apreRemise + fraisDouane + prixLivraison + fraisTransfert;
       TotalWithLivraison = montantApayer;
     }
 
@@ -765,6 +777,44 @@ const ColiSuivi = ({ navigation, route }) => {
                         ("fr" == Language ? " €" : "")}
                   </Text>
                 </View>
+
+                {Commande.depot && Commande.depot.isDepotPointRelais && (
+                    <View
+                    style={{
+                      flex: 1,
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                    }}
+                  >
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Regular",
+                        fontSize: 12,
+                        color: "#ACB2B2",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {t("Frais de transfert")}
+                    </Text>
+                    <Text
+                      style={{
+                        fontFamily: "Poppins-Medium",
+                        fontSize: 14,
+                        color: "#262A2B",
+                        letterSpacing: 0.8,
+                      }}
+                    >
+                      {
+                        ("en" == Language ? "€ " : "") +
+                        Commande.fraisDepotTransfertMontant +
+                        ("fr" == Language ? " €" : "")
+                      }
+                    </Text>
+                  </View>
+                )}
+
+                
 
                 <View
                   style={{
@@ -1163,11 +1213,17 @@ const ColiSuivi = ({ navigation, route }) => {
                             >
                               {"enlevement" == Commande.depot?.mode
                                 ? t("Enlèvement à domicile")
-                                : t("Dépôt au magasin")}
+                                : ( (Commande.depot && Commande.depot.isDepotPointRelais) ? t("Dépôt en point relais") : t("Dépôt au magasin"))
+                              }
                             </Text>
                           </View>
 
                           <View>
+                            {Commande.depot.pointRelaisTransfertNom && (
+                              <Text style={styles.WeightCalText}>
+                                {Commande.depot.pointRelaisTransfertNom}
+                              </Text>
+                            )}
                             {Commande.depot.nom && (
                               <Text style={styles.WeightCalText}>
                                 {Commande.depot.nom}
@@ -1185,6 +1241,29 @@ const ColiSuivi = ({ navigation, route }) => {
                                   Commande.depot?.commandeMagasin?.magasin
                                     .horaireOuverture
                                 }
+
+                                
+                                <View style={[styles.card]}>
+                                  {Array.isArray(Commande.depot.pointRelaisTransfertHoraire) && Commande.depot.pointRelaisTransfertHoraire.length > 0 && (
+                                    <View style={styles.hoursWrap}>
+                                      {chunkBy(Commande.depot.pointRelaisTransfertHoraire, 3).map((row, rIdx) => (
+                                        <View key={rIdx} style={styles.hoursRow}>
+                                          {row.map((d, cIdx) => (
+                                            <View key={cIdx} style={styles.hoursCol}>
+                                              <Text style={styles.hourDay}>
+                                                {Language === 'fr' ? (d.dayFr || d.dayEn) : (d.dayEn || d.dayFr)}
+                                              </Text>
+                                              <Text style={styles.hourSlots}>
+                                                {Array.isArray(d.hours) && d.hours.length ? d.hours.join(' • ') : '—'}
+                                              </Text>
+                                            </View>
+                                          ))}
+                                        </View>
+                                      ))}
+                                    </View>
+                                  )}
+                                </View>
+
                               </Text>
                             )}
                             {"enlevement" == Commande.depot?.mode && (
@@ -1304,8 +1383,7 @@ const ColiSuivi = ({ navigation, route }) => {
           </View>
           <View style={{ marginBottom: windowWidth * 0.1 }}>
             {Commande.showPaiementButton &&
-              Commande.statut.toLowerCase() == "a payer" &&
-              CommandeResteApayer > 0 && (
+              (parseFloat(Commande.totalPaye) || 0) < (parseFloat(Commande.totalPrice) || 0) && (
                 <TouchableOpacity
                   onPress={NavigateToPayment}
                   style={{

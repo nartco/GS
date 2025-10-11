@@ -200,6 +200,7 @@ const CardTotal = ({
                       paddingLeft: 19,
                       color: '#000',
                       height: 45,
+                      width: windowWidth * 0.4,
                     }}
                   />
 

@@ -215,19 +215,8 @@ const ServiceHeader = (props) => {
             >
               <Image
                 source={SmallEarth}
-                style={{ width: wp(7), height: wp(7) }}
+                style={{ width: wp(15), height: wp(15) }}
               />
-              <Text
-                style={{
-                  fontSize: 14,
-                  color: "#fff",
-                  fontFamily: "Roboto-Bold",
-                  textAlign: "center",
-                  marginTop: 4,
-                }}
-              >
-                GS
-              </Text>
             </View>
           </View>
         </>
@@ -370,19 +359,8 @@ const ServiceHeader = (props) => {
           <View style={{ position: "absolute", top: 15, right: 10 }}>
             <Image
               source={SmallEarth}
-              style={{ width: wp(7), height: wp(7) }}
+              style={{ width: wp(15), height: wp(15) }}
             />
-            <Text
-              style={{
-                fontSize: 14,
-                color: "#fff",
-                fontFamily: "Roboto-Bold",
-                textAlign: "center",
-                marginTop: 4,
-              }}
-            >
-              GS
-            </Text>
           </View>
         </View>
       )}

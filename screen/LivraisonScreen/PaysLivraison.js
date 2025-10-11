@@ -21,6 +21,7 @@ import Flag from 'react-native-flags';
 import {useTranslation} from 'react-i18next';
 import {widthPercentageToDP as wp} from 'react-native-responsive-screen';
 import {HeaderActions} from '../../components/HeaderActions';
+import auth from '@react-native-firebase/auth';
 
 const PaysLivraison = ({navigation, route}) => {
   var isFocused = useIsFocused();
@@ -33,8 +34,13 @@ const PaysLivraison = ({navigation, route}) => {
   const [data, setData] = useState([]);
   const [ActivityIndicatorVar, setActivityIndicatorVar] = useState(false);
   const [service, setService] = useState([]);
+  const [user, setUser] = useState(null);
 
   useEffect(() => {
+    if (!user) {
+      setUser(auth().currentUser);
+    }
+
     async function getData() {
       setActivityIndicatorVar(true);
 
@@ -97,6 +103,11 @@ const PaysLivraison = ({navigation, route}) => {
   }, [isFocused]);
 
   async function navigateToReturnByServiceScreen() {
+     if (user === null) {
+        navigation.navigate("Login", { fromCart: "cart" });
+        return;
+      }
+
     var choice = data.filter(ls => {
       if (ls.id == value) {
         return ls;
@@ -324,7 +335,7 @@ const PaysLivraison = ({navigation, route}) => {
             backgroundColor: '#fff',
             borderColor: '#2BA6E9',
           }}
-          maxHeight={190}
+          maxHeight={350}
           placeholder={t('pay livraison')}
           placeholderStyle={{
             color: '#86909C',

@@ -63,7 +63,6 @@ export const HeaderActions = ({ navigation }) => {
         </View>
         <View style={{alignItems: "center", justifyContent: "center"}}>
             <Image source={HeaderEarthImage} style={{width: WidthEarth, height: heightEarth, objectFit: "cover"}}/>
-            <Text style={{ fontSize:  windowWidth * 0.04, color: "#fff", fontFamily: "Roboto-Bold"}}>GS</Text>
           </View>
           <View style={{width: wp(12)}}>
   
@@ -83,8 +82,7 @@ export const HeaderActions = ({ navigation }) => {
           </TouchableOpacity>
         </View>
           <View style={{alignItems: "center", justifyContent: "center"}}>
-            <Image source={HeaderEarthImage} style={{width: wp(10), height: wp(10), objectFit: "cover"}}/>
-            <Text style={{ fontSize: 18, color: "#fff", fontFamily: "Roboto-Bold"}}>GS</Text>
+            <Image source={HeaderEarthImage} style={{width: wp(15), height: wp(15), objectFit: "cover"}}/>
           </View>
           <View style={{width: wp(12)}}>
   

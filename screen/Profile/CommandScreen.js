@@ -1140,9 +1140,9 @@ const CommandScreen = (props) => {
                 {t('commander à nouveau')}
               </Text>
             </TouchableOpacity> */}
+  
             {item.showPaiementButton &&
-              item.statut.toLowerCase() == "a payer" &&
-              item.totalPaye < item.totalPrice && (
+              (parseFloat(item.totalPaye) || 0) < (parseFloat(item.totalPrice) || 0) && (
                 <TouchableOpacity
                   onPress={() =>
                     handleCommandDetail(item.id, item.paysLivraisonId)

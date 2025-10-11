@@ -103,3 +103,48 @@ export const removeCard = async (uuid, cardId) => {
 
   return response.data;
 };
+
+/**
+ * Retry d'un paiement quand le PI est en `requires_action` (3DS requis).
+ * À appeler quand ton back renvoie `requires_action` + { paymentIntentId, clientSecret }.
+ *
+ * @param {object} args
+ * @param {string} args.paymentIntentId - ID du PaymentIntent (pi_...)
+ * @param {string} args.clientSecret - client_secret du PaymentIntent
+ * @param {function} args.handleNextAction - provient de useStripe()
+ * @returns {Promise<{ok:boolean, status:string, message?:string}>}
+ */
+export async function retryPaymentWith3DS({
+  paymentIntentId,
+  clientSecret,
+  handleNextAction,
+}) {
+  // 1) lancer le challenge 3DS dans l’app
+  const result = await handleNextAction(clientSecret);
+
+  if (result?.error) {
+    return {
+      ok: false,
+      status: 'requires_payment_method',
+      message: result.error.message,
+    };
+  }
+
+  // 2) Re-check côté serveur (source de vérité)
+  try {
+    const { data: final } = await axiosInstance.get('/stripe/payment/intent_status', {
+      params: { payment_intent_id: paymentIntentId },
+    });
+
+    const status = final?.status || 'unknown';
+    const success = status === 'succeeded' || status === 'processing';
+
+    return { ok: !!success, status };
+  } catch (err) {
+    return {
+      ok: false,
+      status: 'error',
+      message: err?.message || 'Erreur lors de la vérification du paiement',
+    };
+  }
+}

@@ -90,6 +90,8 @@ const AddCardScreen = props => {
   const [LoadingPayment, setLoadingPayment] = useState(false);
   const [user, setUser] = useState(null);
 
+  const [payerLivraison, setPayerLivraison] = useState(false);
+
   const {setBagCount} = useBag();
 
   useEffect(() => {
@@ -166,6 +168,20 @@ const AddCardScreen = props => {
           setPaysLivraisonObject(paysLivraisonObject);
 
           await saveSelectedCountry(paysLivraisonObject);
+        }
+
+        if (Array.isArray(basketData))
+        {
+          let payerALaLivraison = true;
+          basketData.forEach(function (item) {
+            
+            if (!item.payerLivraison || item.service != 'ventes-privees')
+            {
+              payerALaLivraison = false;
+            }
+          });
+
+          setPayerLivraison(payerALaLivraison);
         }
       } else {
         console.log('No Basket Data');
@@ -299,7 +315,7 @@ const AddCardScreen = props => {
       return Alert.alert(
         t('Succès'),
 
-        t("Voulez-vous payer à l'enlèvement"),
+        payerLivraison ? t("Voulez-vous payer à la livraison") : t("Voulez-vous payer à l'enlèvement"),
 
         [
           {
@@ -307,8 +323,6 @@ const AddCardScreen = props => {
 
             onPress: () => {
               validateCommande();
-
-              console.log('Succes');
             },
           },
 
@@ -388,7 +402,11 @@ const AddCardScreen = props => {
       data.commande.totalPaye = 0;
     }
 
-
+    if (payerLivraison)
+    {
+      data.commande.totalPaye = 0;
+      data.commande.statut = 'A payer';
+    }
 
     const formData = new FormData();
 
@@ -492,7 +510,11 @@ const AddCardScreen = props => {
       }
 
       console.log(error.config);
+
+      console.log('Error response 11', error.response);
     }
+
+     
 
     setLoadingPayment(false);
   }
@@ -530,7 +552,64 @@ const AddCardScreen = props => {
           </Text>
         </View>
 
-        {Service?.code == 'ventes-privees' ||
+        {payerLivraison && Service?.code == 'ventes-privees' ? (
+          <>
+          <ScrollView
+              horizontal
+              style={{paddingLeft: 10}}
+              showsHorizontalScrollIndicator={false}>
+              {card_category.slice(0, 3).map((item, index) => (
+                <View key={index} style={{marginRight: 5, marginBottom: 25}}>
+                  <TouchableOpacity
+                    onPress={() => {
+                      item.title == '' ? setActiveCard(index) : navigateDepot();
+                    }}
+                    disabled={LoadingPayment}
+                    style={[
+                      activeCard === index
+                        ? styles.backgroundColorActive
+                        : styles.backgroundColor,
+                      LoadingPayment && index == 2
+                        ? {backgroundColor: '#2196F3'}
+                        : {},
+                      {
+                        borderColor: '#2196F3',
+                        justifyContent: 'center',
+                        borderRadius: 20,
+                        alignItems: 'center',
+                        paddingHorizontal: item.paddingHorrizontal,
+                        height: 56,
+                        borderWidth: 1.2,
+                      },
+                    ]}>
+                    <View style={{display: item.imgDisplay}}>
+                      {activeCard === index ? item.imgActive : item.img}
+                    </View>
+
+                    <Text
+                        style={[
+                          activeCard === index
+                            ? styles.textActive
+                            : styles.textColor,
+                          {
+                            display: item.titledisplay,
+                            fontFamily: 'Poppins-Medium',
+                            fontSize: 16,
+                          },
+                        ]}>
+                        {LoadingPayment && index == 2 ? (
+                          <ActivityIndicator size="small" color="#fff" />
+                        ) : (
+                          t('Payer à la livraison')
+                        )}
+                      </Text>
+                      
+                  </TouchableOpacity>
+                </View>
+              ))}
+            </ScrollView>
+          </>
+        ) : (Service?.code == 'ventes-privees' ||
         Service?.code == 'demand-d-achat' ||
         Service?.code == 'demandes-d-achat' ? (
           <>
@@ -647,7 +726,12 @@ const AddCardScreen = props => {
               ))}
             </ScrollView>
           </>
-        )}
+        )
+
+        )
+
+        }
+
 
         {activeCard == 0 ? <PaymentCard commandId={commandeId} /> : null}
 

@@ -129,6 +129,17 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontFamily: commonStyle.Bold,
   },
+      hoursWrap: { marginTop: 6, marginBottom: 8 },
+  hoursRow: { flexDirection: 'row', gap: 20, marginBottom: 6 },
+  hoursCol: {
+    flex: 1,                // 3 colonnes auto
+    minWidth: 0,            // évite le débordement
+    padding: 10
+  },
+  hourDay: { fontSize: 12, fontWeight: '700', color: '#333', marginBottom: 2 },
+  hourSlots: { fontSize: 12, color: '#444', lineHeight: 16 },
+    card: { borderWidth: 1, borderColor: '#eee', borderRadius: 12, padding: 12, marginTop: 10, backgroundColor: '#fafafa' },
+
 });
 
 export default styles;
